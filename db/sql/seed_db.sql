@@ -42,3 +42,23 @@ INSERT INTO ta_teams (ta_user_id, course_id, team_id) VALUES
     (2, 1, 1),
     (2, 1, 2),
     (2, 2, 4);
+
+-- Seed lectures
+INSERT INTO lectures (course_id, lecture_date, code) VALUES
+    (1, '2025-10-01', 'CSE210-L1'),
+    (1, '2025-10-03', 'CSE210-L2'),
+    (2, '2025-10-02', 'CSE110-L1');
+
+-- CSE210 Lecture 1: both students present
+INSERT INTO attendances (course_id, lecture_id, student_id, updated_by, update_reason) VALUES
+    (1, 1, 3, 1, 'Initial attendance import'),
+    (1, 1, 4, 1, 'Initial attendance import');
+
+-- CSE210 Lecture 2: only John present
+INSERT INTO attendances (course_id, lecture_id, student_id, updated_by, update_reason) VALUES
+    (1, 2, 3, 2, 'Marked by TA during class');
+
+-- CSE110 Lecture 1: both students present
+INSERT INTO attendances (course_id, lecture_id, student_id, updated_by, update_reason) VALUES
+    (2, 3, 3, 2, 'First lab session'),
+    (2, 3, 4, 2, 'First lab session');

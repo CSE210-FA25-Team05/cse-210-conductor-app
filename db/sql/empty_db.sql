@@ -1,4 +1,6 @@
 TRUNCATE TABLE
+    attendances,
+    lectures,
     ta_teams,
     enrollments,
     teams,

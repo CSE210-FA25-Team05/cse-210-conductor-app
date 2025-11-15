@@ -90,3 +90,31 @@ CREATE TABLE IF NOT EXISTS ta_teams (
     deleted_at TIMESTAMP,
     UNIQUE (ta_user_id, course_id, team_id)
 );
+
+-- LECTURES TABLE
+-- One row per lecture / class meeting in a course
+CREATE TABLE IF NOT EXISTS lectures (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    lecture_date DATE NOT NULL,
+    code VARCHAR,  -- e.g. "L01", "Week2-Discussion"
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP
+);
+
+-- ATTENDANCES TABLE
+-- Tracks student attendance per lecture
+CREATE TABLE IF NOT EXISTS attendances (
+    id SERIAL PRIMARY KEY,
+    course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    lecture_id INTEGER NOT NULL REFERENCES lectures(id) ON DELETE CASCADE,
+    student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    updated_by INTEGER REFERENCES users(id) ON DELETE SET NULL, -- TA / professor who last edited
+    update_reason TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at TIMESTAMP,
+    -- One attendance row per student per lecture
+    UNIQUE (lecture_id, student_id)
+);
