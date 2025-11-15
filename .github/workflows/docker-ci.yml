@@ -1,0 +1,59 @@
+name: Docker CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  backend-tests:
+    name: Backend – Docker Build & Jest Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: conductor
+          POSTGRES_PASSWORD: conductor
+          POSTGRES_DB: conductor_db
+        options: >-
+          --health-cmd "pg_isready -U conductor"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend Docker image
+        run: docker build -t conductor-backend ./backend
+
+      - name: Run backend Jest tests inside Docker
+        run: |
+          docker run \
+            --network=host \
+            -e DATABASE_URL="postgres://conductor:conductor@localhost:5432/conductor_db" \
+            conductor-backend \
+            npm test
+
+  frontend-build:
+    name: Frontend – Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build frontend Docker image
+        run: docker build -t conductor-frontend ./frontend
