@@ -46,6 +46,7 @@ fastify.register(require('./prisma'));
 
 //decorators
 fastify.register(require('./decorators/auth'));
+fastify.register(require('./decorators/course'));
 
 //hooks
 fastify.register(require('./hooks/profile-complete'));

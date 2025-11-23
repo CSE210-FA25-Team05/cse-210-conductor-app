@@ -83,6 +83,26 @@ class AuthRepo {
   }
 
   /**
+   * Get a user by ID.
+   *
+   * @param {number} userId
+   * @param {object} options - Optional select fields
+   * @param {object} options.select - Fields to select (e.g., { id: true, global_role: true })
+   * @returns {Promise<object|null>} user or null if not found
+   */
+  async getUserById(userId, options = {}) {
+    if (!userId) {
+      return null;
+    }
+
+    const queryOptions = options.select
+      ? { where: { id: userId }, select: options.select }
+      : { where: { id: userId } };
+
+    return await this.db.users.findUnique(queryOptions);
+  }
+
+  /**
    * Look up the current user by session id.
    * Returns null if the session is missing, expired, or the user no longer exists.
    *

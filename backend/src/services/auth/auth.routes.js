@@ -20,10 +20,12 @@
 const authSchemas = require('./auth.schemas');
 const AuthRepo = require('./auth.repo');
 const AuthService = require('./auth.service');
+const AuthPermissions = require('./auth.permissions');
 
 async function routes(fastify) {
   const authRepo = new AuthRepo(fastify.db);
   const authService = new AuthService(authRepo);
+  const authPermissions = new AuthPermissions(authRepo);
 
   // Redirect user to Google's consent screen
   fastify.get(
@@ -96,6 +98,42 @@ async function routes(fastify) {
     async (req) => {
       const profile = authService.buildProfileResponse(req.user);
       return profile;
+    }
+  );
+
+  // Get another user's profile
+  fastify.get(
+    '/users/:user_id/profile',
+    {
+      preHandler: fastify.authenticate,
+      schema: authSchemas.GetUserProfileByIdSchema,
+    },
+    async (req, reply) => {
+      const targetUserId = parseInt(req.params.user_id, 10);
+      const actorUserId = req.user.id;
+
+      // Check permission: users can view their own profile, or professors can view any profile
+      let canView = false;
+      if (actorUserId === targetUserId) {
+        canView = true;
+      } else {
+        canView = await authPermissions.isProfessor(actorUserId);
+      }
+
+      if (!canView) {
+        return reply.code(403).send({
+          error: 'Forbidden',
+          message: 'You do not have permission to view this user profile',
+        });
+      }
+
+      // If allowed, fetch and return the profile
+      const targetUser = await authRepo.getUserById(targetUserId);
+      if (!targetUser) {
+        return reply.code(404).send({ error: 'User not found' });
+      }
+
+      return authService.buildProfileResponse(targetUser);
     }
   );
 
