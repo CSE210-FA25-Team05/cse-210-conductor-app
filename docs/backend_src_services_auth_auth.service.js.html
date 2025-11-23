@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: backend/src/services/auth/auth.service.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: backend/src/services/auth/auth.service.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/**
+ * Auth Service
+ *
+ * Responsibilities:
+ * - Build Google OAuth login URL and set CSRF state cookie
+ * - Exchange authorization code for tokens
+ * - Verify Google ID token and email rules
+ * - Create a session (UUID) and store it in the repository
+ */
+
+const { randomUUID } = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
+const authRepo = require('./auth.repo');
+
+// Configuration from environment variables
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI =
+  process.env.GOOGLE_REDIRECT_URI ||
+  'http://localhost:3001/auth/oauth/google/callback';
+
+// Only allow UCSD emails by default; can be overridden via env.
+const ALLOWED_EMAIL_SUFFIXES = (
+  process.env.ALLOWED_EMAIL_SUFFIXES || '@ucsd.edu'
+)
+  .split(',')
+  .map((s) => s.trim().toLowerCase())
+  .filter(Boolean);
+
+// Session lifetime in milliseconds (7 days)
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+// OAuth2 client
+const oauthClient = new OAuth2Client(
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI
+);
+
+/**
+ * Build the Google OAuth login URL and set the CSRF state cookie.
+ * @param {fastify.FastifyReply} reply
+ * @returns {string} Google OAuth consent screen URL
+ */
+function buildGoogleLoginUrl(reply) {
+  const state = randomUUID();
+
+  // Store state in an HttpOnly cookie to mitigate CSRF.
+  reply.setCookie('oauth_state', state, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 10 * 60, // 10 minutes
+  });
+
+  const authUrl = oauthClient.generateAuthUrl({
+    access_type: 'offline',
+    prompt: 'consent',
+    scope: ['openid', 'email', 'profile'],
+    state,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+  });
+
+  return authUrl;
+}
+
+/**
+ * Exchange an authorization code for tokens.
+ * @param {string} code
+ * @returns {Promise&lt;object>} tokens
+ */
+async function exchangeCodeForTokens(code) {
+  const { tokens } = await oauthClient.getToken({
+    code,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+  });
+  if (!tokens || !tokens.id_token) {
+    throw new Error('Failed to retrieve tokens from Google');
+  }
+  return tokens;
+}
+
+/**
+ * Verify the ID token and return the payload.
+ * @param {string} idToken
+ * @returns {Promise&lt;object>} payload
+ */
+async function verifyIdToken(idToken) {
+  const ticket = await oauthClient.verifyIdToken({
+    idToken,
+    audience: GOOGLE_CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw new Error('Google ID token payload is empty');
+  }
+  return payload;
+}
+
+/**
+ * Enforce email rules (verified + allowed domains).
+ * @param {object} payload
+ */
+function enforceEmailRules(payload) {
+  if (!payload.email_verified) {
+    throw new Error('Your Google email is not verified');
+  }
+
+  const email = (payload.email || '').toLowerCase();
+  const allowed = ALLOWED_EMAIL_SUFFIXES.some((suffix) =>
+    email.endsWith(suffix)
+  );
+  if (!allowed) {
+    throw new Error('Only UCSD emails are allowed');
+  }
+}
+
+/**
+ * Create a new session for this user.
+ * @param {object} user
+ * @returns {Promise&lt;string>} sessionId
+ */
+async function createSessionForUser(user) {
+  const sessionId = randomUUID();
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  await authRepo.createSession(sessionId, user.id, expiresAt);
+  return sessionId;
+}
+
+/**
+ * Handle the standard OAuth callback flow (query string).
+ * @param {fastify.FastifyRequest} req
+ * @returns {Promise&lt;string>} sessionId to be stored in cookie
+ */
+async function handleGoogleCallback(req) {
+  const { code, state } = req.query;
+
+  if (!code || typeof code !== 'string') {
+    throw new Error('Missing authorization code');
+  }
+  if (!state || typeof state !== 'string') {
+    throw new Error('Missing OAuth state');
+  }
+
+  const stateCookie = req.cookies?.oauth_state;
+  if (!stateCookie || stateCookie !== state) {
+    throw new Error('Invalid OAuth state (possible CSRF)');
+  }
+
+  const tokens = await exchangeCodeForTokens(code);
+  const payload = await verifyIdToken(tokens.id_token);
+  enforceEmailRules(payload);
+
+  const user = await authRepo.upsertUserFromGooglePayload(payload);
+  const sessionId = await createSessionForUser(user);
+
+  return sessionId;
+}
+
+/**
+ * Optional: handle SPA/PKCE-style flows where the code is in the request body.
+ * @param {fastify.FastifyRequest} req
+ * @returns {Promise&lt;string>} sessionId
+ */
+async function handleCodeExchangeFromBody(req) {
+  const { code, state } = req.body || {};
+
+  if (!code || typeof code !== 'string') {
+    throw new Error('Missing authorization code');
+  }
+  if (!state || typeof state !== 'string') {
+    throw new Error('Missing OAuth state');
+  }
+
+  const stateCookie = req.cookies?.oauth_state;
+  if (!stateCookie || stateCookie !== state) {
+    throw new Error('Invalid OAuth state (possible CSRF)');
+  }
+
+  const tokens = await exchangeCodeForTokens(code);
+  const payload = await verifyIdToken(tokens.id_token);
+  enforceEmailRules(payload);
+
+  const user = await authRepo.upsertUserFromGooglePayload(payload);
+  const sessionId = await createSessionForUser(user);
+
+  return sessionId;
+}
+
+module.exports = {
+  buildGoogleLoginUrl,
+  handleGoogleCallback,
+  handleCodeExchangeFromBody,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DirEntry.html">DirEntry</a></li><li><a href="FSWatcher.html">FSWatcher</a></li></ul><h3>Mixins</h3><ul><li><a href="FsEventsHandler.html">FsEventsHandler</a></li><li><a href="NodeFsHandler.html">NodeFsHandler</a></li></ul><h3>Global</h3><ul><li><a href="global.html#DOT_LITERAL">DOT_LITERAL</a></li><li><a href="global.html#FSEventsWatchers">FSEventsWatchers</a></li><li><a href="global.html#FsWatchInstances">FsWatchInstances</a></li><li><a href="global.html#POSIX_REGEX_SOURCE">POSIX_REGEX_SOURCE</a></li><li><a href="global.html#WINDOWS_CHARS">WINDOWS_CHARS</a></li><li><a href="global.html#add">add</a></li><li><a href="global.html#anymatch">anymatch</a></li><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#braces">braces</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#colors">colors</a></li><li><a href="global.html#colour">colour</a></li><li><a href="global.html#command">command</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#createFSEventsInstance">createFSEventsInstance</a></li><li><a href="global.html#createFsWatchInstance">createFsWatchInstance</a></li><li><a href="global.html#createPattern">createPattern</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#debug">debug</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#encloseBrace">encloseBrace</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#escapeNode">escapeNode</a></li><li><a href="global.html#exceedsLimit">exceedsLimit</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#exec">exec</a></li><li><a href="global.html#execFromPackage">execFromPackage</a></li><li><a href="global.html#expandRange">expandRange</a></li><li><a href="global.html#find">find</a></li><li><a href="global.html#flatten">flatten</a></li><li><a href="global.html#fmtLong">fmtLong</a></li><li><a href="global.html#fmtShort">fmtShort</a></li><li><a href="global.html#formatArgs">formatArgs</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#fsWatchBroadcast">fsWatchBroadcast</a></li><li><a href="global.html#getAllCourse">getAllCourse</a></li><li><a href="global.html#getCourseById">getCourseById</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#getUserDetailsInCourse">getUserDetailsInCourse</a></li><li><a href="global.html#getUsersInCourse">getUsersInCourse</a></li><li><a href="global.html#handleCodeExchangeFromBody">handleCodeExchangeFromBody</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#init">init</a></li><li><a href="global.html#inspectOpts">inspectOpts</a></li><li><a href="global.html#isInvalidBrace">isInvalidBrace</a></li><li><a href="global.html#isOpenOrClose">isOpenOrClose</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadFile">loadFile</a></li><li><a href="global.html#localstorage">localstorage</a></li><li><a href="global.html#log">log</a></li><li><a href="global.html#matchPatterns">matchPatterns</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#nodemon">nodemon</a></li><li><a href="global.html#nodemonOption">nodemonOption</a></li><li><a href="global.html#parse">parse</a></li><li><a href="global.html#parseDelay">parseDelay</a></li><li><a href="global.html#picomatch">picomatch</a></li><li><a href="global.html#plural">plural</a></li><li><a href="global.html#rangeToPattern">rangeToPattern</a></li><li><a href="global.html#readdirp">readdirp</a></li><li><a href="global.html#reduce">reduce</a></li><li><a href="global.html#s">s</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#scan">scan</a></li><li><a href="global.html#setFSEventsListener">setFSEventsListener</a></li><li><a href="global.html#setFsWatchFileListener">setFsWatchFileListener</a></li><li><a href="global.html#setFsWatchListener">setFsWatchListener</a></li><li><a href="global.html#setup">setup</a></li><li><a href="global.html#stringToArgs">stringToArgs</a></li><li><a href="global.html#syntaxError">syntaxError</a></li><li><a href="global.html#tty">tty</a></li><li><a href="global.html#upsertUserFromGooglePayload">upsertUserFromGooglePayload</a></li><li><a href="global.html#useColors">useColors</a></li><li><a href="global.html#users">users</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li><li><a href="global.html#watch">watch</a></li><li><a href="global.html#zip">zip</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Sun Nov 16 2025 16:54:18 GMT-0800 (Pacific Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -4,6 +4,8 @@
 * */
 
 :root {
+  view-transition-name: root;
+
   --color-bg: #fffff;
   --color-primary-100: lightblue;
   --color-primary-600: darkblue;
@@ -16,6 +18,7 @@
   --color-border: lightgray;
   --color-neutral-100: #f2f3f5;
   --color-neutral-600: darkgray;
+  --color-state: #000;
   --typography-padding-vertical: 1rem;
   --font-weight-bold: 700;
 
@@ -37,6 +40,15 @@
   --spacing-medium: 1em;
   --spacing-small: 0.5em;
   --spacing-extra-small: 0.25em;
+
+  --sidebar-width: 10em;
+  --main-content-padding: 3em;
+
+  --icon-button-size: 2.4rem;
+}
+
+@view-transition {
+  navigation: auto;
 }
 
 @media (max-width: 576px) {
@@ -255,28 +267,124 @@ article {
   line-height: 1.6;
   box-shadow: 0.2em 0.3em;
 }
+main {
+  padding: var(--main-content-padding);
+}
+
+/* Buttons */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-small);
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-size: var(--fs-100);
+  border-radius: var(--spacing-small);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-primary-100);
+  cursor: pointer;
+  -webkit-appearance: none;
+  text-decoration: none;
+}
+button.sm {
+  padding: var(--spacing-extra-small) var(--spacing-small);
+  font-size: var(--fs-50);
+}
+button.md {
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-size: var(--fs-100);
+}
+button.lg {
+  padding: var(--spacing-medium) var(--spacing-large);
+  font-size: var(--fs-200);
+}
+button i,
+button .material-icons {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-100);
+  line-height: 1;
+}
+button.icon-only {
+  padding: var(--spacing-small);
+}
+button.icon-round {
+  padding: var(--spacing-small);
+  border-radius: 999px;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
 /* Classes */
 /* Colors */
 .neutral {
   background-color: var(--color-neutral-100);
   color: var(--color-neutral-600);
+  --color-state: var(--color-neutral-600);
 }
 .primary {
   background-color: var(--color-primary-100);
   color: var(--color-primary-600);
+  --color-state: var(--color-primary-600);
 }
 .secondary {
   background-color: var(--color-secondary-100);
   color: var(--color-secondary-600);
+  --color-state: var(--color-secondary-600);
 }
 .error {
   background-color: var(--color-error-100);
   color: var(--color-error-600);
+  --color-state: var(--color-error-600);
 }
 .success {
   background-color: var(--color-success-100);
   color: var(--color-success-600);
+  --color-state: var(--color-success-600);
+}
+
+/* State-layer uses ::after. Any element that includes state-layer will automatically
+ * inherit the state layer and have interactivity. 
+ * elements using state layer should not use ::after.
+*/
+
+button:not([disables]),
+.state-layer {
+  position: relative;
+  cursor: pointer;
+}
+
+button:not([disabled]):after,
+.state-layer::after {
+  content: '';
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  background-color: var(--color-state, #000);
+  border-radius: inherit;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+  transform: scale(0);
+}
+
+button:not([disabled]):hover:after,
+.state-layer:hover:after {
+  transform: scale(1);
+  opacity: 0.08;
+}
+
+button:not([disabled]):active:after,
+.state-layer:active:after {
+  transform: scale(1);
+  opacity: 0.14;
 }
 
 /* Google Icons from https://developers.google.com/fonts/docs/material_icons#setup_method_2_self_hosting */
@@ -284,8 +392,10 @@ article {
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url(/src/fonts/MaterialIcons-Regular.ttf) format('truetype');
+  src: url(/src/assets/fonts/MaterialIcons-Regular.ttf) format('truetype');
 }
+
+i,
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
@@ -307,4 +417,38 @@ article {
   -moz-osx-font-smoothing: grayscale;
   /* Support for IE. */
   font-feature-settings: 'liga';
+}
+
+/* Format */
+.middle {
+  position: fixed;
+  inset: 0px;
+  width: 12rem;
+  height: 5rem;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: auto;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body:has(> aside) {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+body > main {
+  grid-column: 2;
+  grid-row: 1;
+  overflow-y: auto;
+}
+body > aside {
+  grid-column: 1;
+  grid-row: 1;
+  background-color: lightblue; /* This main will have a light green background */
 }

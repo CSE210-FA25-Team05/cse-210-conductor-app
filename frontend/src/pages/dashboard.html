@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Conductor</title>
+        <link rel="stylesheet" href="../styles/styles.css">
+        <script src="../js/auth.js"></script>
+    </head>
+    <body>
+        <main>
+            <h1>Dashboard</h1>
+        </main>
+        <aside>
+            <conductor-nav></conductor-nav>
+            <modal-component id="navModal">
+                <article slot="content">
+                    <h2>Add Signal</h2>
+                    <p>This modal was opened from the nav bar.</p>
+                </article>
+                <button slot="buttons" onclick="document.getElementById('navModal').close()">Submit</button>
+            </modal-component>
+        </aside>
+        
+        <script type="module" src="../components/conductor-nav/conductor-nav.js"></script>
+        <script type="module" src="../components/modal/modal.js"></script>
+    </body>
+</html>

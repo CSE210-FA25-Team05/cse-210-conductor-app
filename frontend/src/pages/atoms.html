@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Conductor</title>
+        <link rel="stylesheet" href="../styles/styles.css">
+        <script src="../js/auth.js"></script>
+    </head>
+    <body>
+        <main>
+            <section>
+                <h1>Heading 1</h1>
+                <h2>Heading 2</h2>
+                <h3>Heading 3</h3>
+                <h4>Heading 4</h4>
+                <h5>Heading 5</h5>
+                <h6>Heading 6</h6>
+                <p>Here is some regular text.</p>
+                <small>Here is some small text.</small>
+                <b>Here is some bold text.</b>
+                <i>Here is some italisized text.</i>
+            </section>
+
+            <section>
+                <article class="primary">
+                    <p>Primary <br> (additional line to show line spacing)</p>
+                </article>
+                <article class="secondary">
+                    <p>Secondary</p>
+                </article>
+                <article class="error">
+                    <p>Error</p>
+                </article>
+                <article class="success">
+                    <p>Success</p>
+                </article>
+                <article class="neutral">
+                    <p>Neutral</p>
+                </article>
+            </section>
+
+            <section>
+              <p>Icons: 
+                <i class="material-icons">cloud</i>
+                <i class="material-icons">favorite</i>
+                <i class="material-icons">attachment</i>
+                <i class="material-icons">computer</i>
+                <i class="material-icons">traffic</i>
+                <i>menu</i>
+              </p>
+            </section>
+
+            <section>
+                <button class="primary">Primary Button</button>
+                <button class="secondary">Secondary Button</button>
+                <button class="error">Error Button</button>
+                <button class="success">Success Button</button>
+                <button class="success" style="background-color: transparent">Success Button</button>
+                <button class="neutral">Neutral Button</button>
+                <button class="sm">Small Button</button>
+                <button class="md">Medium Button</button>
+                <button class="lg">Large Button</button>
+                <button>
+                    <i class="material-icons">cloud</i>
+                </button>
+                <button class="icon-only primary">
+                    <i class="material-icons">cloud</i>
+                </button>
+                <button class="icon-round primary">
+                    <i class="material-icons">cloud</i>
+                </button>
+                <button>
+                    Add
+                    <i class="material-icons">add</i>
+                </button>
+                <button disabled>Disabled Button</button>
+                <button id="button"> Click me!</button>
+            </section>
+        </main>
+        <aside>
+            <conductor-nav></conductor-nav>
+        </aside>
+        <script type="module" src="../components/conductor-nav/conductor-nav.js"></script>
+    </body>
+</html>

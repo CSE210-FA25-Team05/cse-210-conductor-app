@@ -15,9 +15,10 @@
     "start:frontend": "cd frontend && npm start",
     "prepare": "if [ \"$CI\" != \"true\" ]; then husky install; fi",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --check \"**/*.{js,jsx,ts,tsx,css}\"",
-    "test": "cd backend && npm test"
+    "lint:fix": "npx eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "format": "npx prettier --check \"**/*.{js,jsx,ts,tsx,css}\"",
+    "test": "cd backend && npm test",
+    "check:deps": "node checkdependencies.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

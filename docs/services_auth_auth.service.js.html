@@ -36,6 +36,7 @@
  * - Exchange authorization code for tokens
  * - Verify Google ID token and email rules
  * - Create a session (UUID) and store it in the repository
+ * - Handle logout and profile-related logic
  */
 
 const { randomUUID } = require('crypto');
@@ -96,6 +97,68 @@ function buildGoogleLoginUrl(reply) {
 }
 
 /**
+ * Find or create a user based on the Google payload and UCSD/non-UCSD rules.
+ *
+ * - UCSD email:
+ *    - existing user → return it
+ *    - no user       → auto-create via insertUser()
+ * - non-UCSD email:
+ *    - existing user → return it (allowed to log in)
+ *    - no user       → throw error (must be added by professor first)
+ *
+ * @param {object} payload - Google ID token payload
+ * @returns {Promise&lt;object>} user
+ */
+async function resolveUserFromGooglePayload(payload) {
+  const email = (payload.email || '').toLowerCase();
+  if (!email) {
+    throw new Error('Google payload does not contain an email');
+  }
+
+  enforceEmailRules(payload);
+
+  // see if a user already exists
+  const existing = await authRepo.getUserByEmail(email);
+
+  if (existing) {
+    return existing;
+  }
+
+  // decide by UCSD vs non-UCSD
+  if (isUcsdEmail(email)) {
+    // ucsd email → auto-create if needed
+    return await authRepo.insertUser(
+      buildInsertUserInputFromGooglePayload(payload)
+    );
+  }
+
+  // non-UCSD + no existing user in DB → reject login
+  throw new Error(
+    'Your email is not registered in the system. Please ask your professor to add you to a class first.'
+  );
+}
+
+/**
+ * Build the input object for insertUser() from a Google ID token payload.
+ *
+ * @param {object} payload - Google ID token payload
+ * @returns {object} insertUser params
+ */
+function buildInsertUserInputFromGooglePayload(payload) {
+  const email = (payload.email || '').toLowerCase();
+  if (!email) {
+    throw new Error('Google payload does not contain an email');
+  }
+
+  return {
+    email,
+    first_name: payload.given_name || null,
+    last_name: payload.family_name || null,
+    last_login: new Date(),
+  };
+}
+
+/**
  * Exchange an authorization code for tokens.
  * @param {string} code
  * @returns {Promise&lt;object>} tokens
@@ -136,14 +199,6 @@ function enforceEmailRules(payload) {
   if (!payload.email_verified) {
     throw new Error('Your Google email is not verified');
   }
-
-  const email = (payload.email || '').toLowerCase();
-  const allowed = ALLOWED_EMAIL_SUFFIXES.some((suffix) =>
-    email.endsWith(suffix)
-  );
-  if (!allowed) {
-    throw new Error('Only UCSD emails are allowed');
-  }
 }
 
 /**
@@ -180,48 +235,98 @@ async function handleGoogleCallback(req) {
 
   const tokens = await exchangeCodeForTokens(code);
   const payload = await verifyIdToken(tokens.id_token);
-  enforceEmailRules(payload);
 
-  const user = await authRepo.upsertUserFromGooglePayload(payload);
+  const user = await resolveUserFromGooglePayload(payload);
   const sessionId = await createSessionForUser(user);
 
   return sessionId;
 }
 
 /**
- * Optional: handle SPA/PKCE-style flows where the code is in the request body.
- * @param {fastify.FastifyRequest} req
- * @returns {Promise&lt;string>} sessionId
+ * Logout: delete the session record (if any).
+ * Route is responsible for clearing the cookie.
+ *
+ * @param {string | undefined} sessionId
+ * @param {object} logger - fastify logger (req.log)
  */
-async function handleCodeExchangeFromBody(req) {
-  const { code, state } = req.body || {};
-
-  if (!code || typeof code !== 'string') {
-    throw new Error('Missing authorization code');
-  }
-  if (!state || typeof state !== 'string') {
-    throw new Error('Missing OAuth state');
+async function logout(sessionId, logger) {
+  if (!sessionId) {
+    return;
   }
 
-  const stateCookie = req.cookies?.oauth_state;
-  if (!stateCookie || stateCookie !== state) {
-    throw new Error('Invalid OAuth state (possible CSRF)');
+  try {
+    await authRepo.deleteSession(sessionId);
+  } catch (e) {
+    // Do not block logout if session deletion fails.
+    logger?.error(e, 'Failed to delete session during logout');
+  }
+}
+
+/**
+ * Build a standardized profile response object from a user record.
+ * @param {object} user
+ * @returns {object}
+ */
+function buildProfileResponse(user) {
+  if (!user) return null;
+
+  return {
+    id: user.id,
+    email: user.email,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    pronouns: user.pronouns,
+    global_role: user.global_role,
+    is_profile_complete: user.is_profile_complete,
+  };
+}
+
+/**
+ * Update current user's profile (supports partial updates).
+ * Only fields explicitly provided in the request body will be updated.
+ * @param {object} user - current user (from req.user)
+ * @param {object} body - request body with profile fields (first_name?, last_name?, pronouns?)
+ * @returns {Promise&lt;object>} normalized profile response
+ */
+async function updateCurrentUserProfile(user, body) {
+  const { first_name, last_name, pronouns } = body || {};
+
+  // Build profile data object, only including fields that are explicitly provided
+  const profileData = {};
+  if (first_name !== undefined) {
+    profileData.first_name = first_name;
+  }
+  if (last_name !== undefined) {
+    profileData.last_name = last_name;
+  }
+  if (pronouns !== undefined) {
+    profileData.pronouns = pronouns;
   }
 
-  const tokens = await exchangeCodeForTokens(code);
-  const payload = await verifyIdToken(tokens.id_token);
-  enforceEmailRules(payload);
+  const updated = await authRepo.updateUserProfile(user.id, profileData);
 
-  const user = await authRepo.upsertUserFromGooglePayload(payload);
-  const sessionId = await createSessionForUser(user);
+  return buildProfileResponse(updated);
+}
 
-  return sessionId;
+/**
+ * Check whether an email belongs to the "UCSD student" group.
+ * By default we treat emails with allowed suffixes as UCSD.
+ *
+ * @param {string} email
+ * @returns {boolean}
+ */
+function isUcsdEmail(email) {
+  const lower = (email || '').toLowerCase();
+  return ALLOWED_EMAIL_SUFFIXES.some((suffix) => lower.endsWith(suffix));
 }
 
 module.exports = {
   buildGoogleLoginUrl,
   handleGoogleCallback,
-  handleCodeExchangeFromBody,
+  logout,
+  buildProfileResponse,
+  updateCurrentUserProfile,
+  enforceEmailRules,
 };
 </code></pre>
         </article>
@@ -233,13 +338,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#handleCodeExchangeFromBody">handleCodeExchangeFromBody</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#upsertUserFromGooglePayload">upsertUserFromGooglePayload</a></li><li><a href="global.html#users">users</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#buildInsertUserInputFromGooglePayload">buildInsertUserInputFromGooglePayload</a></li><li><a href="global.html#buildProfileResponse">buildProfileResponse</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#getUserByEmail">getUserByEmail</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#isUcsdEmail">isUcsdEmail</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#prisma">prisma</a></li><li><a href="global.html#resolveUserFromGooglePayload">resolveUserFromGooglePayload</a></li><li><a href="global.html#updateCurrentUserProfile">updateCurrentUserProfile</a></li><li><a href="global.html#updateUserProfile">updateUserProfile</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Nov 14 2025 11:01:02 GMT-0800 (Pacific Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Nov 18 2025 20:47:05 GMT-0800 (Pacific Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

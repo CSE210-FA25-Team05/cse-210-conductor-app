@@ -54,6 +54,7 @@ model users {
   attendances       attendances[]    @relation("Student")
   attendances_updated attendances[]  @relation("UpdatedBy")
   sessions          sessions[]
+  journals          journals[]       @relation("Student")
 }
 
 model courses {
@@ -67,11 +68,13 @@ model courses {
   created_at  DateTime?     @default(now()) @map("created_at") @db.Timestamp(6)
   updated_at  DateTime?     @default(now()) @map("updated_at") @db.Timestamp(6)
   deleted_at DateTime?     @map("deleted_at") @db.Timestamp(6)
+  join_code  String      @unique @map("join_code") @db.VarChar
   teams       teams[]
   enrollments enrollments[]
   ta_teams    ta_teams[]
   lectures    lectures[]
   attendances attendances[]
+  journals    journals[]
 
   @@unique([course_code, term, section])
 }
@@ -163,4 +166,19 @@ model sessions {
   expires_at DateTime? @db.Timestamp(6)
 
   users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model journals {
+  id            Int       @id @default(autoincrement())
+  course_id     Int       @map("course_id")
+  student_id    Int       @map("student_id")
+  title         String?   @map("title") @db.VarChar(255)
+  content       String?   @map("content") @db.Text
+  is_private    Boolean   @default(true) @map("is_private")
+  created_at    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updated_at    DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  deleted_at    DateTime? @map("deleted_at") @db.Timestamp(6)
+  
+  courses       courses   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users     @relation("Student", fields: [student_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
