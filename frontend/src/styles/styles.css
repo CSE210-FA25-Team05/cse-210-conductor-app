@@ -8,7 +8,7 @@
 
   /* Light Mode Colors */
   /* Primary Colors */
-  --color-primary-light: #cfd8dc;
+  --color-primary-light: #bbc6cb;
   --color-primary-medium: #455a64; /* buttons, links, accents */
   --color-primary-dark: #263238; /* text, borders */
 
@@ -38,7 +38,8 @@
   --color-text-disabled: #bdbdbd;
 
   /* Border Color */
-  --color-border-light: var(--color-bg-medium);
+  --color-border-light: #bac0c5;
+  --color-border-medium: #787e83;
   --color-border-dark: #222426;
 
   /* Neutral Colors */
