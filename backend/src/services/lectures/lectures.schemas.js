@@ -146,8 +146,8 @@ export const DeleteLectureSchema = {
   params: {
     type: 'object',
     properties: {
-      course_id: { type: 'number' },
-      lecture_id: { type: 'number' },
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
     },
     required: ['course_id', 'lecture_id'],
   },

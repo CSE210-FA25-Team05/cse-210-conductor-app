@@ -28,8 +28,7 @@ module.exports = fp(async function authDecorators(fastify, opts) {
     if (isTestMode) {
       try {
         // Use a test user from the database (first user in seed data)
-        const prisma = require('../prisma');
-        const testUser = await prisma.users.findFirst({
+        const testUser = await fastify.db.users.findFirst({
           where: { deleted_at: null },
           orderBy: { id: 'asc' },
         });
@@ -38,7 +37,9 @@ module.exports = fp(async function authDecorators(fastify, opts) {
           req.user = {
             id: testUser.id,
             email: testUser.email,
-            name: `${testUser.first_name} ${testUser.last_name}`,
+            first_name: testUser.first_name,
+            last_name: testUser.last_name,
+            global_role: testUser.global_role,
           };
           fastify.log.info(
             { testMode: true, userId: testUser.id },

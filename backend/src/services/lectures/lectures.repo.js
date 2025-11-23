@@ -64,10 +64,15 @@ class LecturesRepo {
    * @returns {Promise<Object>} Created lecture object
    */
   async createLecture(data) {
+    // Convert date string to Date object if needed
+    const lectureDate = data.lecture_date instanceof Date 
+      ? data.lecture_date 
+      : new Date(data.lecture_date);
+
     return this.db.lectures.create({
       data: {
         course_id: data.course_id,
-        lecture_date: data.lecture_date,
+        lecture_date: lectureDate,
         code: data.code || null,
       },
     });
@@ -83,13 +88,25 @@ class LecturesRepo {
    * @returns {Promise<Object>} Updated lecture object
    */
   async updateLecture(lectureId, data) {
+    const updateData = {
+      updated_at: new Date(),
+    };
+
+    // Convert date string to Date object if provided
+    if (data.lecture_date !== undefined) {
+      updateData.lecture_date = data.lecture_date instanceof Date
+        ? data.lecture_date
+        : new Date(data.lecture_date);
+    }
+
+    // Add code if provided
+    if (data.code !== undefined) {
+      updateData.code = data.code;
+    }
+
     return this.db.lectures.update({
       where: { id: lectureId },
-      data: {
-        lecture_date: data.lecture_date,
-        code: data.code,
-        updated_at: new Date(),
-      },
+      data: updateData,
     });
   }
 
