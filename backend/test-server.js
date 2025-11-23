@@ -171,9 +171,7 @@ async function getUserDetailsInCourseTest(courseId, userId) {
       `Fetched user id=${userId} in course id=${courseId} successfully`
     );
   } else {
-    console.error(
-      `Failed to fetch user id=${userId} in course id=${courseId}`
-    );
+    console.error(`Failed to fetch user id=${userId} in course id=${courseId}`);
   }
 }
 
@@ -309,9 +307,7 @@ async function getAllLecturesTest(courseId) {
 
 // Get a single lecture
 async function getLectureTest(courseId, lectureId) {
-  console.log(
-    `Fetching lecture id=${lectureId} in course id=${courseId}...`
-  );
+  console.log(`Fetching lecture id=${lectureId} in course id=${courseId}...`);
   const res = await fetch(
     `${BASE_URL}/courses/${courseId}/lectures/${lectureId}`,
     {
@@ -373,9 +369,7 @@ async function createLectureTest(courseId, lectureData) {
 
 // Update a lecture
 async function updateLectureTest(courseId, lectureId, updateData) {
-  console.log(
-    `Updating lecture id=${lectureId} in course id=${courseId}...`
-  );
+  console.log(`Updating lecture id=${lectureId} in course id=${courseId}...`);
   const res = await fetch(
     `${BASE_URL}/courses/${courseId}/lectures/${lectureId}`,
     {
@@ -396,9 +390,7 @@ async function updateLectureTest(courseId, lectureId, updateData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Lecture id=${lectureId} updated successfully`
-    );
+    console.log(`Lecture id=${lectureId} updated successfully`);
   } else {
     console.error(`Failed to update lecture id=${lectureId}`);
   }
@@ -406,9 +398,7 @@ async function updateLectureTest(courseId, lectureId, updateData) {
 
 // Delete a lecture
 async function deleteLectureTest(courseId, lectureId) {
-  console.log(
-    `Deleting lecture id=${lectureId} in course id=${courseId}...`
-  );
+  console.log(`Deleting lecture id=${lectureId} in course id=${courseId}...`);
   const res = await fetch(
     `${BASE_URL}/courses/${courseId}/lectures/${lectureId}`,
     {
@@ -428,9 +418,7 @@ async function deleteLectureTest(courseId, lectureId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Lecture id=${lectureId} deleted successfully`
-    );
+    console.log(`Lecture id=${lectureId} deleted successfully`);
   } else {
     console.error(`Failed to delete lecture id=${lectureId}`);
   }
@@ -441,21 +429,21 @@ async function deleteLectureTest(courseId, lectureId) {
 // COURSE TESTS
 addCourseTest();
 updateCourseTest(16, {
-    course_code: 'CSE291',
-    course_name: 'AI Agent Updated',
-    term: 'SP25',
-    section: 'A00',
-    start_date: '2025-03-31T00:00:00.000Z',
-    end_date: '2025-06-15T00:00:00.000Z',
-  });
-getAllCoursesTest()
-deleteCourse(16)
+  course_code: 'CSE291',
+  course_name: 'AI Agent Updated',
+  term: 'SP25',
+  section: 'A00',
+  start_date: '2025-03-31T00:00:00.000Z',
+  end_date: '2025-06-15T00:00:00.000Z',
+});
+getAllCoursesTest();
+deleteCourse(16);
 getAllUsersInCourseTest(14);
 getUserDetailsInCourseTest(14, 8);
 addUserToCourseTest(17, 16);
 joinCourseTest(17, 16, 'ABCDEF');
-updateRoleTest(17,16,'TA');
-removeUserFromCourseTest(17,16);
+updateRoleTest(17, 16, 'TA');
+removeUserFromCourseTest(17, 16);
 
 // LECTURES TESTS
 // Note: Use course_id=1 (test user is enrolled as professor in course 1)
@@ -464,10 +452,10 @@ getAllLecturesTest(1);
 getLectureTest(1, 1);
 createLectureTest(1, {
   lecture_date: '2025-11-20',
-  code: 'TEST-L1'
+  code: 'TEST-L1',
 });
 updateLectureTest(1, 1, {
   lecture_date: '2025-11-21',
-  code: 'UPDATED-L1'
+  code: 'UPDATED-L1',
 });
 deleteLectureTest(1, 2);
