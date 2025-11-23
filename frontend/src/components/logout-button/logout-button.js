@@ -19,7 +19,7 @@ class LogoutButton extends HTMLElement {
     this.shadowRoot
       .querySelector('button')
       .addEventListener('click', this.handleClick);
-    
+
     this.shadowRoot.appendChild(style);
   }
 
