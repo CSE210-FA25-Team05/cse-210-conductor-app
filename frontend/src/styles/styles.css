@@ -37,6 +37,14 @@
   --color-text-secondary: #757575;
   --color-text-disabled: #bdbdbd;
 
+  /* Border Color */
+  --color-border-light: var(--color-bg-medium);
+  --color-border-dark: #222426;
+
+  /* Neutral Colors */
+  --color-neutral-light: var(--color-bg-light);
+  --color-neutral-medium: var(--color-text-secondary);
+
   font-family: Inter, Roboto, system-ui, sans-serif;
   line-height: 1.6;
 
@@ -61,8 +69,7 @@
 
   --icon-button-size: 2.4rem;
 
-  --border-color: var(--color-border);
-  --border: solid 2px var(--border-color);
+  --border: solid 2px var(--color-border-light);
 }
 
 @view-transition {
@@ -300,7 +307,7 @@ button {
   padding: var(--spacing-small) var(--spacing-medium);
   font-size: var(--fs-100);
   border-radius: var(--spacing-small);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-light);
   background-color: var(--color-primary-light);
   cursor: pointer;
   -webkit-appearance: none;
@@ -343,9 +350,9 @@ button:disabled {
 /* Classes */
 /* Colors */
 .neutral {
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-600);
-  --color-state: var(--color-neutral-600);
+  background-color: var(--color-neutral-light);
+  color: var(--color-neutral-medium);
+  --color-state: var(--color-neutral-medium);
 }
 .primary {
   background-color: var(--color-primary-light);
@@ -385,7 +392,7 @@ button:not([disabled]):after,
   z-index: 0;
   opacity: 0;
   pointer-events: none;
-  background-color: var(--color-state, #000);
+  background-color: var(--color-state, var(--color-text-primary));
   border-radius: inherit;
   position: absolute;
   top: 0%;
