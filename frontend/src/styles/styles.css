@@ -6,22 +6,36 @@
 :root {
   view-transition-name: root;
 
-  --color-bg: #fffff;
-  --color-primary-100: lightblue;
-  --color-primary-600: darkblue;
-  --color-secondary-100: lightpink;
-  --color-secondary-600: darkmagenta;
-  --color-error-100: lightcoral;
-  --color-error-600: darkred;
-  --color-success-100: lightgreen;
-  --color-success-600: darkgreen;
-  --color-border: lightgray;
-  --color-neutral-100: #f2f3f5;
-  --color-neutral-600: darkgray;
-  --color-state: #000;
-  --card-background-color: #fbfbfb;
-  --typography-padding-vertical: 1rem;
-  --font-weight-bold: 700;
+  /* Light Mode Colors */
+  /* Primary Colors */
+  --color-primary-light: #cfd8dc; 
+  --color-primary-medium: #455a64; /* buttons, links, accents */
+  --color-primary-dark: #263238; /* text, borders */
+
+  /* Secondary Colors */
+  --color-secondary-light: #cfd0d8; 
+  --color-secondary-medium: #454b64; 
+  --color-secondary-dark: #2d3142; 
+
+  /* Error Color */
+  --color-error: #d32f2f;
+  --color-error-light: #ffcdd2;
+  --color-error-dark: #b71c1c;
+
+  /* Success Color */
+  --color-success: #388e3c;
+  --color-success-light: #c8e6c9;
+  --color-success-dark: #1b5e20;
+
+  /* Background Colors */
+  --color-bg-white: #ffffff; /* main background */
+  --color-bg-light: #eceff1; /* cards */
+  --color-bg-medium: #cfd8dc; /* hover states */
+
+  /* Text Colors */
+  --color-text-primary: #212121;
+  --color-text-secondary: #757575;
+  --color-text-disabled: #bdbdbd;
 
   font-family: Inter, Roboto, system-ui, sans-serif;
   line-height: 1.6;
@@ -47,7 +61,7 @@
 
   --icon-button-size: 2.4rem;
 
-  --border-color: lightgray;
+  --border-color: var(--color-border);
   --border: solid 2px var(--border-color);
 }
 
@@ -287,7 +301,7 @@ button {
   font-size: var(--fs-100);
   border-radius: var(--spacing-small);
   border: 1px solid var(--color-border);
-  background-color: var(--color-primary-100);
+  background-color: var(--color-primary-light);
   cursor: pointer;
   -webkit-appearance: none;
   text-decoration: none;
@@ -334,24 +348,24 @@ button:disabled {
   --color-state: var(--color-neutral-600);
 }
 .primary {
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-600);
-  --color-state: var(--color-primary-600);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  --color-state: var(--color-primary-dark);
 }
 .secondary {
-  background-color: var(--color-secondary-100);
-  color: var(--color-secondary-600);
-  --color-state: var(--color-secondary-600);
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+  --color-state: var(--color-secondary-dark);
 }
 .error {
-  background-color: var(--color-error-100);
-  color: var(--color-error-600);
-  --color-state: var(--color-error-600);
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  --color-state: var(--color-error);
 }
 .success {
-  background-color: var(--color-success-100);
-  color: var(--color-success-600);
-  --color-state: var(--color-success-600);
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  --color-state: var(--color-success);
 }
 
 /* State-layer uses ::after. Any element that includes state-layer will automatically
@@ -457,5 +471,11 @@ body > main {
 body > aside {
   grid-column: 1;
   grid-row: 1;
-  background-color: lightblue;
+  background-color: var(--color-bg-light);
+}
+
+/* Apply background colors globally */
+body {
+  background-color: var(--color-bg-white);
+  color: var(--color-text-primary);
 }
