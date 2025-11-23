@@ -30,6 +30,7 @@ const CourseRepo = require('./course.repo');
 const courseSchemas = require('./course.schemas');
 const CourseService = require('./course.service');
 
+// eslint-disable-next-line no-unused-vars
 module.exports = async function courseRoutes(fastify, options) {
   const courseRepo = new CourseRepo(fastify.db);
   const courseService = new CourseService(courseRepo);

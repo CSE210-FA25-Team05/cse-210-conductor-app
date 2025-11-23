@@ -22,6 +22,7 @@ const CourseRepo = require('../services/course/course.repo');
 const AuthRepo = require('../services/auth/auth.repo');
 const CoursePermissions = require('../services/course/course.permissions');
 
+// eslint-disable-next-line no-unused-vars
 module.exports = fp(async function coursePermissionDecorators(fastify, opts) {
   const courseRepo = new CourseRepo(fastify.db);
   const authRepo = new AuthRepo(fastify.db);

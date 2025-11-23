@@ -16,6 +16,7 @@ const fp = require('fastify-plugin');
 const AuthRepo = require('../services/auth/auth.repo');
 const AuthPermissions = require('../services/auth/auth.permissions');
 
+// eslint-disable-next-line no-unused-vars
 module.exports = fp(async function authDecorators(fastify, _opts) {
   const authRepo = new AuthRepo(fastify.db);
   const authPermissions = new AuthPermissions(authRepo);

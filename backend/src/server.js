@@ -25,6 +25,7 @@ fastify.register(swaggerUI, {
   },
   staticCSP: true,
   transformStaticCSP: (header) => header,
+  // eslint-disable-next-line no-unused-vars
   transformSpecification: (swaggerObject, request, reply) => {
     return swaggerObject;
   },
