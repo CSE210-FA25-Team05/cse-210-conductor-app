@@ -38,7 +38,10 @@ async function routes(fastify) {
         const userId = req.user.id;
 
         // Check if user can view lectures
-        const canView = await lecturesPermissions.canViewLectures(userId, courseId);
+        const canView = await lecturesPermissions.canViewLectures(
+          userId,
+          courseId
+        );
         if (!canView) {
           return reply.code(403).send({
             error: 'Forbidden',
@@ -82,7 +85,10 @@ async function routes(fastify) {
         const userId = req.user.id;
 
         // Check if user can view lectures
-        const canView = await lecturesPermissions.canViewLectures(userId, courseId);
+        const canView = await lecturesPermissions.canViewLectures(
+          userId,
+          courseId
+        );
         if (!canView) {
           return reply.code(403).send({
             error: 'Forbidden',
@@ -120,7 +126,10 @@ async function routes(fastify) {
         const userId = req.user.id;
 
         // Check if user can modify lectures
-        const canModify = await lecturesPermissions.canModifyLectures(userId, courseId);
+        const canModify = await lecturesPermissions.canModifyLectures(
+          userId,
+          courseId
+        );
         if (!canModify) {
           return reply.code(403).send({
             error: 'Forbidden',
@@ -175,7 +184,10 @@ async function routes(fastify) {
         const userId = req.user.id;
 
         // Check if user can modify lectures
-        const canModify = await lecturesPermissions.canModifyLectures(userId, courseId);
+        const canModify = await lecturesPermissions.canModifyLectures(
+          userId,
+          courseId
+        );
         if (!canModify) {
           return reply.code(403).send({
             error: 'Forbidden',
@@ -184,7 +196,10 @@ async function routes(fastify) {
         }
 
         // Check if lecture exists
-        const existingLecture = await lecturesRepo.getLectureById(lectureId, courseId);
+        const existingLecture = await lecturesRepo.getLectureById(
+          lectureId,
+          courseId
+        );
         if (!existingLecture) {
           return reply.code(404).send({ error: 'Lecture not found' });
         }
@@ -194,7 +209,9 @@ async function routes(fastify) {
           const updateData = {
             lecture_date: req.body.lecture_date || existingLecture.lecture_date,
             code:
-              req.body.code !== undefined ? req.body.code : existingLecture.code,
+              req.body.code !== undefined
+                ? req.body.code
+                : existingLecture.code,
           };
 
           const validation = lecturesService.validateLectureData(updateData);
@@ -202,7 +219,10 @@ async function routes(fastify) {
             return reply.code(400).send({ error: validation.error });
           }
 
-          const lecture = await lecturesRepo.updateLecture(lectureId, updateData);
+          const lecture = await lecturesRepo.updateLecture(
+            lectureId,
+            updateData
+          );
           return reply.send({ lecture });
         }
 
@@ -235,7 +255,10 @@ async function routes(fastify) {
         const userId = req.user.id;
 
         // Check if user can modify lectures
-        const canModify = await lecturesPermissions.canModifyLectures(userId, courseId);
+        const canModify = await lecturesPermissions.canModifyLectures(
+          userId,
+          courseId
+        );
         if (!canModify) {
           return reply.code(403).send({
             error: 'Forbidden',
@@ -244,7 +267,10 @@ async function routes(fastify) {
         }
 
         // Check if lecture exists
-        const existingLecture = await lecturesRepo.getLectureById(lectureId, courseId);
+        const existingLecture = await lecturesRepo.getLectureById(
+          lectureId,
+          courseId
+        );
         if (!existingLecture) {
           return reply.code(404).send({ error: 'Lecture not found' });
         }

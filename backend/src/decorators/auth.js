@@ -16,14 +16,15 @@ const fp = require('fastify-plugin');
 const AuthRepo = require('../services/auth/auth.repo');
 const AuthPermissions = require('../services/auth/auth.permissions');
 
-module.exports = fp(async function authDecorators(fastify, opts) {
+module.exports = fp(async function authDecorators(fastify, _opts) {
   const authRepo = new AuthRepo(fastify.db);
   const authPermissions = new AuthPermissions(authRepo);
 
   fastify.decorate('authenticate', async function (req, reply) {
     // Test mode: bypass authentication in development
     const isTestMode =
-      process.env.NODE_ENV === 'development' && process.env.TEST_MODE === 'true';
+      process.env.NODE_ENV === 'development' &&
+      process.env.TEST_MODE === 'true';
 
     if (isTestMode) {
       try {
@@ -48,7 +49,10 @@ module.exports = fp(async function authDecorators(fastify, opts) {
           return; // Skip real authentication
         }
       } catch (error) {
-        fastify.log.error({ error }, 'Test mode failed, falling back to normal auth');
+        fastify.log.error(
+          { error },
+          'Test mode failed, falling back to normal auth'
+        );
       }
     }
 

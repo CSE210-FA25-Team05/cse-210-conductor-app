@@ -65,9 +65,10 @@ class LecturesRepo {
    */
   async createLecture(data) {
     // Convert date string to Date object if needed
-    const lectureDate = data.lecture_date instanceof Date 
-      ? data.lecture_date 
-      : new Date(data.lecture_date);
+    const lectureDate =
+      data.lecture_date instanceof Date
+        ? data.lecture_date
+        : new Date(data.lecture_date);
 
     return this.db.lectures.create({
       data: {
@@ -94,9 +95,10 @@ class LecturesRepo {
 
     // Convert date string to Date object if provided
     if (data.lecture_date !== undefined) {
-      updateData.lecture_date = data.lecture_date instanceof Date
-        ? data.lecture_date
-        : new Date(data.lecture_date);
+      updateData.lecture_date =
+        data.lecture_date instanceof Date
+          ? data.lecture_date
+          : new Date(data.lecture_date);
     }
 
     // Add code if provided

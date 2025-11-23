@@ -165,4 +165,3 @@ export const DeleteLectureSchema = {
     404: ErrorSchema,
   },
 };
-

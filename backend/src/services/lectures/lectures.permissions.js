@@ -52,4 +52,3 @@ class LecturesPermissions {
 }
 
 module.exports = LecturesPermissions;
-
