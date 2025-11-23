@@ -19,6 +19,7 @@
   --color-neutral-100: #f2f3f5;
   --color-neutral-600: darkgray;
   --color-state: #000;
+  --card-background-color: #fbfbfb;
   --typography-padding-vertical: 1rem;
   --font-weight-bold: 700;
 
@@ -45,6 +46,9 @@
   --main-content-padding: 3em;
 
   --icon-button-size: 2.4rem;
+
+  --border-color: lightgray;
+  --border: solid 2px var(--border-color);
 }
 
 @view-transition {
@@ -191,7 +195,7 @@ section {
   display: block;
 }
 body {
-  line-height: 1;
+  line-height: 1.6;
 }
 ol,
 ul {
@@ -261,11 +265,13 @@ small {
   font-size: var(--fs-50);
 }
 article {
-  margin: var(--spacing-small);
   padding: var(--spacing-medium);
   border-radius: 0.5em;
-  line-height: 1.6;
-  box-shadow: 0.2em 0.3em;
+  background-color: var(--card-background-color);
+
+  margin-bottom: var(--spacing-medium);
+  margin-left: auto;
+  margin-right: auto;
 }
 main {
   padding: var(--main-content-padding);
@@ -435,6 +441,7 @@ i,
   justify-content: center;
   align-items: center;
 }
+/* Sidebar Format */
 body:has(> aside) {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -450,5 +457,5 @@ body > main {
 body > aside {
   grid-column: 1;
   grid-row: 1;
-  background-color: lightblue; /* This main will have a light green background */
+  background-color: lightblue;
 }

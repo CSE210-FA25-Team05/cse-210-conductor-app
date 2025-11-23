@@ -7,80 +7,603 @@
         <link rel="stylesheet" href="../styles/styles.css">
         <script src="../js/auth.js"></script>
     </head>
+    <style>
+    .copy-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #d4edda;
+        color: #155724;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 0.9em;
+        display: none; /* Hidden by default */
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+    .copy-status.show {
+        display: block;
+        opacity: 1;
+    }
+
+
+
+    .copy-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        margin-bottom: 2em;
+    }
+
+    .copy-content {
+        flex-grow: 1;
+        padding-right: 5px;
+    }
+
+    .copy-content small {
+        color: #555;
+        font-size: 0.9em;
+    }
+
+
+
+    .copy-status {
+        color: #28a745;
+    }
+
+    header,
+    section {
+        margin-bottom: 3em;
+    }
+
+    article {
+        max-width: 50dvw;
+    }
+
+    main {
+        display: grid;
+        grid-template-cols: 1fr auto;
+        padding-right: 0;
+        margin-right: 0;
+    }
+
+    main > * {
+        grid-column: 1;
+    }
+
+    #toc {
+        padding: 0;
+        margin: 0;
+        max-width: 8em;
+        grid-column: 2;
+        grid-row: 1;
+
+        position: sticky;
+        top: 0;
+        align-self: start;
+    }
+
+    .color-article {
+    }
+    .color-container {
+        display: flex; 
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .color-item {
+        padding: 1em;
+        text-align: center;
+    }
+
+
+    </style>
     <body>
         <main>
+            <header>
+                <h1>Atomic Elements</h1>
+                <p>This page serves as a UI reference tool. To add conent, use the following format: </p>
+                <pre>
+&lt;article class="copy-container"&gt;
+    &lt;div class="copy-content"&gt;
+        // HTML CONTENT HERE
+    &lt;/div&gt;
+    &lt;button class="copy-button icon-only"&gt;&lt;i&gt;content_copy&lt;/i&gt;&lt;/button&gt;
+    &lt;span class="copy-status"&gt;&lt;/span&gt;
+&lt;/article&gt;
+                </pre>
+            </header>
             <section>
-                <h1>Heading 1</h1>
-                <h2>Heading 2</h2>
-                <h3>Heading 3</h3>
-                <h4>Heading 4</h4>
-                <h5>Heading 5</h5>
-                <h6>Heading 6</h6>
-                <p>Here is some regular text.</p>
-                <small>Here is some small text.</small>
-                <b>Here is some bold text.</b>
-                <i>Here is some italisized text.</i>
+                <header>
+                    <h2 id="typography">Typography</h2>
+                </header>
+
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <h1>Heading 1</h1>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <h2>Heading 2</h2>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <h3>Heading 3</h3>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <h4>Heading 4</h4>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <h5>Heading 5</h5>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <h6>Heading 6</h6>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <small>Here is some small text.</small>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <b>Here is some bold text.</b>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <em>Here is some italisized text.</em>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
             </section>
 
             <section>
-                <article class="primary">
-                    <p>Primary <br> (additional line to show line spacing)</p>
+
+                <header>
+                <h2 id="colors">Colors</h2>
+                <p>Colors are named --color-type-x (i.e. --color-primary-100)</p>
+                </header>
+
+
+                <article>
+                    <header>
+                        <h3>Primary</h3>
+                        <p>--color-primary-x</p>
+                    </header>
+                    <div class="color-container">
+                        <div class="color-item" style="background-color: var(--color-primary-100)">100</div>
+                        <div class="color-item" style="background-color: var(--color-primary-200)">200</div>
+                        <div class="color-item" style="background-color: var(--color-primary-300)">300</div>
+                        <div class="color-item" style="background-color: var(--color-primary-400)">400</div>
+                        <div class="color-item" style="background-color: var(--color-primary-500)">500</div>
+                        <div class="color-item" style="background-color: var(--color-primary-600)">600</div>
+                        <div class="color-item" style="background-color: var(--color-primary-700)">700</div>
+                        <div class="color-item" style="background-color: var(--color-primary-800)">800</div>
+                        <div class="color-item" style="background-color: var(--color-primary-900)">900</div>
+                    </div>
                 </article>
-                <article class="secondary">
-                    <p>Secondary</p>
+
+                <article>
+                    <header>
+                        <h3>Secondary</h3>
+                        <p>--color-secondary-x</p>
+                    </header>
+                    <div class="color-container">
+                        <div class="color-item" style="background-color: var(--color-secondary-100)">100</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-200)">200</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-300)">300</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-400)">400</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-500)">500</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-600)">600</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-700)">700</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-800)">800</div>
+                        <div class="color-item" style="background-color: var(--color-secondary-900)">900</div>
+                    </div>
                 </article>
-                <article class="error">
-                    <p>Error</p>
+
+                <article>
+                    <header>
+                        <h3>Error</h3>
+                        <p>--color-error-x</p>
+                    </header>
+                    <div class="color-container">
+                        <div class="color-item" style="background-color: var(--color-error-100)">100</div>
+                        <div class="color-item" style="background-color: var(--color-error-200)">200</div>
+                        <div class="color-item" style="background-color: var(--color-error-300)">300</div>
+                        <div class="color-item" style="background-color: var(--color-error-400)">400</div>
+                        <div class="color-item" style="background-color: var(--color-error-500)">500</div>
+                        <div class="color-item" style="background-color: var(--color-error-600)">600</div>
+                        <div class="color-item" style="background-color: var(--color-error-700)">700</div>
+                        <div class="color-item" style="background-color: var(--color-error-800)">800</div>
+                        <div class="color-item" style="background-color: var(--color-error-900)">900</div>
+                    </div>
                 </article>
-                <article class="success">
-                    <p>Success</p>
+
+                <article>
+                    <header>
+                        <h3>Success</h3>
+                        <p>--color-success-x</p>
+                    </header>
+                    <div class="color-container">
+                        <div class="color-item" style="background-color: var(--color-success-100)">100</div>
+                        <div class="color-item" style="background-color: var(--color-success-200)">200</div>
+                        <div class="color-item" style="background-color: var(--color-success-300)">300</div>
+                        <div class="color-item" style="background-color: var(--color-success-400)">400</div>
+                        <div class="color-item" style="background-color: var(--color-success-500)">500</div>
+                        <div class="color-item" style="background-color: var(--color-success-600)">600</div>
+                        <div class="color-item" style="background-color: var(--color-success-700)">700</div>
+                        <div class="color-item" style="background-color: var(--color-success-800)">800</div>
+                        <div class="color-item" style="background-color: var(--color-success-900)">900</div>
+                    </div>
                 </article>
-                <article class="neutral">
-                    <p>Neutral</p>
+
+                <article>
+                    <header>
+                        <h3>Neutral</h3>
+                        <p>--color-neutral-x</p>
+                    </header>
+                    <div class="color-container">
+                        <div class="color-item" style="background-color: var(--color-neutral-100)">100</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-200)">200</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-300)">300</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-400)">400</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-500)">500</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-600)">600</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-700)">700</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-800)">800</div>
+                        <div class="color-item" style="background-color: var(--color-neutral-900)">900</div>
+                    </div>
+                </article>
+
+            </section>
+
+            <section>
+
+                <header>
+                <h2 id="cards">Cards</h2>
+                <p>Cards are created with the <code>&lt;article&gt;</code> element.</p>
+                <p><em>Note</em>: Cards will fill the width of their container.</p>
+                </header>
+
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <article>
+                            <p>Primary <br> (additional line to show line spacing)</p>
+                        </article>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <article class="secondary">
+                            <p>Secondary</p>
+                        </article>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <article class="error">
+                            <p>Error</p>
+                        </article>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <article class="success">
+                            <p>Success</p>
+                        </article>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <article class="neutral">
+                            <p>Neutral</p>
+                        </article>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+            </section>
+
+            <section>
+
+                <header>
+                <h2 id="buttons">Buttons</h2>
+                </header>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="primary">Primary Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="secondary">Secondary Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="error">Error Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="success">Success Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="neutral">Neutral Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="sm">Small Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="md">Medium Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="lg">Large Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="icon-only">
+                            <i>cloud</i>
+                        </button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button class="icon-round">
+                            <i>cloud</i>
+                        </button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button>
+                            Add
+                            <i>add</i>
+                        </button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button>
+                            <i>home</i>
+                            Home
+                        </button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <button disabled>Disabled Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+            </section>
+
+            <section>
+                <header>
+                <h2 id="components">Components</h2>
+                </header>
+
+                <article class="copy-container">
+                    <div style="">
+                        <h3>Modal</h3>
+                        <p>*Make sure to add script tag to src/components/modal.js.</p>
+                        <p>.open() to open</p>
+                        <p>.close() to close</p>
+
+                        <button slot="buttons" onclick="document.getElementById('navModal').open()">Open Modal</button>
+                    </div>
+
+                    <div class="copy-content">
+
+                        <modal-component id="navModal">
+                            <article slot="content">
+                                <h2>Add Signal</h2>
+                                <p>This modal was opened from the nav bar.</p>
+                            </article>
+                            <button slot="buttons" onclick="document.getElementById('navModal').close()">Submit</button>
+                        </modal-component>
+
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
                 </article>
             </section>
 
             <section>
-              <p>Icons: 
-                <i class="material-icons">cloud</i>
-                <i class="material-icons">favorite</i>
-                <i class="material-icons">attachment</i>
-                <i class="material-icons">computer</i>
-                <i class="material-icons">traffic</i>
-                <i>menu</i>
-              </p>
+                <header>
+                <h2 id="state-layer">State Layer</h2>
+                <p>.state-layer: adds hover and active styles to any element</p>
+                </header>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <article class="state-layer">
+                            <p>Article. [hover]</p>
+                        </article>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
             </section>
 
-            <section>
-                <button class="primary">Primary Button</button>
-                <button class="secondary">Secondary Button</button>
-                <button class="error">Error Button</button>
-                <button class="success">Success Button</button>
-                <button class="success" style="background-color: transparent">Success Button</button>
-                <button class="neutral">Neutral Button</button>
-                <button class="sm">Small Button</button>
-                <button class="md">Medium Button</button>
-                <button class="lg">Large Button</button>
-                <button>
-                    <i class="material-icons">cloud</i>
-                </button>
-                <button class="icon-only primary">
-                    <i class="material-icons">cloud</i>
-                </button>
-                <button class="icon-round primary">
-                    <i class="material-icons">cloud</i>
-                </button>
-                <button>
-                    Add
-                    <i class="material-icons">add</i>
-                </button>
-                <button disabled>Disabled Button</button>
-                <button id="button"> Click me!</button>
-            </section>
+            <aside id="toc">
+                <nav>
+                    <ul>
+                        <li><a href="#typography">Typography</a></li>
+                        <li><a href="#colors">Colors</a></li>
+                        <li><a href="#cards">Cards</a></li>
+                        <li><a href="#buttons">Buttons</a></li>
+                        <li><a href="#components">Components</a></li>
+                        <li><a href="#state-layer">State Layer</a></li>
+                    </ul>
+                </nav>
+            </aside>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
+        <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const copyButtons = document.querySelectorAll('.copy-container .copy-button');
+
+            copyButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const copyContainer = button.closest('.copy-container');
+                    const copyContentDiv = copyContainer.querySelector('.copy-content');
+                    const copyStatusSpan = copyContainer.querySelector('.copy-status');
+
+                    if (!copyContentDiv) {
+                        console.error('No .copy-content found within this .copy-container.');
+                        return;
+                    }
+
+                    let textToCopy = copyContentDiv.innerHTML.trim();
+
+                    // Copy to clipboard
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        try {
+                            await navigator.clipboard.writeText(textToCopy);
+                            showCopyStatus(copyStatusSpan, 'Copied HTML!');
+                        } catch (err) {
+                            console.error('Failed to copy HTML: ', err);
+                            showCopyStatus(copyStatusSpan, 'Failed to copy!', true);
+                        }
+                    } else {
+                        const tempTextArea = document.createElement('textarea');
+                        tempTextArea.value = textToCopy;
+                        document.body.appendChild(tempTextArea);
+                        tempTextArea.select();
+                        try {
+                            const successful = document.execCommand('copy');
+                            const msg = successful ? 'Copied HTML (fallback)! ' : 'Failed to copy HTML (fallback)!';
+                            showCopyStatus(copyStatusSpan, msg, !successful);
+                        } catch (err) {
+                            console.error('Fallback: Failed to copy HTML: ', err);
+                            showCopyStatus(copyStatusSpan, 'Failed (manual copy needed).', true);
+                        }
+                        document.body.removeChild(tempTextArea);
+                        window.getSelection().removeAllRanges();
+                    }
+                });
+            });
+
+            function showCopyStatus(statusElement, message, isError = false) {
+                statusElement.textContent = message;
+                statusElement.classList.remove('error'); // Remove previous error state
+                if (isError) {
+                    statusElement.style.backgroundColor = '#f8d7da'; /* Light red */
+                    statusElement.style.color = '#721c24'; /* Dark red */
+                } else {
+                    statusElement.style.backgroundColor = '#d4edda'; /* Light green */
+                    statusElement.style.color = '#155724'; /* Dark green */
+                }
+                statusElement.classList.add('show');
+
+                setTimeout(() => {
+                    statusElement.classList.remove('show');
+                }, 3000);
+            }
+        });
+        </script>
         <script type="module" src="../components/conductor-nav/conductor-nav.js"></script>
+        <script type="module" src="../components/modal/modal.js"></script>
     </body>
 </html>
