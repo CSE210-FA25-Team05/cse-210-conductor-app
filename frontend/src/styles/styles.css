@@ -8,14 +8,14 @@
 
   /* Light Mode Colors */
   /* Primary Colors */
-  --color-primary-light: #cfd8dc; 
+  --color-primary-light: #cfd8dc;
   --color-primary-medium: #455a64; /* buttons, links, accents */
   --color-primary-dark: #263238; /* text, borders */
 
   /* Secondary Colors */
-  --color-secondary-light: #cfd0d8; 
-  --color-secondary-medium: #454b64; 
-  --color-secondary-dark: #2d3142; 
+  --color-secondary-light: #cfd0d8;
+  --color-secondary-medium: #454b64;
+  --color-secondary-dark: #2d3142;
 
   /* Error Color */
   --color-error: #d32f2f;
