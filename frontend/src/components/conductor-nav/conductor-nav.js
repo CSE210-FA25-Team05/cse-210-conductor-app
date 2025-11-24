@@ -1,4 +1,3 @@
-import styles from './conductor-nav.css?inline';
 import logoutButton from '../logout-button/logout-button.js'; // IMP
 
 class ConductorNav extends HTMLElement {
@@ -16,15 +15,11 @@ class ConductorNav extends HTMLElement {
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' }); // Attach Shadow DOM
-
     const nav = document.createElement('nav');
     const ul = document.createElement('ul');
     const bottom = document.createElement('div');
     const style = document.createElement('style');
     const logoutButtonInstance = document.createElement('logout-button');
-
-    style.textContent = styles;
 
     for (const displayName of Object.keys(this.paths)) {
       const li = document.createElement('li');
@@ -53,8 +48,8 @@ class ConductorNav extends HTMLElement {
     nav.appendChild(ul);
     nav.appendChild(bottom);
 
-    this.shadowRoot.appendChild(style);
-    this.shadowRoot.appendChild(nav);
+    this.appendChild(style);
+    this.appendChild(nav);
   }
 }
 
