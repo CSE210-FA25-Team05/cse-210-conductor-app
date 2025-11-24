@@ -52,7 +52,7 @@
         color: #28a745;
     }
 
-    header,
+    header:not(article header),
     section {
         margin-bottom: 3em;
     }
@@ -296,17 +296,62 @@
             <section>
 
                 <header>
-                <h2 id="cards">Cards</h2>
-                <p>Cards are created with the <code>&lt;article&gt;</code> element.</p>
-                <p><em>Note</em>: Cards will fill the width of their container.</p>
+                    <h2 id="cards">Cards</h2>
+                    <p>Cards are created with the <code>&lt;article&gt;</code> element.</p>
+                    <p><em>Note</em>: Cards will fill the width of their container.</p>
                 </header>
 
 
+                <article>
+                    <p>Card <br> (additional line to show line spacing)</p>
+                </article>
+
+                <article>
+                    <header>Header</header>
+                    Main content
+                    <p>More main content </p>
+                    <footer>Footer</footer>
+                </article>
+
+                <article> 
+                    <header>
+                        Header with button
+                        <button class="icon-only"><i>close</i></button>
+                    </header>
+                    Main Content
+                    <footer>
+                        <button>Submit</button>
+                    </footer>
+                </article>
+
+                <article> 
+                    <header>
+                        Header
+                    </header>
+                    Use .justify-end to move items to the end.
+                    <footer class="justify-end">
+                        <button>Submit</button>
+                    </footer>
+                </article>
+                <article class="border">
+                    <header>
+                        Header
+                    </header>
+                    Card with .border
+                    <footer>
+                        Footer
+                    </footer>
+                </article>
+
+                <article class="border">
+                    <header>
+                        Header
+                    </header>
+                    Card with .border and no footer
+                </article>
+
                 <article class="copy-container">
                     <div class="copy-content">
-                        <article>
-                            <p>Primary <br> (additional line to show line spacing)</p>
-                        </article>
                     </div>
                     <button class="copy-button icon-only"><i>content_copy</i></button>
                     <span class="copy-status"></span>

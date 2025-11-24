@@ -20,6 +20,7 @@
   --color-neutral-600: darkgray;
   --color-state: #000;
   --card-background-color: #fbfbfb;
+  --card-header-footer-color: #f3f3f3;
   --typography-padding-vertical: 1rem;
   --font-weight-bold: 700;
 
@@ -44,11 +45,12 @@
 
   --sidebar-width: 10em;
   --main-content-padding: 3em;
-
   --icon-button-size: 2.4rem;
-
+  --card-padding: var(--spacing-medium);
+  --card-padding-negative: calc(-1 * var(--card-padding));
+  --border-radius: 0.5em;
   --border-color: lightgray;
-  --border: solid 2px var(--border-color);
+  --border: solid 1px var(--border-color);
 }
 
 @view-transition {
@@ -265,13 +267,47 @@ small {
   font-size: var(--fs-50);
 }
 article {
-  padding: var(--spacing-medium);
-  border-radius: 0.5em;
+  padding: var(--card-padding);
+  border-radius: var(--border-radius);
   background-color: var(--card-background-color);
 
   margin-bottom: var(--spacing-medium);
   margin-left: auto;
   margin-right: auto;
+}
+article>footer,
+article>header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin: var(--card-padding-negative);
+    background-color: var(--card-header-footer-color);
+}
+article>header {
+    margin-bottom: var(--card-padding);
+    padding: var(--card-padding);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+article>footer {
+    margin-top: var(--card-padding);
+    padding: var(--card-padding);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+article>header>h1, 
+article>header>h2,
+article>header>h3,
+article>header>h4,
+article>header>h5,
+article>header>h6,
+article>header>p {
+    margin: 0;
+    padding: 0;
+}
+article>footer:has(button),
+article>header:has(button){
+    padding-top: var(--spacing-small);
+    padding-bottom: var(--spacing-small);
 }
 main {
   padding: var(--main-content-padding);
@@ -285,7 +321,7 @@ button {
   gap: var(--spacing-small);
   padding: var(--spacing-small) var(--spacing-medium);
   font-size: var(--fs-100);
-  border-radius: var(--spacing-small);
+  border-radius: var(--border-radius);
   border: 1px solid var(--color-border);
   background-color: var(--color-primary-100);
   cursor: pointer;
@@ -327,6 +363,12 @@ button:disabled {
 }
 
 /* Classes */
+.border {
+    border: var(--border);
+}
+.justify-end {
+    justify-content: flex-end;
+}
 /* Colors */
 .neutral {
   background-color: var(--color-neutral-100);
