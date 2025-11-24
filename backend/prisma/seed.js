@@ -427,7 +427,7 @@ async function main() {
   });
 
   console.log('Creating pulse configs...');
-  await prisma.pulse_configs.create({
+  const cse210_pulse_config = await prisma.pulse_configs.create({
     data: {
       course_id: cse210.id,
       config: {
@@ -464,6 +464,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: john.id,
+      pulse_config_id: cse210_pulse_config.id,
       value: 'Happy',
       description: 'Feeling good about our project progress!',
       created_at: new Date('2025-10-01T09:00:00Z'),
@@ -474,6 +475,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: jane.id,
+      pulse_config_id: cse210_pulse_config.id,
       value: 'Tired',
       description: 'A bit overwhelmed with the workload.',
       created_at: new Date('2025-10-01T09:05:00Z'),
@@ -484,6 +486,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: john.id,
+      pulse_config_id: cse210_pulse_config.id,
       value: 'Concerned',
       created_at: new Date('2025-10-08T09:00:00Z'),
     },
@@ -493,6 +496,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: ta.id,
+      pulse_config_id: cse210_pulse_config.id,
       value: 'Worried',
       description:
         'Concerned about the upcoming deadlines and progress of team 5.',
