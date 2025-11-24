@@ -426,6 +426,80 @@ async function main() {
     },
   });
 
+  console.log('Creating pulse configs...');
+  await prisma.pulse_configs.create({
+    data: {
+      course_id: cse210.id,
+      config: {
+        text: 'How are you feeling about the progress of your team project?',
+        options: [
+          { value: 'Happy', color: 'rgb(0, 255, 0)' },
+          { value: 'Tired', color: 'rgb(255, 243, 21)' },
+          { value: 'Concerned', color: 'rgba(255, 153, 0, 1)' },
+          { value: 'Worried', color: 'rgb(255, 0, 0)' },
+          { value: 'Sad', color: 'rgb(0, 0, 255)' },
+        ],
+      },
+      is_editable: false,
+    },
+  });
+
+  await prisma.pulse_configs.create({
+    data: {
+      course_id: cse110.id,
+      config: {
+        text: 'What do you think about the course so far?',
+        options: [
+          { value: 'Good', color: 'rgb(0, 255, 0)' },
+          { value: 'Neutral', color: 'rgb(0, 0, 255)' },
+          { value: 'Bad', color: 'rgb(255, 0, 0)' },
+        ],
+      },
+      is_editable: true,
+    },
+  });
+
+  console.log('Creating pulses...');
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      student_id: john.id,
+      value: 'Happy',
+      description: 'Feeling good about our project progress!',
+      created_at: new Date('2025-10-01T09:00:00Z'),
+    },
+  });
+
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      student_id: jane.id,
+      value: 'Tired',
+      description: 'A bit overwhelmed with the workload.',
+      created_at: new Date('2025-10-01T09:05:00Z'),
+    },
+  });
+
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      student_id: john.id,
+      value: 'Concerned',
+      created_at: new Date('2025-10-08T09:00:00Z'),
+    },
+  });
+
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      student_id: ta.id,
+      value: 'Worried',
+      description:
+        'Concerned about the upcoming deadlines and progress of team 5.',
+      created_at: new Date('2025-10-08T09:10:00Z'),
+    },
+  });
+
   console.log('Seeding completed!');
 }
 
