@@ -1,11 +1,8 @@
 button {
   background-color: var(--color-primary-medium);
   color: var(--color-bg-white);
-
+  border-width: 0;
   padding: 10px 14px;
-  border-color: var(--color-border-light);
-  border-width: 1px;
-  border-style: solid;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.7em;
