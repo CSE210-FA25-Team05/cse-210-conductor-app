@@ -6,13 +6,13 @@ class JournalRepo {
   }
 
   /**
- * Create a new journal entry for a user.
- * @param {number} userId
- * @param {number} courseId
- * @param {string} title
- * @param {string} content
- * @returns {Promise<object>} created journal entry
- */
+   * Create a new journal entry for a user.
+   * @param {number} userId
+   * @param {number} courseId
+   * @param {string} title
+   * @param {string} content
+   * @returns {Promise<object>} created journal entry
+   */
   async createJournalEntry(userId, courseId, title, content) {
     // check if content is smaller than 1GB
     if (Buffer.byteLength(content, 'utf8') > 1e9) {
@@ -29,14 +29,14 @@ class JournalRepo {
     return entry;
   }
 
-  /** 
- * get all journal entries for a specific course.
- * @param {number} courseId
- * @returns {Promise<Array>} list of journal entries
- */
+  /**
+   * get all journal entries for a specific course.
+   * @param {number} courseId
+   * @returns {Promise<Array>} list of journal entries
+   */
   async getJournalsByCourseId(courseId) {
     const entries = await this.db.journals.findMany({
-      where: { 
+      where: {
         course_id: courseId,
         deleted_at: null,
       },
@@ -45,13 +45,13 @@ class JournalRepo {
   }
 
   /**
- * Get a journal entry by its ID.
- * @param {number} journalId 
- * @returns {Promise<object>} journal entry
- */
+   * Get a journal entry by its ID.
+   * @param {number} journalId
+   * @returns {Promise<object>} journal entry
+   */
   async getJournalById(journalId) {
     const entry = await this.db.journals.findFirst({
-      where: { 
+      where: {
         id: journalId,
         deleted_at: null,
       },
@@ -60,14 +60,14 @@ class JournalRepo {
   }
 
   /**
- * get journals by course id + user id
- * @param {number} userId
- * @param {number} courseId
- * @returns {Promise<Array>} list of journal entries
- */
+   * get journals by course id + user id
+   * @param {number} userId
+   * @param {number} courseId
+   * @returns {Promise<Array>} list of journal entries
+   */
   async getJournalsByUserIdAndCourseId(userId, courseId) {
     const entries = await this.db.journals.findMany({
-      where: { 
+      where: {
         student_id: userId,
         course_id: courseId,
         deleted_at: null,
@@ -77,15 +77,15 @@ class JournalRepo {
   }
 
   /**
- * Update the latest journal entry for a user.
- * @param {number} journal_id
- * @param {string} title
- * @param {string} content
- * @returns {Promise<object>} updated journal entry
- */
+   * Update the latest journal entry for a user.
+   * @param {number} journal_id
+   * @param {string} title
+   * @param {string} content
+   * @returns {Promise<object>} updated journal entry
+   */
   async updateJournalEntry(journal_id, title, content) {
     const entry = await this.db.journals.updateMany({
-      where: { 
+      where: {
         id: journal_id,
         deleted_at: null,
       },
@@ -99,13 +99,13 @@ class JournalRepo {
   }
 
   /**
- * Delete a journal entry by marking it as deleted.
- * @param {number} journalId
- * @returns {Promise<object>} deleted journal entry
- */
+   * Delete a journal entry by marking it as deleted.
+   * @param {number} journalId
+   * @returns {Promise<object>} deleted journal entry
+   */
   async deleteJournalEntry(journalId) {
     const entry = await this.db.journals.updateMany({
-      where: { 
+      where: {
         id: journalId,
         deleted_at: null,
       },
@@ -115,7 +115,5 @@ class JournalRepo {
     });
     return entry;
   }
-
 }
 module.exports = JournalRepo;
-

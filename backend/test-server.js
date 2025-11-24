@@ -361,7 +361,9 @@ async function deleteJournalEntryTest(courseId, journalId) {
 }
 // get journal entries test
 async function getJournalEntriesTest(courseId, userId) {
-  console.log(`→ Fetching journal entries for user id=${userId} in course id=${courseId}...`);
+  console.log(
+    `→ Fetching journal entries for user id=${userId} in course id=${courseId}...`
+  );
   const res = await fetch(
     `${BASE_URL}/courses/${courseId}/journals/user/${userId}`,
     {
@@ -381,9 +383,13 @@ async function getJournalEntriesTest(courseId, userId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`);
+    console.log(
+      `✅ Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`
+    );
   } else {
-    console.error(`❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`);
+    console.error(
+      `❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`
+    );
   }
 }
 // Run tests
@@ -414,5 +420,5 @@ await updateJournalEntryTest(17, 4, {
   content: 'This is my updated journal entry content.',
   title: 'Updated Entry',
 });
-await getJournalEntriesTest(17,17);
+await getJournalEntriesTest(17, 17);
 // deleteJournalEntryTest(17,4);
