@@ -1,11 +1,6 @@
 import styles from './theme-toggle.css?inline';
 
 class ThemeToggle extends HTMLElement {
-  constructor() {
-    super();
-    this._boundOnToggle = this.onToggle.bind(this);
-  }
-
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
@@ -21,42 +16,25 @@ class ThemeToggle extends HTMLElement {
     `;
 
     const toggle = this.shadowRoot.querySelector('#toggle');
-    toggle.addEventListener('change', this._boundOnToggle);
 
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
+    // Restore saved theme state
+    if (localStorage.getItem('theme') === 'dark') {
       toggle.checked = true;
     }
 
+    toggle.addEventListener('change', () => {
+      const checked = toggle.checked;
+
+      if (checked) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
     this.shadowRoot.appendChild(style);
-  }
-
-  disconnectedCallback() {
-    const toggle = this.shadowRoot.querySelector('#toggle');
-    if (toggle) {
-      toggle.removeEventListener('change', this._boundOnToggle);
-    }
-  }
-
-  onToggle() {
-    const checked = this.shadowRoot.querySelector('#toggle').checked;
-
-    // Update global theme
-    if (checked) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-
-    this.dispatchEvent(
-      new CustomEvent('theme-changed', {
-        detail: { dark: checked },
-        bubbles: true,
-        composed: true,
-      })
-    );
   }
 }
 

@@ -1,6 +1,6 @@
 dialog {
-  background-color: var(--color-bg-white);
-
+  background-color: var(--color-bg-light);
+  color: var(--color-bg-dark);
   /* Center in Middle */
   position: fixed;
   inset: 0px;
