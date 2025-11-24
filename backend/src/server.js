@@ -50,6 +50,7 @@ fastify.register(require('./decorators/auth'));
 fastify.register(require('./decorators/course'));
 
 //hooks
+fastify.register(require('./hooks/authenticate'));
 fastify.register(require('./hooks/profile-complete'));
 
 //services

@@ -92,7 +92,6 @@ async function routes(fastify) {
   fastify.get(
     '/me/profile',
     {
-      preHandler: fastify.authenticate,
       schema: authSchemas.GetUserProfileSchema,
     },
     async (req) => {
@@ -105,7 +104,6 @@ async function routes(fastify) {
   fastify.get(
     '/users/:user_id/profile',
     {
-      preHandler: fastify.authenticate,
       schema: authSchemas.GetUserProfileByIdSchema,
     },
     async (req, reply) => {
@@ -141,7 +139,6 @@ async function routes(fastify) {
   fastify.post(
     '/me/profile',
     {
-      preHandler: fastify.authenticate,
       schema: authSchemas.UpdateUserProfileSchema,
     },
     async (req, reply) => {
