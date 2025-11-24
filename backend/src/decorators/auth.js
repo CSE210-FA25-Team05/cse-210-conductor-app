@@ -29,20 +29,29 @@ module.exports = fp(async function authDecorators(fastify, _opts) {
 
     if (isTestMode) {
       try {
-        // Use a test user from the database (first user in seed data)
-        const testUser = await fastify.db.users.findFirst({
-          where: { deleted_at: null },
-          orderBy: { id: 'asc' },
-        });
+        // Support custom test user via header (x-test-user-id or x-test-user-email)
+        const testUserId = req.headers['x-test-user-id'];
+        const testUserEmail = req.headers['x-test-user-email'];
+
+        let testUser;
+        if (testUserId) {
+          testUser = await fastify.db.users.findUnique({
+            where: { id: parseInt(testUserId, 10) },
+          });
+        } else if (testUserEmail) {
+          testUser = await fastify.db.users.findUnique({
+            where: { email: testUserEmail.toLowerCase() },
+          });
+        } else {
+          // Default: use first user from database
+          testUser = await fastify.db.users.findFirst({
+            where: { deleted_at: null },
+            orderBy: { id: 'asc' },
+          });
+        }
 
         if (testUser) {
-          req.user = {
-            id: testUser.id,
-            email: testUser.email,
-            first_name: testUser.first_name,
-            last_name: testUser.last_name,
-            global_role: testUser.global_role,
-          };
+          req.user = testUser;
           fastify.log.info(
             { testMode: true, userId: testUser.id },
             'Test mode: using test user'

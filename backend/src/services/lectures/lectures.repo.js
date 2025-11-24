@@ -163,22 +163,6 @@ class LecturesRepo {
     return enrollment ? enrollment.role : null;
   }
 
-  /**
-   * Get user ID by email address.
-   *
-   * @param {string} email - Email address
-   * @returns {Promise<number|null>} User ID or null if not found
-   */
-  async getUserIdByEmail(email) {
-    const user = await this.db.users.findUnique({
-      where: {
-        email: email.toLowerCase(),
-        deleted_at: null,
-      },
-    });
-
-    return user ? user.id : null;
-  }
 }
 
 module.exports = LecturesRepo;

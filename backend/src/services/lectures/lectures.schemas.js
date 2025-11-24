@@ -29,11 +29,8 @@ export const LectureInfo = {
     course_id: { type: 'number' },
     lecture_date: DateType,
     code: { type: 'string', nullable: true },
-    created_at: DateTimeType,
-    updated_at: DateTimeType,
-    deleted_at: { type: 'string', format: 'date-time', nullable: true },
   },
-  required: ['id', 'course_id', 'lecture_date', 'created_at', 'updated_at'],
+  required: ['id', 'course_id', 'lecture_date', 'code'],
 };
 
 export const GetAllLecturesSchema = {
@@ -42,7 +39,7 @@ export const GetAllLecturesSchema = {
   params: {
     type: 'object',
     properties: {
-      course_id: { type: 'number' },
+      course_id: { type: 'integer' },
     },
     required: ['course_id'],
   },
@@ -67,19 +64,13 @@ export const GetLectureSchema = {
   params: {
     type: 'object',
     properties: {
-      course_id: { type: 'number' },
-      lecture_id: { type: 'number' },
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
     },
     required: ['course_id', 'lecture_id'],
   },
   response: {
-    200: {
-      type: 'object',
-      properties: {
-        lecture: LectureInfo,
-      },
-      required: ['lecture'],
-    },
+    200: LectureInfo,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -93,19 +84,13 @@ export const CreateLectureSchema = {
   params: {
     type: 'object',
     properties: {
-      course_id: { type: 'number' },
+      course_id: { type: 'integer' },
     },
     required: ['course_id'],
   },
   body: CreateLectureParams,
   response: {
-    201: {
-      type: 'object',
-      properties: {
-        lecture: LectureInfo,
-      },
-      required: ['lecture'],
-    },
+    201: LectureInfo,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -119,20 +104,14 @@ export const UpdateLectureSchema = {
   params: {
     type: 'object',
     properties: {
-      course_id: { type: 'number' },
-      lecture_id: { type: 'number' },
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
     },
     required: ['course_id', 'lecture_id'],
   },
   body: UpdateLectureParams,
   response: {
-    200: {
-      type: 'object',
-      properties: {
-        lecture: LectureInfo,
-      },
-      required: ['lecture'],
-    },
+    200: LectureInfo,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -151,6 +130,7 @@ export const DeleteLectureSchema = {
     },
     required: ['course_id', 'lecture_id'],
   },
+  body: false,
   response: {
     200: {
       type: 'object',

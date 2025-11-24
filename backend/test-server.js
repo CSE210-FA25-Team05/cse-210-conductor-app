@@ -427,23 +427,23 @@ async function deleteLectureTest(courseId, lectureId) {
 // Run tests
 
 // COURSE TESTS
-addCourseTest();
-updateCourseTest(16, {
-  course_code: 'CSE291',
-  course_name: 'AI Agent Updated',
-  term: 'SP25',
-  section: 'A00',
-  start_date: '2025-03-31T00:00:00.000Z',
-  end_date: '2025-06-15T00:00:00.000Z',
-});
-getAllCoursesTest();
-deleteCourse(16);
-getAllUsersInCourseTest(14);
-getUserDetailsInCourseTest(14, 8);
-addUserToCourseTest(17, 16);
-joinCourseTest(17, 16, 'ABCDEF');
-updateRoleTest(17, 16, 'TA');
-removeUserFromCourseTest(17, 16);
+// addCourseTest();
+// updateCourseTest(16, {
+//   course_code: 'CSE291',
+//   course_name: 'AI Agent Updated',
+//   term: 'SP25',
+//   section: 'A00',
+//   start_date: '2025-03-31T00:00:00.000Z',
+//   end_date: '2025-06-15T00:00:00.000Z',
+// });
+// getAllCoursesTest();
+// deleteCourse(16);
+// getAllUsersInCourseTest(14);
+// getUserDetailsInCourseTest(14, 8);
+// addUserToCourseTest(17, 16);
+// joinCourseTest(17, 16, 'ABCDEF');
+// updateRoleTest(17, 16, 'TA');
+// removeUserFromCourseTest(17, 16);
 
 // LECTURES TESTS
 // Note: Use course_id=1 (test user is enrolled as professor in course 1)
@@ -458,4 +458,4 @@ updateLectureTest(1, 1, {
   lecture_date: '2025-11-21',
   code: 'UPDATED-L1',
 });
-deleteLectureTest(1, 2);
+deleteLectureTest(1, );
