@@ -16,11 +16,57 @@ const fp = require('fastify-plugin');
 const AuthRepo = require('../services/auth/auth.repo');
 const AuthPermissions = require('../services/auth/auth.permissions');
 
-module.exports = fp(async function authDecorators(fastify, opts) {
+// eslint-disable-next-line no-unused-vars
+module.exports = fp(async function authDecorators(fastify, _opts) {
   const authRepo = new AuthRepo(fastify.db);
   const authPermissions = new AuthPermissions(authRepo);
 
   fastify.decorate('authenticate', async function (req, reply) {
+    // Test mode: bypass authentication in development
+    const isTestMode =
+      process.env.NODE_ENV === 'development' &&
+      process.env.TEST_MODE === 'true';
+
+    if (isTestMode) {
+      try {
+        // Support custom test user via header (x-test-user-id or x-test-user-email)
+        const testUserId = req.headers['x-test-user-id'];
+        const testUserEmail = req.headers['x-test-user-email'];
+
+        let testUser;
+        if (testUserId) {
+          testUser = await fastify.db.users.findUnique({
+            where: { id: parseInt(testUserId, 10) },
+          });
+        } else if (testUserEmail) {
+          testUser = await fastify.db.users.findUnique({
+            where: { email: testUserEmail.toLowerCase() },
+          });
+        } else {
+          // Default: use first user from database
+          testUser = await fastify.db.users.findFirst({
+            where: { deleted_at: null },
+            orderBy: { id: 'asc' },
+          });
+        }
+
+        if (testUser) {
+          req.user = testUser;
+          fastify.log.info(
+            { testMode: true, userId: testUser.id },
+            'Test mode: using test user'
+          );
+          return; // Skip real authentication
+        }
+      } catch (error) {
+        fastify.log.error(
+          { error },
+          'Test mode failed, falling back to normal auth'
+        );
+      }
+    }
+
+    // Normal authentication flow
     const sessionId = req.cookies?.sid;
     if (!sessionId) {
       return reply.code(401).send({ error: 'Not authenticated' });

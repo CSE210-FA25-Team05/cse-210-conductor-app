@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "dev:test": "NODE_ENV=development TEST_MODE=true nodemon src/server.js",
     "test": "jest",
+    "test:api": "node test-server.js",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
