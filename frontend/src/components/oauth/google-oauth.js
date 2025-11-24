@@ -1,3 +1,5 @@
+import styles from './google-oauth.css?inline';
+
 class GoogleOAuth extends HTMLElement {
   constructor() {
     super();
@@ -7,6 +9,7 @@ class GoogleOAuth extends HTMLElement {
     this.attachShadow({ mode: 'open' });
 
     this.shadowRoot.innerHTML = `
+        <style>${styles}</style>
         <button class="gsi-material-button"> 
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
@@ -25,8 +28,6 @@ class GoogleOAuth extends HTMLElement {
         </button>
         `;
     const linkElem = document.createElement('link');
-    linkElem.setAttribute('rel', 'stylesheet');
-    linkElem.setAttribute('href', './src/components/oauth/google-oauth.css'); // IMP: relative to html file using this WebComponent
     this.shadowRoot.appendChild(linkElem);
 
     this.shadowRoot
@@ -40,9 +41,14 @@ class GoogleOAuth extends HTMLElement {
       .removeEventListener('click', this.handleClick);
   }
 
-  handleClick() {
-    console.log('Google OAuth button clicked!');
-    // TODO: do something
+  async handleClick(event) {
+    event.preventDefault();
+
+    try {
+      window.location.href = 'http://localhost:3001/auth/oauth/google';
+    } catch (error) {
+      console.error('Failed to start Google OAuth flow', error);
+    }
   }
 }
 

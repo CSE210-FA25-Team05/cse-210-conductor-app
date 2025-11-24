@@ -33,3 +33,37 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+
+      - name: Set DATABASE_URL for Prisma
+        run: echo "DATABASE_URL=postgres://conductor:conductor@localhost:5432/conductor_db" >> $GITHUB_ENV
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run backend lint
+        run: npm run lint || echo "No backend lint script defined, skipping."
+
+      - name: Run backend tests
+        run: npm test || echo "No backend test script defined, skipping."

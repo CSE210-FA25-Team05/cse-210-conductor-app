@@ -1,5 +1,13 @@
-echo "Generating JSDoc and fixing formatting and style..."
-npx jsdoc -c jsdoc.json
+cd "$(git rev-parse --show-toplevel)"
+
+#echo "Checking dependencies..."
+#npm run check:deps
+# Stage any updated package.json files
+#git add package.json frontend/package.json backend/package.json
+#echo "Depenedencies are up to date."
+
+echo "Fixing formatting and style..."
+#npx jsdoc -c jsdoc.json
 npm run lint:fix
 npx prettier --write "**/*.{js,jsx,ts,tsx,css}"
-git add docs
+#git add docs

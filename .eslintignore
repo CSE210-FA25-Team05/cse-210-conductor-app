@@ -3,5 +3,7 @@ dist/
 build/
 coverage/
 *.config.js 
-specs
+specs/
 docs/
+checkdependencies.js
+backend/primsa/migrations/

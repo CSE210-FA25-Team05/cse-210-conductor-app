@@ -177,7 +177,11 @@ This plugin wires the auth routes into the Fastify instance.
 - POST /auth/oauth/google/add_token
       → Optional SPA/PKCE flow, same behavior as callback
 - POST /auth/logout
-      → Clear session cookie
+      → Delete session + clear session cookie
+- GET  /me/profile
+      → Get current user's profile
+- POST /me/profile
+      → Update current user's profile and mark it complete
 </div>
 
 
@@ -215,7 +219,7 @@ This plugin wires the auth routes into the Fastify instance.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.routes.js.html">services/auth/auth.routes.js</a>, <a href="services_auth_auth.routes.js.html#line16">line 16</a>
+        <a href="services_auth_auth.routes.js.html">services/auth/auth.routes.js</a>, <a href="services_auth_auth.routes.js.html#line20">line 20</a>
     </li></ul></dd>
     
 
@@ -299,7 +303,7 @@ This plugin wires the auth routes into the Fastify instance.
 
         
             
-<h4 class="name" id="users"><span class="type-signature">(constant) </span>users<span class="type-signature"></span></h4>
+<h4 class="name" id="prisma"><span class="type-signature">(constant) </span>prisma<span class="type-signature"></span></h4>
 
 
 
@@ -307,9 +311,8 @@ This plugin wires the auth routes into the Fastify instance.
 <div class="description">
     Auth Repository
 
-This module represents the data access layer for authentication:
-- User storage (currently in-memory; replace with Prisma/DB later)
-- Session storage (sessionId → userId mapping)
+- User storage (Prisma / PostgreSQL)
+- Session storage
 </div>
 
 
@@ -347,7 +350,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line12">line 12</a>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line10">line 10</a>
     </li></ul></dd>
     
 
@@ -375,7 +378,7 @@ This module represents the data access layer for authentication:
     
 
     
-    <h4 class="name" id="buildGoogleLoginUrl"><span class="type-signature"></span>buildGoogleLoginUrl<span class="signature">(reply)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id="addCourse"><span class="type-signature">(async) </span>addCourse<span class="signature">(db, courseData)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -383,7 +386,348 @@ This module represents the data access layer for authentication:
 
 
 <div class="description">
-    Build the Google OAuth login URL and set the CSRF state cookie.
+    Add a new course.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>courseData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Data for the new course</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Created course object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="buildInsertUserInputFromGooglePayload"><span class="type-signature"></span>buildInsertUserInputFromGooglePayload<span class="signature">(payload)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Build the input object for insertUser() from a Google ID token payload.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>payload</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Google ID token payload</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line119">line 119</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    insertUser params
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="buildProfileResponse"><span class="type-signature"></span>buildProfileResponse<span class="signature">(user)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Build a standardized profile response object from a user record.
 </div>
 
 
@@ -476,7 +820,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line47">line 47</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line242">line 242</a>
     </li></ul></dd>
     
 
@@ -504,10 +848,6 @@ This module represents the data access layer for authentication:
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    Google OAuth consent screen URL
-</div>
-
 
 
 <dl>
@@ -516,7 +856,7 @@ This module represents the data access layer for authentication:
     </dt>
     <dd>
         
-<span class="param-type">string</span>
+<span class="param-type">object</span>
 
 
     </dd>
@@ -543,6 +883,7 @@ This module represents the data access layer for authentication:
 
 <div class="description">
     Create a new session for a given user id.
+Sessions are stored in the `sessions` table.
 </div>
 
 
@@ -578,13 +919,13 @@ This module represents the data access layer for authentication:
 
         <tr>
             
-                <td class="name"><code>sessionId</code></td>
+                <td class="name"><code>payload</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">object</span>
 
 
             
@@ -607,7 +948,7 @@ This module represents the data access layer for authentication:
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">number</span>
 
 
             
@@ -617,7 +958,7 @@ This module represents the data access layer for authentication:
 
             
 
-            <td class="description last">id of the authenticated user</td>
+            <td class="description last">id of the authenticated user (users.id)</td>
         </tr>
 
     
@@ -681,7 +1022,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line50">line 50</a>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -710,7 +1051,7 @@ This module represents the data access layer for authentication:
 
         
 <div class="param-desc">
-    session object
+    session record
 </div>
 
 
@@ -840,7 +1181,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line126">line 126</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line181">line 181</a>
     </li></ul></dd>
     
 
@@ -906,7 +1247,891 @@ This module represents the data access layer for authentication:
 
 
 <div class="description">
-    Optional helper to invalidate a session, e.g. on logout.
+    Invalidate a session, e.g. on logout.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sessionId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Join code to verify</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line129">line 129</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;void></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="enforceEmailRules"><span class="type-signature"></span>enforceEmailRules<span class="signature">(payload)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Enforce email rules (verified + allowed domains).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>payload</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">randomly generated UUID</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">id of the authenticated user (users.id)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>expiresAt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">session expiration time</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line170">line 170</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="exchangeCodeForTokens"><span class="type-signature">(async) </span>exchangeCodeForTokens<span class="signature">(code)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Exchange an authorization code for tokens.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>code</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line138">line 138</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    tokens
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getUserByEmail"><span class="type-signature">(async) </span>getUserByEmail<span class="signature">(email)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|null)>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a user by email.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>courseId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ID of the course to delete</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line130">line 130</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Deleted course object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="deleteEnrollment"><span class="type-signature">(async) </span>deleteEnrollment<span class="signature">(db, courseId, userId)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Delete an enrollment of a user from a course.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>courseId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ID of the course</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ID of the user</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line192">line 192</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Deleted enrollment object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="deleteSession"><span class="type-signature">(async) </span>deleteSession<span class="signature">(sessionId)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Invalidate a session, e.g. on logout.
 </div>
 
 
@@ -999,7 +2224,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line94">line 94</a>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -1154,7 +2379,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line107">line 107</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line170">line 170</a>
     </li></ul></dd>
     
 
@@ -1291,7 +2516,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line75">line 75</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line138">line 138</a>
     </li></ul></dd>
     
 
@@ -1349,6 +2574,665 @@ This module represents the data access layer for authentication:
     
 
     
+    <h4 class="name" id="getAllCourse"><span class="type-signature">(async) </span>getAllCourse<span class="signature">(db)</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get all courses.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    List of all courses
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getCourseById"><span class="type-signature">(async) </span>getCourseById<span class="signature">(db)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a course by ID.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Course object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getCourseJoinCode"><span class="type-signature">(async) </span>getCourseJoinCode<span class="signature">(db, courseId)</span><span class="type-signature"> &rarr; {Promise.&lt;string>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get the join code for a course.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>courseId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ID of the course</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line142">line 142</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Join code of the course
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getUserByEmail"><span class="type-signature">(async) </span>getUserByEmail<span class="signature">(email)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|null)>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get a user by email.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    user or null if not found
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(object|null)></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
     <h4 class="name" id="getUserBySessionId"><span class="type-signature">(async) </span>getUserBySessionId<span class="signature">(sessionId)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|null)>}</span></h4>
     
 
@@ -1358,6 +3242,7 @@ This module represents the data access layer for authentication:
 
 <div class="description">
     Look up the current user by session id.
+Returns null if the session is missing, expired, or the user no longer exists.
 </div>
 
 
@@ -1450,7 +3335,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line67">line 67</a>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line89">line 89</a>
     </li></ul></dd>
     
 
@@ -1508,7 +3393,7 @@ This module represents the data access layer for authentication:
     
 
     
-    <h4 class="name" id="handleCodeExchangeFromBody"><span class="type-signature">(async) </span>handleCodeExchangeFromBody<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;string>}</span></h4>
+    <h4 class="name" id="getUserDetailsInCourse"><span class="type-signature">(async) </span>getUserDetailsInCourse<span class="signature">(db)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -1516,7 +3401,7 @@ This module represents the data access layer for authentication:
 
 
 <div class="description">
-    Optional: handle SPA/PKCE-style flows where the code is in the request body.
+    Get user details in a course.
 </div>
 
 
@@ -1552,13 +3437,13 @@ This module represents the data access layer for authentication:
 
         <tr>
             
-                <td class="name"><code>req</code></td>
+                <td class="name"><code>db</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">fastify.FastifyRequest</span>
+<span class="param-type">PrismaDBClient</span>
 
 
             
@@ -1568,7 +3453,7 @@ This module represents the data access layer for authentication:
 
             
 
-            <td class="description last"></td>
+            <td class="description last">Prisma DB client instance</td>
         </tr>
 
     
@@ -1609,7 +3494,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line168">line 168</a>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -1638,7 +3523,7 @@ This module represents the data access layer for authentication:
 
         
 <div class="param-desc">
-    sessionId
+    User object
 </div>
 
 
@@ -1649,7 +3534,166 @@ This module represents the data access layer for authentication:
     </dt>
     <dd>
         
-<span class="param-type">Promise.&lt;string></span>
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getUsersInCourse"><span class="type-signature">(async) </span>getUsersInCourse<span class="signature">(db)</span><span class="type-signature"> &rarr; {Promise.&lt;Array>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get users in a course.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    List of users in the course
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array></span>
 
 
     </dd>
@@ -1768,7 +3812,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line138">line 138</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line193">line 193</a>
     </li></ul></dd>
     
 
@@ -1826,7 +3870,7 @@ This module represents the data access layer for authentication:
     
 
     
-    <h4 class="name" id="upsertUserFromGooglePayload"><span class="type-signature">(async) </span>upsertUserFromGooglePayload<span class="signature">(payload)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    <h4 class="name" id="insertUser"><span class="type-signature">(async) </span>insertUser<span class="signature">(params)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
     
 
     
@@ -1834,7 +3878,617 @@ This module represents the data access layer for authentication:
 
 
 <div class="description">
-    Upsert a user from a Google ID token payload.
+    Insert or update a user record by email.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>first_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>last_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>last_login</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    user - Prisma users record
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="isUcsdEmail"><span class="type-signature"></span>isUcsdEmail<span class="signature">(email)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Check whether an email belongs to the "UCSD student" group.
+By default we treat emails with allowed suffixes as UCSD.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line290">line 290</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="logout"><span class="type-signature">(async) </span>logout<span class="signature">(sessionId, logger)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Logout: delete the session record (if any).
+Route is responsible for clearing the cookie.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sessionId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>logger</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">fastify logger (req.log)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line224">line 224</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="resolveUserFromGooglePayload"><span class="type-signature">(async) </span>resolveUserFromGooglePayload<span class="signature">(payload)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Find or create a user based on the Google payload and UCSD/non-UCSD rules.
+
+- UCSD email:
+   - existing user → return it
+   - no user       → auto-create via insertUser()
+- non-UCSD email:
+   - existing user → return it (allowed to log in)
+   - no user       → throw error (must be added by professor first)
 </div>
 
 
@@ -1927,7 +4581,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line20">line 20</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line84">line 84</a>
     </li></ul></dd>
     
 
@@ -1956,7 +4610,1849 @@ This module represents the data access layer for authentication:
 
         
 <div class="param-desc">
-    user - normalized user object
+    user
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateCourse"><span class="type-signature">(async) </span>updateCourse<span class="signature">(db, courseId, updateData)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update course details.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>db</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">PrismaDBClient</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prisma DB client instance</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>courseId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ID of the course to update</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>updateData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Data to update</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_course_course.repo.js.html">services/course/course.repo.js</a>, <a href="services_course_course.repo.js.html#line117">line 117</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Updated course object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateCurrentUserProfile"><span class="type-signature">(async) </span>updateCurrentUserProfile<span class="signature">(user, body)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update current user's profile (supports partial updates).
+Only fields explicitly provided in the request body will be updated.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>user</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">current user (from req.user)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>body</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">request body with profile fields (first_name?, last_name?, pronouns?)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    user or null if not found
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(object|null)></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getUserBySessionId"><span class="type-signature">(async) </span>getUserBySessionId<span class="signature">(sessionId)</span><span class="type-signature"> &rarr; {Promise.&lt;(object|null)>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Look up the current user by session id.
+Returns null if the session is missing, expired, or the user no longer exists.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sessionId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    user or null if not found/expired
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;(object|null)></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="handleGoogleCallback"><span class="type-signature">(async) </span>handleGoogleCallback<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;string>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Handle the standard OAuth callback flow (query string).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">fastify.FastifyRequest</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line193">line 193</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    sessionId to be stored in cookie
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;string></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="insertUser"><span class="type-signature">(async) </span>insertUser<span class="signature">(params)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Insert or update a user record by email.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>first_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>last_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>last_login</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Date</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    user - Prisma users record
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="isUcsdEmail"><span class="type-signature"></span>isUcsdEmail<span class="signature">(email)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Check whether an email belongs to the "UCSD student" group.
+By default we treat emails with allowed suffixes as UCSD.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>email</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line290">line 290</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="logout"><span class="type-signature">(async) </span>logout<span class="signature">(sessionId, logger)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Logout: delete the session record (if any).
+Route is responsible for clearing the cookie.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sessionId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">undefined</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>logger</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">fastify logger (req.log)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line224">line 224</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="resolveUserFromGooglePayload"><span class="type-signature">(async) </span>resolveUserFromGooglePayload<span class="signature">(payload)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Find or create a user based on the Google payload and UCSD/non-UCSD rules.
+
+- UCSD email:
+   - existing user → return it
+   - no user       → auto-create via insertUser()
+- non-UCSD email:
+   - existing user → return it (allowed to log in)
+   - no user       → throw error (must be added by professor first)
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>payload</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Google ID token payload</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line84">line 84</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    user
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateCurrentUserProfile"><span class="type-signature">(async) </span>updateCurrentUserProfile<span class="signature">(user, body)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update current user's profile (supports partial updates).
+Only fields explicitly provided in the request body will be updated.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>user</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">current user (from req.user)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>body</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">request body with profile fields (first_name?, last_name?, pronouns?)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line263">line 263</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    normalized profile response
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="updateUserProfile"><span class="type-signature">(async) </span>updateUserProfile<span class="signature">(userId, profileData)</span><span class="type-signature"> &rarr; {Promise.&lt;object>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Update user profile fields (partial update supported).
+Only updates fields that are explicitly provided (not undefined).
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>userId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>profileData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">{ first_name?, last_name?, pronouns? }</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="services_auth_auth.repo.js.html">services/auth/auth.repo.js</a>, <a href="services_auth_auth.repo.js.html#line143">line 143</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    updated user
 </div>
 
 
@@ -2086,7 +6582,7 @@ This module represents the data access layer for authentication:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line91">line 91</a>
+        <a href="services_auth_auth.service.js.html">services/auth/auth.service.js</a>, <a href="services_auth_auth.service.js.html#line154">line 154</a>
     </li></ul></dd>
     
 
@@ -2154,13 +6650,13 @@ This module represents the data access layer for authentication:
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#handleCodeExchangeFromBody">handleCodeExchangeFromBody</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#upsertUserFromGooglePayload">upsertUserFromGooglePayload</a></li><li><a href="global.html#users">users</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#buildInsertUserInputFromGooglePayload">buildInsertUserInputFromGooglePayload</a></li><li><a href="global.html#buildProfileResponse">buildProfileResponse</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#getUserByEmail">getUserByEmail</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#isUcsdEmail">isUcsdEmail</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#prisma">prisma</a></li><li><a href="global.html#resolveUserFromGooglePayload">resolveUserFromGooglePayload</a></li><li><a href="global.html#updateCurrentUserProfile">updateCurrentUserProfile</a></li><li><a href="global.html#updateUserProfile">updateUserProfile</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Nov 14 2025 11:01:02 GMT-0800 (Pacific Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Nov 18 2025 20:47:05 GMT-0800 (Pacific Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

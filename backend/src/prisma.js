@@ -1,16 +1,17 @@
-// Prisma Client instance
-const { PrismaClient } = require('@prisma/client');
+'use strict';
 
-const prisma = new PrismaClient({
-  log:
-    process.env.NODE_ENV === 'development'
-      ? ['query', 'error', 'warn']
-      : ['error'],
+const fp = require('fastify-plugin');
+const prisma = require('./prisma-client');
+
+module.exports = fp(async function prismaPlugin(fastify) {
+  // Establish connection
+  await prisma.$connect();
+
+  // Attach to fastify instance
+  fastify.decorate('db', prisma);
+
+  // Managed disconnection by Fastify lifecycle
+  fastify.addHook('onClose', async (app) => {
+    await app.db.$disconnect();
+  });
 });
-
-// Handle graceful shutdown
-process.on('beforeExit', async () => {
-  await prisma.$disconnect();
-});
-
-module.exports = prisma;

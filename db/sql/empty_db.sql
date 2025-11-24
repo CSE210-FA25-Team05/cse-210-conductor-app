@@ -1,3 +1,6 @@
+-- Remove all data from tables while keeping the schema intact.
+-- Order matters: child tables must be truncated before parent tables.
+
 TRUNCATE TABLE
     attendances,
     lectures,

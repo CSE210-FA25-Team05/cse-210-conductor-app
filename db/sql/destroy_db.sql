@@ -1,3 +1,6 @@
+-- Drop all tables and fully remove their schema.
+-- CASCADE ensures dependent objects are also removed.
+
 DROP TABLE IF EXISTS attendances   CASCADE;
 DROP TABLE IF EXISTS lectures      CASCADE;
 DROP TABLE IF EXISTS ta_teams      CASCADE;

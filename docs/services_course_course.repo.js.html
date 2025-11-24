@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/course/course.repo.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/course/course.repo.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+const { join } = require('@prisma/client/runtime/library');
+
+/**
+ * Course Repository
+ *
+ * This module provides data access methods for course-related operations.
+ */
+
+/**
+ * Get all courses.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @returns {Promise&lt;Array>} List of all courses
+ */
+async function getAllCourse(db) {
+  const courses = await db.courses.findMany();
+  return courses;
+}
+
+/**
+ * Get a course by ID.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @returns {Promise&lt;Object>} Course object
+ */
+async function getCourseById(db, courseId) {
+  const course = await db.courses.findUnique({
+    where: { id: courseId },
+  });
+  return course;
+}
+
+/**
+ * Get users in a course.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @returns {Promise&lt;Array>} List of users in the course
+ */
+async function getUsersInCourse(db, courseId) {
+  const users = await db.enrollments.findMany({
+    where: { course_id: courseId },
+  });
+  return users;
+}
+
+/**
+ * Get user details in a course.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @returns {Promise&lt;Object>} User object
+ */
+async function getUserDetailsInCourse(db, courseId, userId) {
+  const user = await db.enrollments.findFirst({
+    where: {
+      user_id: userId,
+      course_id: courseId,
+    },
+  });
+  return user;
+}
+
+/** Add a new course.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @param {Object} courseData - Data for the new course
+ * @returns {Promise&lt;Object>} Created course object
+ */
+async function addCourse(db, courseData) {
+  const {
+    course_code,
+    course_name,
+    term,
+    section = null,
+    start_date = null,
+    end_date = null,
+    join_code = null,
+  } = courseData || {};
+
+  // Validate required fields first
+  if (!course_code || !course_name || !term) {
+    const e = new Error('course_code, course_name, term are required');
+    e.code = 'BAD_REQUEST';
+    throw e;
+  }
+
+  // Ensure a unique join code exists on courseData
+  if (join_code == null) {
+    // Generate a random 6-character join code
+    let uniqueCode;
+    do {
+      uniqueCode = await generateJoinCode();
+    } while (
+      await db.courses.findUnique({
+        where: { join_code: uniqueCode },
+      })
+    );
+    courseData = Object.assign({}, courseData, { join_code: uniqueCode });
+  }
+
+  const created = await db.courses.create({
+    data: {
+      course_code,
+      course_name,
+      term,
+      section,
+      start_date: start_date ? new Date(start_date) : null,
+      end_date: end_date ? new Date(end_date) : null,
+      join_code: (courseData &amp;&amp; courseData.join_code) || join_code || null,
+    },
+  });
+  return created;
+}
+
+/** Update course details.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @param {number} courseId - ID of the course to update
+ * @param {Object} updateData - Data to update
+ * @returns {Promise&lt;Object>} Updated course object
+ */
+async function updateCourse(db, courseId, updateData) {
+  const updatedCourse = await db.courses.update({
+    where: { id: courseId },
+    data: updateData,
+  });
+  return updatedCourse;
+}
+
+/** Delete a course.
+ * @param {PrismaDBlient} db - Prisma DB client instance
+ * @param {number} courseId - ID of the course to delete
+ * @returns {Promise&lt;Object>} Deleted course object
+ */
+async function deleteCourse(db, courseId) {
+  const deletedCourse = await db.courses.delete({
+    where: { id: courseId },
+  });
+  return deletedCourse;
+}
+
+/** Get the join code for a course.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @param {number} courseId - ID of the course
+ * @returns {Promise&lt;string>} Join code of the course
+ */
+async function getCourseJoinCode(db, courseId) {
+  const course = await db.courses.findUnique({
+    where: { id: courseId },
+    select: { join_code: true },
+  });
+  return course ? course.join_code : null;
+}
+
+/** Add an enrollment of a user into a course.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @param {number} courseId - ID of the course
+ * @param {number} userId - ID of the user
+ * @returns {Promise&lt;Object>} Created enrollment object
+ */
+async function addEnrollment(db, courseId, userId) {
+  const enrollment = await db.enrollments.create({
+    data: {
+      course_id: courseId,
+      user_id: userId,
+    },
+  });
+  return enrollment;
+}
+
+/** Update the role of a user in a course enrollment.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @param {number} courseId - ID of the course
+ * @param {number} userId - ID of the user
+ * @param {string} role - New role to assign
+ * @returns {Promise&lt;Object>} Updated enrollment object
+ */
+async function updateEnrollmentRole(db, courseId, userId, role) {
+  const updatedEnrollment = await db.enrollments.updateMany({
+    where: {
+      course_id: courseId,
+      user_id: userId,
+    },
+    data: {
+      role: role,
+    },
+  });
+  return updatedEnrollment;
+}
+
+/** Delete an enrollment of a user from a course.
+ * @param {PrismaDBClient} db - Prisma DB client instance
+ * @param {number} courseId - ID of the course
+ * @param {number} userId - ID of the user
+ * @returns {Promise&lt;Object>} Deleted enrollment object
+ */
+async function deleteEnrollment(db, courseId, userId) {
+  const deletedEnrollment = await db.enrollments.deleteMany({
+    where: {
+      course_id: courseId,
+      user_id: userId,
+    },
+  });
+  return deletedEnrollment;
+}
+
+async function generateJoinCode() {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let generatedCode = '';
+  for (let i = 0; i &lt; 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    generatedCode += characters.charAt(randomIndex);
+  }
+  return generatedCode;
+}
+
+module.exports = {
+  getAllCourse,
+  getCourseById,
+  getUsersInCourse,
+  getUserDetailsInCourse,
+  addCourse,
+  updateCourse,
+  deleteCourse,
+  getCourseJoinCode,
+  addEnrollment,
+  updateEnrollmentRole,
+  deleteEnrollment,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addCourse">addCourse</a></li><li><a href="global.html#addEnrollment">addEnrollment</a></li><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#buildInsertUserInputFromGooglePayload">buildInsertUserInputFromGooglePayload</a></li><li><a href="global.html#buildProfileResponse">buildProfileResponse</a></li><li><a href="global.html#checkCourseJoinCode">checkCourseJoinCode</a></li><li><a href="global.html#courseRepo">courseRepo</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#deleteCourse">deleteCourse</a></li><li><a href="global.html#deleteEnrollment">deleteEnrollment</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#getAllCourse">getAllCourse</a></li><li><a href="global.html#getCourseById">getCourseById</a></li><li><a href="global.html#getCourseJoinCode">getCourseJoinCode</a></li><li><a href="global.html#getUserByEmail">getUserByEmail</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#getUserDetailsInCourse">getUserDetailsInCourse</a></li><li><a href="global.html#getUsersInCourse">getUsersInCourse</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#isUcsdEmail">isUcsdEmail</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#prisma">prisma</a></li><li><a href="global.html#resolveUserFromGooglePayload">resolveUserFromGooglePayload</a></li><li><a href="global.html#updateCourse">updateCourse</a></li><li><a href="global.html#updateCurrentUserProfile">updateCurrentUserProfile</a></li><li><a href="global.html#updateEnrollmentRole">updateEnrollmentRole</a></li><li><a href="global.html#updateUserProfile">updateUserProfile</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Nov 19 2025 15:47:37 GMT-0800 (Pacific Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -10,15 +10,25 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U conductor -d conductor_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
 
   backend:
     build: ./backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
     environment:
-      DATABASE_URL: postgres://conductor:conductor@db:5432/conductor_db
-      FRONTEND_URL: http://localhost:5173
-      NODE_ENV: development
+      # Override DATABASE_URL with the Docker-specific host
+      DATABASE_URL: ${DOCKER_DATABASE_URL}
+      NODE_ENV: ${NODE_ENV:-development}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
     ports:
       - "3001:3001"
     volumes:

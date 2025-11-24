@@ -13,4 +13,8 @@ COPY . .
 # Expose the Fastify server port
 EXPOSE 3001
 
-CMD ["npm", "run", "dev"]
+# Use our custom entrypoint to set up Prisma + DB then start server
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
+CMD ["./docker-entrypoint.sh"]

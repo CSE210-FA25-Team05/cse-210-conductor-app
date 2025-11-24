@@ -12,6 +12,8 @@ async function main() {
   await prisma.lectures.deleteMany();
   await prisma.ta_teams.deleteMany();
   await prisma.enrollments.deleteMany();
+  // remove journals before deleting courses/users to avoid FK constraint issues
+  await prisma.journals.deleteMany();
   await prisma.teams.deleteMany();
   await prisma.courses.deleteMany();
   await prisma.credentials.deleteMany();
@@ -70,6 +72,7 @@ async function main() {
       section: 'A00',
       start_date: new Date('2025-09-23'),
       end_date: new Date('2025-12-12'),
+      join_code: 'ABCDEF',
     },
   });
 
@@ -81,6 +84,7 @@ async function main() {
       section: 'A00',
       start_date: new Date('2025-09-23'),
       end_date: new Date('2025-12-12'),
+      join_code: 'HIJKLM',
     },
   });
 
@@ -254,7 +258,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       lecture_id: lecture1.id,
-      student_id: john.id,
+      user_id: john.id,
       updated_by: professor.id,
       update_reason: 'Initial attendance import',
     },
@@ -264,7 +268,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       lecture_id: lecture1.id,
-      student_id: jane.id,
+      user_id: jane.id,
       updated_by: professor.id,
       update_reason: 'Initial attendance import',
     },
@@ -274,7 +278,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       lecture_id: lecture2.id,
-      student_id: john.id,
+      user_id: john.id,
       updated_by: ta.id,
       update_reason: 'Marked by TA during class',
     },
@@ -284,7 +288,7 @@ async function main() {
     data: {
       course_id: cse110.id,
       lecture_id: lecture3.id,
-      student_id: john.id,
+      user_id: john.id,
       updated_by: ta.id,
       update_reason: 'First lab session',
     },
@@ -294,9 +298,209 @@ async function main() {
     data: {
       course_id: cse110.id,
       lecture_id: lecture3.id,
-      student_id: jane.id,
+      user_id: jane.id,
       updated_by: ta.id,
       update_reason: 'First lab session',
+    },
+  });
+
+  console.log('Creating journals...');
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: john.id,
+      title: 'Reflection on Lecture 1',
+      content:
+        'Today we covered the project structure and responsibilities. I need to finish the README and set up CI.',
+      is_private: false,
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: john.id,
+      title: 'Project brainstorming',
+      content:
+        'Thinking about using a microservice architecture for the project; need to evaluate complexity.',
+      is_private: false,
+      created_at: new Date('2025-10-01T12:00:00Z'),
+      updated_at: new Date('2025-10-06T16:20:00Z'), // edited later
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse110.id,
+      user_id: john.id,
+      title: 'Extra lab observations',
+      content:
+        'Encountered a bug in exercise 2; solved by adjusting index logic.',
+      is_private: true,
+      created_at: new Date('2025-10-02T15:00:00Z'),
+      updated_at: new Date('2025-10-02T18:30:00Z'), // edited same day
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse110.id,
+      user_id: john.id,
+      title: 'Lab thoughts',
+      content:
+        'Lab 1 was straightforward. Need to review arrays and loops for next lab.',
+      is_private: false,
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: jane.id,
+      title: 'Notes about teammates',
+      content:
+        'Team 2 agreed on weekly meetings. I will own the documentation.',
+      is_private: true,
+      created_at: new Date('2025-10-03T10:45:00Z'),
+      updated_at: new Date('2025-10-03T10:45:00Z'),
+    },
+  });
+  await prisma.journals.create({
+    data: {
+      course_id: cse110.id,
+      user_id: jane.id,
+      title: 'Lab tips',
+      content:
+        'Remember to run tests after each change; the CI pipeline flags style issues.',
+      is_private: false,
+      created_at: new Date('2025-10-02T11:20:00Z'),
+      updated_at: new Date('2025-10-02T11:20:00Z'),
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: jane.id,
+      title: 'Team formation notes',
+      content:
+        'Met with Team 2; we will use GitHub Projects to track tasks and meet twice a week.',
+      is_private: true,
+    },
+  });
+
+  // Example instructor note (attached to course but authored by professor)
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: professor.id,
+      title: 'Course announcement draft',
+      content:
+        'Reminder: project proposals due next Friday. Office hours moved to Wednesday.',
+      is_private: true,
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: ta.id,
+      title: 'TA notes on lab grading',
+      content:
+        'Grading rubric seems fair. I will prepare solutions and gradebook entries this weekend.',
+      is_private: false,
+      created_at: new Date('2025-10-04T09:00:00Z'),
+      updated_at: new Date('2025-10-04T09:00:00Z'),
+    },
+  });
+
+  await prisma.journals.create({
+    data: {
+      course_id: cse210.id,
+      user_id: ta.id,
+      title: 'TA private reminder',
+      content: 'Remember to finalize office hours and announce in Slack.',
+      is_private: true,
+      created_at: new Date('2025-10-05T08:30:00Z'),
+      updated_at: new Date('2025-10-07T14:15:00Z'), // edited later
+    },
+  });
+
+  console.log('Creating pulse configs...');
+  const cse210_pulse_config = await prisma.pulse_configs.create({
+    data: {
+      course_id: cse210.id,
+      config: {
+        text: 'How are you feeling about the progress of your team project?',
+        options: [
+          { value: 'Happy', color: 'rgb(0, 255, 0)' },
+          { value: 'Tired', color: 'rgb(255, 243, 21)' },
+          { value: 'Concerned', color: 'rgba(255, 153, 0, 1)' },
+          { value: 'Worried', color: 'rgb(255, 0, 0)' },
+          { value: 'Sad', color: 'rgb(0, 0, 255)' },
+        ],
+      },
+      is_editable: false,
+    },
+  });
+
+  await prisma.pulse_configs.create({
+    data: {
+      course_id: cse110.id,
+      config: {
+        text: 'What do you think about the course so far?',
+        options: [
+          { value: 'Good', color: 'rgb(0, 255, 0)' },
+          { value: 'Neutral', color: 'rgb(0, 0, 255)' },
+          { value: 'Bad', color: 'rgb(255, 0, 0)' },
+        ],
+      },
+      is_editable: true,
+    },
+  });
+
+  console.log('Creating pulses...');
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      user_id: john.id,
+      pulse_config_id: cse210_pulse_config.id,
+      value: 'Happy',
+      description: 'Feeling good about our project progress!',
+      created_at: new Date('2025-10-01T09:00:00Z'),
+    },
+  });
+
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      user_id: jane.id,
+      pulse_config_id: cse210_pulse_config.id,
+      value: 'Tired',
+      description: 'A bit overwhelmed with the workload.',
+      created_at: new Date('2025-10-01T09:05:00Z'),
+    },
+  });
+
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      user_id: john.id,
+      pulse_config_id: cse210_pulse_config.id,
+      value: 'Concerned',
+      created_at: new Date('2025-10-08T09:00:00Z'),
+    },
+  });
+
+  await prisma.pulses.create({
+    data: {
+      course_id: cse210.id,
+      user_id: ta.id,
+      pulse_config_id: cse210_pulse_config.id,
+      value: 'Worried',
+      description:
+        'Concerned about the upcoming deadlines and progress of team 5.',
+      created_at: new Date('2025-10-08T09:10:00Z'),
     },
   });
 

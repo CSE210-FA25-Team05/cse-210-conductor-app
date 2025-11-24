@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: services/course/course.routes.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: services/course/course.routes.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+const { mapAndReply } = require('../../utils/error-map');
+
+/**
+ * Course Routes Plugin
+ * GET
+ * /api/courses - get all courses
+ * /api/courses/:course_id - get specific course data
+ * /api/courses/:course_id/users - get all users in class
+ * /api/courses/:course_id/users/:user_id - get specific user details in context of course
+ *
+ * POST
+ * /api/courses - create a new course
+ *
+ * PATCH
+ * /api/courses/:course_id - update course details
+ *
+ * DELETE
+ * /api/courses/:course_id - delete a course
+ *
+ * POST
+ * /api/courses/:course_id/users - enroll a user into a course
+ * /api/courses/:course_id/join - join a course with join code
+ *
+ *
+ */
+
+module.exports = async function courseRoutes(fastify, options) {
+  const courseRepo = require('./course.repo');
+  const courseService = require('./course.service');
+  fastify.get('/courses', async (request, reply) => {
+    try {
+      const res = await courseRepo.getAllCourse(fastify.db);
+      return res;
+    } catch (error) {
+      console.error(error);
+      return mapAndReply(error, reply);
+    }
+  });
+
+  fastify.get('/courses/:course_id', async (request, reply) => {
+    try {
+      const res = await courseRepo.getCourseById(
+        fastify.db,
+        parseInt(request.params.course_id, 10)
+      );
+      return res;
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+
+  fastify.get('/courses/:course_id/users', async (request, reply) => {
+    try {
+      const res = await courseRepo.getUsersInCourse(
+        fastify.db,
+        parseInt(request.params.course_id, 10)
+      );
+      return res;
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+
+  fastify.get('/courses/:course_id/users/:user_id', async (request, reply) => {
+    try {
+      const res = await courseRepo.getUserDetailsInCourse(
+        fastify.db,
+        parseInt(request.params.course_id, 10),
+        parseInt(request.params.user_id, 10)
+      );
+      return res;
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+
+  fastify.post('/courses', async (request, reply) => {
+    try {
+      const course = await courseRepo.addCourse(fastify.db, request.body);
+      reply.code(201).send(course);
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+
+  fastify.patch('/courses/:course_id', async (request, reply) => {
+    try {
+      await courseRepo.updateCourse(
+        fastify.db,
+        parseInt(request.params.course_id, 10),
+        request.body
+      );
+      reply.send();
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+  fastify.delete('/courses/:course_id', async (request, reply) => {
+    try {
+      await courseRepo.deleteCourse(
+        fastify.db,
+        parseInt(request.params.course_id, 10)
+      );
+      reply.code(204).send();
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+  fastify.post('/courses/:course_id/users', async (request, reply) => {
+    try {
+      await courseRepo.addEnrollment(
+        fastify.db,
+        parseInt(request.params.course_id, 10),
+        request.body.user_id
+      );
+      reply.code(201).send();
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+  fastify.post('/courses/:course_id/join', async (request, reply) => {
+    try {
+      const isValid = await courseService.checkCourseJoinCode(
+        fastify.db,
+        parseInt(request.params.course_id, 10),
+        request.body.join_code
+      );
+      if (!isValid) {
+        return reply.code(400).send({ error: 'Invalid join code' });
+      }
+      await courseRepo.addEnrollment(
+        fastify.db,
+        parseInt(request.params.course_id, 10),
+        request.body.user_id
+      );
+      reply.code(201).send();
+    } catch (error) {
+      return mapAndReply(error, reply);
+    }
+  });
+
+  fastify.patch(
+    '/courses/:course_id/users/:user_id',
+    async (request, reply) => {
+      try {
+        await courseRepo.updateEnrollmentRole(
+          fastify.db,
+          parseInt(request.params.course_id, 10),
+          parseInt(request.params.user_id, 10),
+          request.body.role
+        );
+        reply.send();
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  fastify.delete(
+    '/courses/:course_id/users/:user_id',
+    async (request, reply) => {
+      try {
+        await courseRepo.deleteEnrollment(
+          fastify.db,
+          parseInt(request.params.course_id, 10),
+          parseInt(request.params.user_id, 10)
+        );
+        reply.code(204).send();
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addCourse">addCourse</a></li><li><a href="global.html#addEnrollment">addEnrollment</a></li><li><a href="global.html#authRoutes">authRoutes</a></li><li><a href="global.html#authService">authService</a></li><li><a href="global.html#buildGoogleLoginUrl">buildGoogleLoginUrl</a></li><li><a href="global.html#buildInsertUserInputFromGooglePayload">buildInsertUserInputFromGooglePayload</a></li><li><a href="global.html#buildProfileResponse">buildProfileResponse</a></li><li><a href="global.html#checkCourseJoinCode">checkCourseJoinCode</a></li><li><a href="global.html#courseRepo">courseRepo</a></li><li><a href="global.html#createSession">createSession</a></li><li><a href="global.html#createSessionForUser">createSessionForUser</a></li><li><a href="global.html#deleteCourse">deleteCourse</a></li><li><a href="global.html#deleteEnrollment">deleteEnrollment</a></li><li><a href="global.html#deleteSession">deleteSession</a></li><li><a href="global.html#enforceEmailRules">enforceEmailRules</a></li><li><a href="global.html#exchangeCodeForTokens">exchangeCodeForTokens</a></li><li><a href="global.html#fp">fp</a></li><li><a href="global.html#getAllCourse">getAllCourse</a></li><li><a href="global.html#getCourseById">getCourseById</a></li><li><a href="global.html#getCourseJoinCode">getCourseJoinCode</a></li><li><a href="global.html#getUserByEmail">getUserByEmail</a></li><li><a href="global.html#getUserBySessionId">getUserBySessionId</a></li><li><a href="global.html#getUserDetailsInCourse">getUserDetailsInCourse</a></li><li><a href="global.html#getUsersInCourse">getUsersInCourse</a></li><li><a href="global.html#handleGoogleCallback">handleGoogleCallback</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#isUcsdEmail">isUcsdEmail</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#prisma">prisma</a></li><li><a href="global.html#resolveUserFromGooglePayload">resolveUserFromGooglePayload</a></li><li><a href="global.html#updateCourse">updateCourse</a></li><li><a href="global.html#updateCurrentUserProfile">updateCurrentUserProfile</a></li><li><a href="global.html#updateEnrollmentRole">updateEnrollmentRole</a></li><li><a href="global.html#updateUserProfile">updateUserProfile</a></li><li><a href="global.html#verifyIdToken">verifyIdToken</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Nov 19 2025 15:47:37 GMT-0800 (Pacific Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
