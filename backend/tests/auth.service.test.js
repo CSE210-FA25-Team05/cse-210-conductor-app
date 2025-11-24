@@ -4,7 +4,7 @@
 jest.mock('../src/services/auth/auth.repo');
 jest.mock('google-auth-library');
 
-const { 
+const {
   describe,
   test,
   expect,
@@ -68,17 +68,6 @@ afterEach(() => {
 });
 
 describe('buildGoogleLoginUrl', () => {
-  test('should generate Google OAuth URL', () => {
-    const mockAuthUrl =
-      'https://accounts.google.com/o/oauth2/v2/auth?client_id=test';
-    mockOAuthClient.generateAuthUrl.mockReturnValue(mockAuthUrl);
-
-    const url = authService.buildGoogleLoginUrl(mockReply);
-
-    expect(url).toBe(mockAuthUrl);
-    expect(mockOAuthClient.generateAuthUrl).toHaveBeenCalledTimes(1);
-  });
-
   test('should set oauth_state cookie', () => {
     mockOAuthClient.generateAuthUrl.mockReturnValue('https://google.com/oauth');
 

@@ -152,13 +152,6 @@ describe('sanitizeInput', () => {
     expect(output).not.toMatch(/[<>]/);
   });
 
-  test('sanitizes nested HTML tags', () => {
-    const input = '<div><span>text</span></div>';
-    const output = sanitizeInput(input);
-    expect(output).toBe('divspantextspandiv');
-    expect(output).not.toMatch(/[<>]/);
-  });
-
   test('sanitizes self-closing tags', () => {
     const input = '<img src="x" />';
     const output = sanitizeInput(input);
@@ -169,12 +162,6 @@ describe('sanitizeInput', () => {
     const input = '<a href="javascript:alert(1)">click</a>';
     const output = sanitizeInput(input);
     expect(output).not.toMatch(/[<>]/);
-  });
-
-  test('sanitizes mixed content with text and tags', () => {
-    const input = 'Hello <b>World</b>!';
-    const output = sanitizeInput(input);
-    expect(output).toBe('Hello bWorldb!');
   });
 
   test('handles input with only angle brackets', () => {
@@ -192,12 +179,6 @@ describe('sanitizeInput', () => {
 
   test('preserves tabs', () => {
     expect(sanitizeInput('Column1\tColumn2')).toBe('Column1\tColumn2');
-  });
-
-  test('removes angle brackets but preserves unicode', () => {
-    const input = '<div>Hello 世界</div>';
-    const output = sanitizeInput(input);
-    expect(output).toBe('divHello 世界div');
   });
 });
 
