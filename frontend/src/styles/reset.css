@@ -1,0 +1,211 @@
+:root {
+  view-transition-name: root;
+
+  font-family: Inter, Roboto, system-ui, sans-serif;
+  line-height: 1.6;
+
+  text-underline-offset: 0.1rem;
+
+  --fs-50: 0.875em;
+  --fs-100: 1em;
+  --fs-200: 1.125em;
+  --fs-300: 1.5em;
+  --fs-400: 1.75em;
+  --fs-500: 2em;
+  --fs-600: 2.25em;
+  --fs-700: 2.5em;
+
+  --spacing-large: 2em;
+  --spacing-medium: 1em;
+  --spacing-small: 0.5em;
+  --spacing-extra-small: 0.25em;
+
+  --sidebar-width: 10em;
+  --main-content-padding: 3em;
+  --icon-button-size: 2.4rem;
+  --card-padding: var(--spacing-medium);
+  --card-background-color: var(--color-bg-light);
+  --card-padding-negative: calc(-1 * var(--card-padding));
+  --border-radius: 0.5em;
+  --border: solid 1px var(--color-border-light);
+
+  /* Apply colors globally */
+  background-color: var(--color-bg-white);
+  color: var(--color-text-primary);
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+@media (max-width: 576px) {
+  :root {
+    font-size: 16px;
+  }
+}
+@media (min-width: 576px) and (max-width: 768px) {
+  :root {
+    font-size: 17px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  :root {
+    font-size: 18px;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1280px) {
+  :root {
+    font-size: 19px;
+  }
+}
+@media (min-width: 1280px) and (max-width: 1536px) {
+  :root {
+    font-size: 20px;
+  }
+}
+@media (min-width: 1536px) {
+  :root {
+    font-size: 21px;
+  }
+}
+
+/* 
+   START RESET FROM https://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1.6;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+/* 
+   END RESET 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+main {
+  padding: var(--main-content-padding);
+}
+

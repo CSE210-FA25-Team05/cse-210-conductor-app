@@ -1,0 +1,39 @@
+/* Format */
+.middle {
+  position: fixed;
+  inset: 0px;
+  width: 12rem;
+  height: 5rem;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: auto;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Sidebar Format */
+body:has(> aside) {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+body > main {
+  grid-column: 2;
+  grid-row: 1;
+  overflow-y: auto;
+}
+body > aside {
+  grid-column: 1;
+  grid-row: 1;
+  background-color: var(--color-bg-light);
+}
+
+/* Apply background colors globally */
+body {
+}

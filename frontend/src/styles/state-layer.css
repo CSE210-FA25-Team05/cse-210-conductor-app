@@ -1,0 +1,39 @@
+/* State-layer uses ::after. Any element that includes state-layer will automatically
+ * inherit the state layer and have interactivity. 
+ * elements using state layer should not use ::after.
+*/
+
+button:not([disabled]),
+.state-layer {
+  position: relative;
+  cursor: pointer;
+}
+
+button:not([disabled]):after,
+.state-layer::after {
+  content: '';
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  background-color: var(--color-state, var(--color-text-primary));
+  border-radius: inherit;
+  position: absolute;
+  top: 0%;
+  bottom: 0%;
+  left: 0%;
+  right: 0%;
+  transform: scale(0);
+}
+
+button:not([disabled]):hover:after,
+.state-layer:hover:after {
+  transform: scale(1);
+  opacity: 0.08;
+}
+
+button:not([disabled]):active:after,
+.state-layer:active:after {
+  transform: scale(1);
+  opacity: 0.14;
+}
+

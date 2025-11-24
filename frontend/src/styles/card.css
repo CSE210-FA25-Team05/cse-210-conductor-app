@@ -1,0 +1,48 @@
+article {
+  padding: var(--card-padding);
+  border-radius: var(--border-radius);
+  background-color: var(--card-background-color);
+
+  margin-bottom: var(--spacing-medium);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+article > footer,
+article > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: var(--card-padding-negative);
+  background-color: var(--card-header-footer-color);
+}
+
+article > header {
+  margin-bottom: var(--card-padding);
+  padding: var(--card-padding);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+article > footer {
+  margin-top: var(--card-padding);
+  padding: var(--card-padding);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+article > header > h1,
+article > header > h2,
+article > header > h3,
+article > header > h4,
+article > header > h5,
+article > header > h6,
+article > header > p {
+  margin: 0;
+  padding: 0;
+}
+
+article > footer:has(button),
+article > header:has(button) {
+  padding-top: var(--spacing-small);
+  padding-bottom: var(--spacing-small);
+}
