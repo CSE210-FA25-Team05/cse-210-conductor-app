@@ -74,7 +74,6 @@
   --card-padding-negative: calc(-1 * var(--card-padding));
   --border-radius: 0.5em;
   --border: solid 1px var(--color-border-light);
-
 }
 
 :root[data-theme='dark'] {
@@ -419,10 +418,10 @@ button:disabled {
 .border {
   border: var(--border);
 }
-.border>header {
+.border > header {
   border-bottom: var(--border);
 }
-.border>footer {
+.border > footer {
   border-top: var(--border);
 }
 .justify-end {
