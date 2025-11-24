@@ -73,6 +73,32 @@
   --border: solid 2px var(--color-border-light);
 }
 
+:root.dark{
+  --color-primary-light: #263238;
+  --color-primary-medium: #98aeb8;
+  --color-primary-dark: #cfd8dc;
+  --color-secondary-light: #2d3142;
+  --color-secondary-medium: #5a6178;
+  --color-secondary-dark: #cfd0d8;
+  --color-error: #ef5350;
+  --color-error-light: #c62828;
+  --color-error-dark: #ffcdd2;
+  --color-success: #66bb6a;
+  --color-success-light: #2e7d32;
+  --color-success-dark: #c8e6c9;
+  --color-bg-white: #263238;
+  --color-bg-light: #37474f;
+  --color-bg-medium: #455a64;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0bec5;
+  --color-text-disabled: #78909c;
+  --color-border: #546e7a;
+  --color-neutral-100: #37474f;
+  --color-neutral-400: #78909c;
+  --color-neutral-600: #b0bec5;
+
+}
+
 @view-transition {
   navigation: auto;
 }
