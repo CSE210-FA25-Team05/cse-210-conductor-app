@@ -275,39 +275,39 @@ article {
   margin-left: auto;
   margin-right: auto;
 }
-article>footer,
-article>header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+article > footer,
+article > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    margin: var(--card-padding-negative);
-    background-color: var(--card-header-footer-color);
+  margin: var(--card-padding-negative);
+  background-color: var(--card-header-footer-color);
 }
-article>header {
-    margin-bottom: var(--card-padding);
-    padding: var(--card-padding);
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
+article > header {
+  margin-bottom: var(--card-padding);
+  padding: var(--card-padding);
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
-article>footer {
-    margin-top: var(--card-padding);
-    padding: var(--card-padding);
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
+article > footer {
+  margin-top: var(--card-padding);
+  padding: var(--card-padding);
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
-article>header>h1, 
-article>header>h2,
-article>header>h3,
-article>header>h4,
-article>header>h5,
-article>header>h6,
-article>header>p {
-    margin: 0;
-    padding: 0;
+article > header > h1,
+article > header > h2,
+article > header > h3,
+article > header > h4,
+article > header > h5,
+article > header > h6,
+article > header > p {
+  margin: 0;
+  padding: 0;
 }
-article>footer:has(button),
-article>header:has(button){
-    padding-top: var(--spacing-small);
-    padding-bottom: var(--spacing-small);
+article > footer:has(button),
+article > header:has(button) {
+  padding-top: var(--spacing-small);
+  padding-bottom: var(--spacing-small);
 }
 main {
   padding: var(--main-content-padding);
@@ -364,10 +364,10 @@ button:disabled {
 
 /* Classes */
 .border {
-    border: var(--border);
+  border: var(--border);
 }
 .justify-end {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 /* Colors */
 .neutral {
