@@ -11,8 +11,8 @@ dialog {
   /* Move to front */
   z-index: 1000;
 }
-dialog>article{
-  margin:0;
+dialog > article {
+  margin: 0;
 }
 
 dialog::backdrop {
@@ -22,7 +22,6 @@ dialog::backdrop {
 }
 
 dialog[open] {
-
   /* Center in Middle */
   position: fixed;
   inset: 0px;

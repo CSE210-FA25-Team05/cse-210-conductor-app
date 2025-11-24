@@ -78,19 +78,6 @@
   --color-border-light: #222426;
 }
 
-/* Classes */
-.border {
-  border: var(--border);
-}
-.border > header {
-  border-bottom: var(--border);
-}
-.border > footer {
-  border-top: var(--border);
-}
-.justify-end {
-  justify-content: flex-end;
-}
 /* Colors */
 .neutral {
   background-color: var(--color-neutral-light);
