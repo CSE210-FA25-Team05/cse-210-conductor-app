@@ -19,7 +19,10 @@ const lecturesSchemas = require('./lectures.schemas');
 async function routes(fastify) {
   const lecturesRepo = new LecturesRepo(fastify.db);
   const lecturesPermissions = new LecturesPermissions(lecturesRepo);
-  const lecturesService = new LecturesService(lecturesRepo, lecturesPermissions);
+  const lecturesService = new LecturesService(
+    lecturesRepo,
+    lecturesPermissions
+  );
 
   // Get all lectures for a course
   fastify.get(

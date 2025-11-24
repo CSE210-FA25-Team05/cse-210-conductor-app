@@ -1,6 +1,5 @@
 import {
   createArrayReponseSchema,
-  DateTimeType,
   DateType,
   ErrorSchema,
 } from '../shared/shared.schemas.js';

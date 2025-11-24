@@ -458,4 +458,4 @@ updateLectureTest(1, 1, {
   lecture_date: '2025-11-21',
   code: 'UPDATED-L1',
 });
-deleteLectureTest(1, );
+deleteLectureTest(1, 2);

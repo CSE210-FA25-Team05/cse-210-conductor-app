@@ -162,7 +162,6 @@ class LecturesRepo {
 
     return enrollment ? enrollment.role : null;
   }
-
 }
 
 module.exports = LecturesRepo;

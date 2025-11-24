@@ -60,7 +60,10 @@ class LecturesService {
       }
     }
 
-    const lecture = await this.lecturesRepo.getLectureById(lectureId, course.id);
+    const lecture = await this.lecturesRepo.getLectureById(
+      lectureId,
+      course.id
+    );
     if (!lecture) {
       const error = new Error('Lecture not found');
       error.code = 'NOT_FOUND';
@@ -153,12 +156,9 @@ class LecturesService {
     }
 
     const finalUpdateData = {
-      lecture_date:
-        updateData.lecture_date || existingLecture.lecture_date,
+      lecture_date: updateData.lecture_date || existingLecture.lecture_date,
       code:
-        updateData.code !== undefined
-          ? updateData.code
-          : existingLecture.code,
+        updateData.code !== undefined ? updateData.code : existingLecture.code,
     };
 
     return await this.lecturesRepo.updateLecture(lectureId, finalUpdateData);
