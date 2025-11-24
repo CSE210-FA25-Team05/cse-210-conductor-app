@@ -83,5 +83,3 @@ module.exports = fp(async function authenticateHook(fastify) {
     req.user = user;
   });
 });
-
-
