@@ -258,7 +258,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       lecture_id: lecture1.id,
-      student_id: john.id,
+      user_id: john.id,
       updated_by: professor.id,
       update_reason: 'Initial attendance import',
     },
@@ -268,7 +268,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       lecture_id: lecture1.id,
-      student_id: jane.id,
+      user_id: jane.id,
       updated_by: professor.id,
       update_reason: 'Initial attendance import',
     },
@@ -278,7 +278,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       lecture_id: lecture2.id,
-      student_id: john.id,
+      user_id: john.id,
       updated_by: ta.id,
       update_reason: 'Marked by TA during class',
     },
@@ -288,7 +288,7 @@ async function main() {
     data: {
       course_id: cse110.id,
       lecture_id: lecture3.id,
-      student_id: john.id,
+      user_id: john.id,
       updated_by: ta.id,
       update_reason: 'First lab session',
     },
@@ -298,7 +298,7 @@ async function main() {
     data: {
       course_id: cse110.id,
       lecture_id: lecture3.id,
-      student_id: jane.id,
+      user_id: jane.id,
       updated_by: ta.id,
       update_reason: 'First lab session',
     },
@@ -308,7 +308,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: john.id,
+      user_id: john.id,
       title: 'Reflection on Lecture 1',
       content:
         'Today we covered the project structure and responsibilities. I need to finish the README and set up CI.',
@@ -319,7 +319,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: john.id,
+      user_id: john.id,
       title: 'Project brainstorming',
       content:
         'Thinking about using a microservice architecture for the project; need to evaluate complexity.',
@@ -332,7 +332,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse110.id,
-      student_id: john.id,
+      user_id: john.id,
       title: 'Extra lab observations',
       content:
         'Encountered a bug in exercise 2; solved by adjusting index logic.',
@@ -345,7 +345,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse110.id,
-      student_id: john.id,
+      user_id: john.id,
       title: 'Lab thoughts',
       content:
         'Lab 1 was straightforward. Need to review arrays and loops for next lab.',
@@ -356,7 +356,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: jane.id,
+      user_id: jane.id,
       title: 'Notes about teammates',
       content:
         'Team 2 agreed on weekly meetings. I will own the documentation.',
@@ -368,7 +368,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse110.id,
-      student_id: jane.id,
+      user_id: jane.id,
       title: 'Lab tips',
       content:
         'Remember to run tests after each change; the CI pipeline flags style issues.',
@@ -381,7 +381,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: jane.id,
+      user_id: jane.id,
       title: 'Team formation notes',
       content:
         'Met with Team 2; we will use GitHub Projects to track tasks and meet twice a week.',
@@ -393,7 +393,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: professor.id,
+      user_id: professor.id,
       title: 'Course announcement draft',
       content:
         'Reminder: project proposals due next Friday. Office hours moved to Wednesday.',
@@ -404,7 +404,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: ta.id,
+      user_id: ta.id,
       title: 'TA notes on lab grading',
       content:
         'Grading rubric seems fair. I will prepare solutions and gradebook entries this weekend.',
@@ -417,7 +417,7 @@ async function main() {
   await prisma.journals.create({
     data: {
       course_id: cse210.id,
-      student_id: ta.id,
+      user_id: ta.id,
       title: 'TA private reminder',
       content: 'Remember to finalize office hours and announce in Slack.',
       is_private: true,
@@ -463,7 +463,7 @@ async function main() {
   await prisma.pulses.create({
     data: {
       course_id: cse210.id,
-      student_id: john.id,
+      user_id: john.id,
       value: 'Happy',
       description: 'Feeling good about our project progress!',
       created_at: new Date('2025-10-01T09:00:00Z'),
@@ -473,7 +473,7 @@ async function main() {
   await prisma.pulses.create({
     data: {
       course_id: cse210.id,
-      student_id: jane.id,
+      user_id: jane.id,
       value: 'Tired',
       description: 'A bit overwhelmed with the workload.',
       created_at: new Date('2025-10-01T09:05:00Z'),
@@ -483,7 +483,7 @@ async function main() {
   await prisma.pulses.create({
     data: {
       course_id: cse210.id,
-      student_id: john.id,
+      user_id: john.id,
       value: 'Concerned',
       created_at: new Date('2025-10-08T09:00:00Z'),
     },
@@ -492,7 +492,7 @@ async function main() {
   await prisma.pulses.create({
     data: {
       course_id: cse210.id,
-      student_id: ta.id,
+      user_id: ta.id,
       value: 'Worried',
       description:
         'Concerned about the upcoming deadlines and progress of team 5.',
