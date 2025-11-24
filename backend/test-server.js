@@ -276,6 +276,116 @@ async function removeUserFromCourseTest(courseId, userId) {
   }
 }
 
+// test creation of journal entries
+async function createJournalEntryTest(courseId, journalData) {
+  console.log('→ Creating journal entry...');
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/journals`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(journalData),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry created successfully (id=${data.id})`);
+  } else {
+    console.error('❌ Journal entry creation failed');
+    process.exit(1);
+  }
+}
+
+// update journal entry test
+async function updateJournalEntryTest(courseId, journalId, updateData) {
+  console.log(`→ Updating journal entry id=${journalId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/${journalId}`,
+    {
+      method: 'PATCH',
+      headers: headers(),
+      body: JSON.stringify(updateData),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry id=${journalId} updated successfully`);
+  } else {
+    console.error(`❌ Failed to update journal entry id=${journalId}`);
+  }
+}
+// delete journal entry test
+async function deleteJournalEntryTest(courseId, journalId) {
+  console.log(`→ Deleting journal entry id=${journalId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/${journalId}`,
+    {
+      method: 'DELETE',
+      headers: headers(),
+      body: JSON.stringify({}),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry id=${journalId} deleted successfully`);
+  } else {
+    console.error(`❌ Failed to delete journal entry id=${journalId}`);
+  }
+}
+// get journal entries test
+async function getJournalEntriesTest(courseId, userId) {
+  console.log(`→ Fetching journal entries for user id=${userId} in course id=${courseId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/user/${userId}`,
+    {
+      method: 'GET',
+      headers: headers(),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`);
+  } else {
+    console.error(`❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`);
+  }
+}
 // Run tests
 
 // addCourseTest();
@@ -295,3 +405,14 @@ async function removeUserFromCourseTest(courseId, userId) {
 // joinCourseTest(17, 16, 'ABCDEF');
 // updateRoleTest(17,16,'TA');
 // removeUserFromCourseTest(17,16);
+await createJournalEntryTest(17, {
+  student_id: 17,
+  content: 'This is my first journal entry.',
+  title: 'First Entry',
+});
+await updateJournalEntryTest(17, 4, {
+  content: 'This is my updated journal entry content.',
+  title: 'Updated Entry',
+});
+await getJournalEntriesTest(17,17);
+// deleteJournalEntryTest(17,4);
