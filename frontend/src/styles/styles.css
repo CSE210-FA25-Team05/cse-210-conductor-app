@@ -77,25 +77,28 @@
   --color-primary-light: #263238;
   --color-primary-medium: #98aeb8;
   --color-primary-dark: #cfd8dc;
-  --color-secondary-light: #2d3142;
-  --color-secondary-medium: #5a6178;
+  --color-secondary-light: #383d55;
+  --color-secondary-medium: #666f8d;
   --color-secondary-dark: #cfd0d8;
-  --color-error: #ef5350;
-  --color-error-light: #c62828;
-  --color-error-dark: #ffcdd2;
-  --color-success: #66bb6a;
+  --color-error: #ed9795;
+  --color-error-light: #cf3737;
+  --color-error-dark: #ffe1e4;
+  --color-success: #8ed792;
   --color-success-light: #2e7d32;
-  --color-success-dark: #c8e6c9;
-  --color-bg-white: #263238;
+  --color-success-dark: #dcf6dd;
+  --color-bg-white: #2b353b;
   --color-bg-light: #37474f;
   --color-bg-medium: #455a64;
-  --color-text-primary: #ffffff;
+  --color-text-primary: #e2e2e2;
   --color-text-secondary: #b0bec5;
   --color-text-disabled: #78909c;
   --color-border: #546e7a;
   --color-neutral-100: #37474f;
   --color-neutral-400: #78909c;
   --color-neutral-600: #b0bec5;
+  --color-border-dark: #bac0c5;
+  --color-border-medium: #787e83;
+  --color-border-light: #222426;
 }
 
 @view-transition {
@@ -333,11 +336,12 @@ button {
   padding: var(--spacing-small) var(--spacing-medium);
   font-size: var(--fs-100);
   border-radius: var(--spacing-small);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border-dark);
   background-color: var(--color-primary-light);
   cursor: pointer;
   -webkit-appearance: none;
   text-decoration: none;
+  color: var(--color-text-primary);
 }
 button.sm {
   padding: var(--spacing-extra-small) var(--spacing-small);
