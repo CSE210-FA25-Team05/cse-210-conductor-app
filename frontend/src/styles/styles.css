@@ -3,6 +3,7 @@
 * Typography/Breakpoint sizes from https://picocss.com/docs/typography 
 * */
 
+:root[data-theme='light'],
 :root {
   view-transition-name: root;
 
@@ -73,7 +74,7 @@
   --border: solid 2px var(--color-border-light);
 }
 
-:root.dark {
+:root[data-theme='dark'] {
   --color-primary-light: #263238;
   --color-primary-medium: #98aeb8;
   --color-primary-dark: #cfd8dc;
