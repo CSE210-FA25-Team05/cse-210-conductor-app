@@ -4,6 +4,8 @@ nav {
   padding: var(--main-content-padding);
   height: calc(100dvh - var(--main-content-padding) * 2);
   justify-content: flex-start;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
 }
 
 nav > ul {
@@ -16,7 +18,33 @@ nav > ul > li {
   padding-bottom: var(--spacing-medium);
 }
 
+nav > ul > li > a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+nav > ul > li > a:hover {
+  color: var(--color-primary-medium);
+}
+
+nav > button {
+  background-color: var(--color-primary-medium);
+  color: var(--color-bg-white);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: var(--spacing-medium);
+  font-weight: 600;
+}
+
+nav > button:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
 nav div {
-  background-color: pink;
+  background-color: transparent;
   margin-top: auto;
 }

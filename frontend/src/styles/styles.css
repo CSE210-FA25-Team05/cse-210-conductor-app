@@ -3,25 +3,49 @@
 * Typography/Breakpoint sizes from https://picocss.com/docs/typography 
 * */
 
+:root[data-theme='light'],
 :root {
   view-transition-name: root;
 
-  --color-bg: #fffff;
-  --color-primary-100: lightblue;
-  --color-primary-600: darkblue;
-  --color-secondary-100: lightpink;
-  --color-secondary-600: darkmagenta;
-  --color-error-100: lightcoral;
-  --color-error-600: darkred;
-  --color-success-100: lightgreen;
-  --color-success-600: darkgreen;
-  --color-border: lightgray;
-  --color-neutral-100: #f2f3f5;
-  --color-neutral-600: darkgray;
-  --color-state: #000;
-  --card-background-color: #fbfbfb;
-  --typography-padding-vertical: 1rem;
-  --font-weight-bold: 700;
+  /* Light Mode Colors */
+  /* Primary Colors */
+  --color-primary-light: #bbc6cb;
+  --color-primary-medium: #455a64; /* buttons, links, accents */
+  --color-primary-dark: #263238; /* text, borders */
+
+  /* Secondary Colors */
+  --color-secondary-light: #cfd0d8;
+  --color-secondary-medium: #454b64;
+  --color-secondary-dark: #2d3142;
+
+  /* Error Color */
+  --color-error: #d32f2f;
+  --color-error-light: #ffcdd2;
+  --color-error-dark: #b71c1c;
+
+  /* Success Color */
+  --color-success: #388e3c;
+  --color-success-light: #c8e6c9;
+  --color-success-dark: #1b5e20;
+
+  /* Background Colors */
+  --color-bg-white: #ffffff; /* main background */
+  --color-bg-light: #eceff1; /* cards */
+  --color-bg-medium: #cfd8dc; /* hover states */
+
+  /* Text Colors */
+  --color-text-primary: #212121;
+  --color-text-secondary: #757575;
+  --color-text-disabled: #bdbdbd;
+
+  /* Border Color */
+  --color-border-light: #bac0c5;
+  --color-border-medium: #787e83;
+  --color-border-dark: #222426;
+
+  /* Neutral Colors */
+  --color-neutral-light: var(--color-bg-light);
+  --color-neutral-medium: var(--color-text-secondary);
 
   font-family: Inter, Roboto, system-ui, sans-serif;
   line-height: 1.6;
@@ -47,8 +71,35 @@
 
   --icon-button-size: 2.4rem;
 
-  --border-color: lightgray;
-  --border: solid 2px var(--border-color);
+  --border: solid 2px var(--color-border-light);
+}
+
+:root[data-theme='dark'] {
+  --color-primary-light: #263238;
+  --color-primary-medium: #98aeb8;
+  --color-primary-dark: #cfd8dc;
+  --color-secondary-light: #383d55;
+  --color-secondary-medium: #666f8d;
+  --color-secondary-dark: #cfd0d8;
+  --color-error: #ed9795;
+  --color-error-light: #cf3737;
+  --color-error-dark: #ffe1e4;
+  --color-success: #8ed792;
+  --color-success-light: #2e7d32;
+  --color-success-dark: #dcf6dd;
+  --color-bg-white: #2b353b;
+  --color-bg-light: #37474f;
+  --color-bg-medium: #455a64;
+  --color-text-primary: #e2e2e2;
+  --color-text-secondary: #b0bec5;
+  --color-text-disabled: #78909c;
+  --color-border: #546e7a;
+  --color-neutral-100: #37474f;
+  --color-neutral-400: #78909c;
+  --color-neutral-600: #b0bec5;
+  --color-border-dark: #bac0c5;
+  --color-border-medium: #787e83;
+  --color-border-light: #222426;
 }
 
 @view-transition {
@@ -286,11 +337,12 @@ button {
   padding: var(--spacing-small) var(--spacing-medium);
   font-size: var(--fs-100);
   border-radius: var(--spacing-small);
-  border: 1px solid var(--color-border);
-  background-color: var(--color-primary-100);
+  border: 1px solid var(--color-border-dark);
+  background-color: var(--color-primary-light);
   cursor: pointer;
   -webkit-appearance: none;
   text-decoration: none;
+  color: var(--color-text-primary);
 }
 button.sm {
   padding: var(--spacing-extra-small) var(--spacing-small);
@@ -329,29 +381,29 @@ button:disabled {
 /* Classes */
 /* Colors */
 .neutral {
-  background-color: var(--color-neutral-100);
-  color: var(--color-neutral-600);
-  --color-state: var(--color-neutral-600);
+  background-color: var(--color-neutral-light);
+  color: var(--color-neutral-medium);
+  --color-state: var(--color-neutral-medium);
 }
 .primary {
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-600);
-  --color-state: var(--color-primary-600);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  --color-state: var(--color-primary-dark);
 }
 .secondary {
-  background-color: var(--color-secondary-100);
-  color: var(--color-secondary-600);
-  --color-state: var(--color-secondary-600);
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+  --color-state: var(--color-secondary-dark);
 }
 .error {
-  background-color: var(--color-error-100);
-  color: var(--color-error-600);
-  --color-state: var(--color-error-600);
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  --color-state: var(--color-error);
 }
 .success {
-  background-color: var(--color-success-100);
-  color: var(--color-success-600);
-  --color-state: var(--color-success-600);
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  --color-state: var(--color-success);
 }
 
 /* State-layer uses ::after. Any element that includes state-layer will automatically
@@ -371,7 +423,7 @@ button:not([disabled]):after,
   z-index: 0;
   opacity: 0;
   pointer-events: none;
-  background-color: var(--color-state, #000);
+  background-color: var(--color-state, var(--color-text-primary));
   border-radius: inherit;
   position: absolute;
   top: 0%;
@@ -457,5 +509,11 @@ body > main {
 body > aside {
   grid-column: 1;
   grid-row: 1;
-  background-color: lightblue;
+  background-color: var(--color-bg-light);
+}
+
+/* Apply background colors globally */
+body {
+  background-color: var(--color-bg-white);
+  color: var(--color-text-primary);
 }
