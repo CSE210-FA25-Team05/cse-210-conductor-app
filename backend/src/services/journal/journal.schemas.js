@@ -11,9 +11,10 @@ export const JournalEntryType = {
     id: { type: 'number' },
     student_id: { type: 'number' },
     course_id: { type: 'number' },
+    title: { type: 'string' },
     content: { type: 'string' },
   },
-  required: ['id', 'student_id', 'course_id', 'content'],
+  required: ['id', 'student_id', 'course_id', 'title', 'content'],
 };
 
 export const GetJournalByCourseSchema = {
