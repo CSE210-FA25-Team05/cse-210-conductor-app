@@ -1,7 +1,8 @@
 nav {
   display: flex;
   flex-direction: column;
-  padding: var(--main-content-padding);
+  align-items: flex-start;
+  padding: var(--spacing-medium);
   height: calc(100dvh - var(--main-content-padding) * 2);
   justify-content: flex-start;
   background-color: var(--color-bg-light);
