@@ -18,7 +18,6 @@ class ConductorNav extends HTMLElement {
     const nav = document.createElement('nav');
     const ul = document.createElement('ul');
     const bottom = document.createElement('div');
-    const style = document.createElement('style');
     const logoutButtonInstance = document.createElement('logout-button');
 
     for (const displayName of Object.keys(this.paths)) {
@@ -48,7 +47,6 @@ class ConductorNav extends HTMLElement {
     nav.appendChild(ul);
     nav.appendChild(bottom);
 
-    this.appendChild(style);
     this.appendChild(nav);
   }
 }
