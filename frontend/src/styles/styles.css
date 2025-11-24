@@ -317,6 +317,16 @@ p {
 small {
   font-size: var(--fs-50);
 }
+a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+a[selected=''],
+a:hover {
+  color: var(--color-primary-medium);
+}
 article {
   padding: var(--card-padding);
   border-radius: var(--border-radius);
