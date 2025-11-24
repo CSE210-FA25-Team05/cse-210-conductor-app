@@ -111,31 +111,37 @@
 @media (max-width: 576px) {
   :root {
     font-size: 16px;
+    --sidebar-width: 7rem;
   }
 }
 @media (min-width: 576px) and (max-width: 768px) {
   :root {
     font-size: 17px;
+    --sidebar-width: 8rem;
   }
 }
 @media (min-width: 768px) and (max-width: 1024px) {
   :root {
     font-size: 18px;
+    --sidebar-width: 9rem;
   }
 }
 @media (min-width: 1024px) and (max-width: 1280px) {
   :root {
     font-size: 19px;
+    --sidebar-width: 10rem;
   }
 }
 @media (min-width: 1280px) and (max-width: 1536px) {
   :root {
     font-size: 20px;
+    --sidebar-width: 10rem;
   }
 }
 @media (min-width: 1536px) {
   :root {
     font-size: 21px;
+    --sidebar-width: 10rem;
   }
 }
 
@@ -554,7 +560,8 @@ i,
 /* Sidebar Format */
 body:has(> aside) {
   display: grid;
-  grid-template-columns: auto 1fr;
+  /* grid-template-columns: auto 1fr; */
+  grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: 1fr;
   height: 100vh;
   overflow: hidden;
