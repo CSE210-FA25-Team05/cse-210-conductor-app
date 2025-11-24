@@ -522,11 +522,9 @@
 
                     <div class="copy-content">
 
-                        <modal-component id="navModal">
-                            <article slot="content">
-                                <h2>Add Signal</h2>
-                                <p>This modal was opened from the nav bar.</p>
-                            </article>
+                        <modal-component id="navModal" button-align="end">
+                            <h2 slot="header">Add Signal</h2>
+                            <p slot="content">This modal was opened from the nav bar.</p>
                             <button slot="buttons" onclick="document.getElementById('navModal').close()">Submit</button>
                         </modal-component>
 
