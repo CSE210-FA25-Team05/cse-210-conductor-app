@@ -1,0 +1,35 @@
+nav {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - var(--main-content-padding) * 2);
+  justify-content: flex-start;
+  color: var(--color-text-primary);
+  width: 100%;
+  padding: var(--spacing-small);
+}
+
+nav > ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav > ul > li {
+  padding-bottom: var(--spacing-small);
+}
+
+nav > ul > li > a {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+nav > ul > li > a:hover {
+  color: var(--color-primary-medium);
+}
+
+nav div {
+  background-color: transparent;
+  margin-top: auto;
+  width: 100%;
+}
