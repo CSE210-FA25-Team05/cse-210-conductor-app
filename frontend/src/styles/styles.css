@@ -560,7 +560,6 @@ i,
 /* Sidebar Format */
 body:has(> aside) {
   display: grid;
-  /* grid-template-columns: auto 1fr; */
   grid-template-columns: var(--sidebar-width) 1fr;
   grid-template-rows: 1fr;
   height: 100vh;
