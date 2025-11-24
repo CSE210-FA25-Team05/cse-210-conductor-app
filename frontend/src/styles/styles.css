@@ -73,7 +73,7 @@
   --border: solid 2px var(--color-border-light);
 }
 
-:root.dark{
+:root.dark {
   --color-primary-light: #263238;
   --color-primary-medium: #98aeb8;
   --color-primary-dark: #cfd8dc;
@@ -96,7 +96,6 @@
   --color-neutral-100: #37474f;
   --color-neutral-400: #78909c;
   --color-neutral-600: #b0bec5;
-
 }
 
 @view-transition {
