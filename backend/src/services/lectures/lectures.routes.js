@@ -28,7 +28,7 @@ async function routes(fastify) {
   fastify.get(
     '/api/courses/:course_id/lectures',
     {
-      preHandler: [fastify.authenticate, fastify.loadCourse],
+      preHandler: fastify.loadCourse,
       schema: lecturesSchemas.GetAllLecturesSchema,
     },
     async (req, reply) => {
@@ -49,7 +49,7 @@ async function routes(fastify) {
   fastify.get(
     '/api/courses/:course_id/lectures/:lecture_id',
     {
-      preHandler: [fastify.authenticate, fastify.loadCourse],
+      preHandler: fastify.loadCourse,
       schema: lecturesSchemas.GetLectureSchema,
     },
     async (req, reply) => {
@@ -72,7 +72,7 @@ async function routes(fastify) {
   fastify.post(
     '/api/courses/:course_id/lectures',
     {
-      preHandler: [fastify.authenticate, fastify.loadCourse],
+      preHandler: fastify.loadCourse,
       schema: lecturesSchemas.CreateLectureSchema,
     },
     async (req, reply) => {
@@ -94,7 +94,7 @@ async function routes(fastify) {
   fastify.patch(
     '/api/courses/:course_id/lectures/:lecture_id',
     {
-      preHandler: [fastify.authenticate, fastify.loadCourse],
+      preHandler: fastify.loadCourse,
       schema: lecturesSchemas.UpdateLectureSchema,
     },
     async (req, reply) => {
@@ -118,7 +118,7 @@ async function routes(fastify) {
   fastify.delete(
     '/api/courses/:course_id/lectures/:lecture_id',
     {
-      preHandler: [fastify.authenticate, fastify.loadCourse],
+      preHandler: fastify.loadCourse,
       schema: lecturesSchemas.DeleteLectureSchema,
     },
     async (req, reply) => {
