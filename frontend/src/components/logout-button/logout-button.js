@@ -1,9 +1,13 @@
+import styles from './logout-button.css?inline';
+
 class LogoutButton extends HTMLElement {
   constructor() {
     super();
   }
 
   connectedCallback() {
+    const style = document.createElement('style');
+    style.textContent = styles;
     this.attachShadow({ mode: 'open' });
 
     this.shadowRoot.innerHTML = `
@@ -15,6 +19,8 @@ class LogoutButton extends HTMLElement {
     this.shadowRoot
       .querySelector('button')
       .addEventListener('click', this.handleClick);
+
+    this.shadowRoot.appendChild(style);
   }
 
   disconnectedCallback() {
