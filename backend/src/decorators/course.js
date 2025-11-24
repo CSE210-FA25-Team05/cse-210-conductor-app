@@ -39,10 +39,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
    * Requires authentication.
    */
   fastify.decorate('loadCourse', async function (req, reply) {
-    if (!req.user) {
-      return reply.code(401).send({ error: 'Not authenticated' });
-    }
-
+    // Authentication is already checked by authenticate hook/decorator
     // Parse course_id (schema validation ensures it's a valid integer, but params are still strings)
     const courseId = parseInt(req.params.course_id, 10);
 

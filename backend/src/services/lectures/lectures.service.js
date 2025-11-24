@@ -21,17 +21,15 @@ class LecturesService {
    * @returns {Promise<Array>} List of lectures
    */
   async getAllLectures(user, course, enrollment) {
-    // Check if user is enrolled (use enrollment if provided, otherwise query)
-    if (enrollment === null) {
-      const canView = await this.lecturesPermissions.canViewLectures(
-        user.id,
-        course.id
-      );
-      if (!canView) {
-        const error = new Error('You are not enrolled in this course');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
+    const canView = await this.lecturesPermissions.canViewLectures(
+      user,
+      course,
+      enrollment
+    );
+    if (!canView) {
+      const error = new Error('You are not enrolled in this course');
+      error.code = 'FORBIDDEN';
+      throw error;
     }
 
     return await this.lecturesRepo.getLecturesByCourseId(course.id);
@@ -47,17 +45,15 @@ class LecturesService {
    * @returns {Promise<Object>} Lecture object
    */
   async getLecture(user, course, enrollment, lectureId) {
-    // Check if user is enrolled (use enrollment if provided, otherwise query)
-    if (enrollment === null) {
-      const canView = await this.lecturesPermissions.canViewLectures(
-        user.id,
-        course.id
-      );
-      if (!canView) {
-        const error = new Error('You are not enrolled in this course');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
+    const canView = await this.lecturesPermissions.canViewLectures(
+      user,
+      course,
+      enrollment
+    );
+    if (!canView) {
+      const error = new Error('You are not enrolled in this course');
+      error.code = 'FORBIDDEN';
+      throw error;
     }
 
     const lecture = await this.lecturesRepo.getLectureById(
@@ -83,24 +79,15 @@ class LecturesService {
    * @returns {Promise<Object>} Created lecture object
    */
   async createLecture(user, course, enrollment, lectureData) {
-    // Check permissions (use enrollment if provided, otherwise query)
-    if (enrollment === null) {
-      const canModify = await this.lecturesPermissions.canModifyLectures(
-        user.id,
-        course.id
-      );
-      if (!canModify) {
-        const error = new Error('Only professors and TAs can create lectures');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
-    } else {
-      // Use enrollment role directly
-      if (enrollment.role !== 'professor' && enrollment.role !== 'ta') {
-        const error = new Error('Only professors and TAs can create lectures');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
+    const canModify = await this.lecturesPermissions.canModifyLectures(
+      user,
+      course,
+      enrollment
+    );
+    if (!canModify) {
+      const error = new Error('Only professors and TAs can create lectures');
+      error.code = 'FORBIDDEN';
+      throw error;
     }
 
     return await this.lecturesRepo.createLecture({
@@ -121,24 +108,15 @@ class LecturesService {
    * @returns {Promise<Object>} Updated lecture object
    */
   async updateLecture(user, course, enrollment, lectureId, updateData) {
-    // Check permissions (use enrollment if provided, otherwise query)
-    if (enrollment === null) {
-      const canModify = await this.lecturesPermissions.canModifyLectures(
-        user.id,
-        course.id
-      );
-      if (!canModify) {
-        const error = new Error('Only professors and TAs can update lectures');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
-    } else {
-      // Use enrollment role directly
-      if (enrollment.role !== 'professor' && enrollment.role !== 'ta') {
-        const error = new Error('Only professors and TAs can update lectures');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
+    const canModify = await this.lecturesPermissions.canModifyLectures(
+      user,
+      course,
+      enrollment
+    );
+    if (!canModify) {
+      const error = new Error('Only professors and TAs can update lectures');
+      error.code = 'FORBIDDEN';
+      throw error;
     }
 
     const existingLecture = await this.lecturesRepo.getLectureById(
@@ -174,24 +152,15 @@ class LecturesService {
    * @returns {Promise<void>}
    */
   async deleteLecture(user, course, enrollment, lectureId) {
-    // Check permissions (use enrollment if provided, otherwise query)
-    if (enrollment === null) {
-      const canModify = await this.lecturesPermissions.canModifyLectures(
-        user.id,
-        course.id
-      );
-      if (!canModify) {
-        const error = new Error('Only professors and TAs can delete lectures');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
-    } else {
-      // Use enrollment role directly
-      if (enrollment.role !== 'professor' && enrollment.role !== 'ta') {
-        const error = new Error('Only professors and TAs can delete lectures');
-        error.code = 'FORBIDDEN';
-        throw error;
-      }
+    const canModify = await this.lecturesPermissions.canModifyLectures(
+      user,
+      course,
+      enrollment
+    );
+    if (!canModify) {
+      const error = new Error('Only professors and TAs can delete lectures');
+      error.code = 'FORBIDDEN';
+      throw error;
     }
 
     const existingLecture = await this.lecturesRepo.getLectureById(
