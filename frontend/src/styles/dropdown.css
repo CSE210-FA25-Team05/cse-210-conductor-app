@@ -80,13 +80,13 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image: none;
-  
+
   padding: var(--spacing-small) var(--spacing-medium);
-  
+
   border: var(--border);
   border-radius: var(--border-radius);
   background-color: var(--color-neutral-light);
-  
+
   white-space: nowrap;
   text-align: left;
   cursor: pointer;
@@ -100,4 +100,3 @@ option {
   background-color: var(--color-neutral-light);
   padding: var(--spacing-small) var(--spacing-medium);
 }
-
