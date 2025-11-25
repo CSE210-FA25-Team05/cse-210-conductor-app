@@ -530,6 +530,56 @@
 
             <section>
                 <header>
+                <h2 id="dropdown">Dropdown</h2>
+                </header>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <!-- Dropdown -->
+                        <conductor-dropdown>
+                            <details class="dropdown" name="atoms">
+                                <summary>Dropdown</summary>
+                                <ul>
+                                    <li><a href="#cards">Cards</a></li>
+                                    <li><a href="#typography">Typography</a></li>
+                                    <li><a href="#components">Components</a></li>
+                                    <li><a href="#buttons">Buttons</a></li>
+                                </ul>
+                            </details>
+                        </conductor-dropdown>
+                        <conductor-dropdown>
+                            <details class="dropdown" name="atoms">
+                                <summary>Dropdown with Article</summary>
+                                <article class="border">
+                                    <header>
+                                        <h4>Inside a dropdown</h4>
+                                    </header>
+                                    <p>Content inside a dropdown</p>
+                                    <footer>
+                                        <button>Button inside a dropdown</button>
+                                    </footer>
+                                </article>
+                            </details>
+                        </conductor-dropdown>
+
+                        <!-- Select -->
+                        <select name="select" aria-label="Select" required>
+                            <option selected disabled value="">Select</option>
+                            <option>Solid</option>
+                            <option>Liquid</option>
+                            <option>Gas</option>
+                            <option>Plasma</option>false
+                        </select>
+
+
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+            </section>
+
+            <section>
+                <header>
                     <h2 id="form">Forms</h2>
                 </header>
 
@@ -654,6 +704,7 @@
                         <li><a href="#cards">Cards</a></li>
                         <li><a href="#buttons">Buttons</a></li>
                         <li><a href="#components">Components</a></li>
+                        <li><a href="#dropdown">Dropdown</a></li>
                         <li><a href="#form">Forms</a></li>
                         <li><a href="#state-layer">State Layer</a></li>
                     </ul>
@@ -729,5 +780,6 @@
         </script>
         <script type="module" src="../components/conductor-nav/conductor-nav.js"></script>
         <script type="module" src="../components/modal/modal.js"></script>
+        <script type="module" src="../components/bundle.js"></script>
     </body>
 </html>
