@@ -25,8 +25,6 @@ const TeamsService = require('./teams.service');
  */
 
 module.exports = async function teamsRoutes(fastify, options) {
-  const { authenticate } = fastify;
-
   // Instantiate repo + service once per Fastify instance,
   // following the same pattern as AuthRepo/AuthService.
   const teamsRepo = new TeamsRepo(fastify.db);
@@ -35,7 +33,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // GET /courses/:course_id/teams
   fastify.get(
     '/courses/:course_id/teams',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -50,7 +47,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // GET /courses/:course_id/teams/:team_id
   fastify.get(
     '/courses/:course_id/teams/:team_id',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -67,7 +63,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // GET /courses/:course_id/teams/:team_id/members
   fastify.get(
     '/courses/:course_id/teams/:team_id/members',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -85,7 +80,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // body: { name, description?, members?: [{ id, role }] }
   fastify.post(
     '/courses/:course_id/teams',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -102,7 +96,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // body: { id, role } OR [{ id, role }]
   fastify.post(
     '/courses/:course_id/teams/:team_id/add_members',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -120,7 +113,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // body: { name?, description? }
   fastify.patch(
     '/courses/:course_id/teams/:team_id',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -142,7 +134,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // body: [{ id, role }]
   fastify.patch(
     '/courses/:course_id/teams/:team_id/update_members',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);
@@ -160,7 +151,6 @@ module.exports = async function teamsRoutes(fastify, options) {
   // body: { ids: [userId1, userId2, ...] }
   fastify.delete(
     '/courses/:course_id/teams/:team_id/remove_members',
-    { preHandler: [authenticate] },
     async (request, reply) => {
       try {
         const courseId = parseInt(request.params.course_id, 10);

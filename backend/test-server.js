@@ -714,55 +714,55 @@ async function removeTeamMembersTest(courseId, teamId, memberIds) {
 // LECTURES TESTS
 // Note: Use course_id=1 (test user is enrolled as professor in course 1)
 // Course 1 has lectures with IDs 1 and 2
-getAllLecturesTest(1);
-getLectureTest(1, 1);
-createLectureTest(1, {
-  lecture_date: '2025-11-20',
-  code: 'TEST-L1',
-});
-updateLectureTest(1, 1, {
-  lecture_date: '2025-11-21',
-  code: 'UPDATED-L1',
-});
-deleteLectureTest(1, 2);
+// getAllLecturesTest(1);
+// getLectureTest(1, 1);
+// createLectureTest(1, {
+//   lecture_date: '2025-11-20',
+//   code: 'TEST-L1',
+// });
+// updateLectureTest(1, 1, {
+//   lecture_date: '2025-11-21',
+//   code: 'UPDATED-L1',
+// });
+// deleteLectureTest(1, 2);
 
 // TEAMS TESTS (uncomment and adjust IDs as needed)
 // Example flow:
 //
 // 1. Create a team in an existing course (e.g., course_id = 1)
-// createTeamTest(1, {
-//   name: 'Team Alpha',
-//   description: 'Test team for course 1',
-//   // optional initial members if they are enrolled in course 1:
-//   // members: [{ id: 8, role: 'student' }]
-// });
+createTeamTest(1, {
+  name: 'Team Alpha',
+  description: 'Test team for course 1',
+  // optional initial members if they are enrolled in course 1:
+  // members: [{ id: 8, role: 'student' }]
+});
 //
 // 2. List all teams
-// getAllTeamsTest(1);
+getAllTeamsTest(1);
 //
 // 3. Get a specific team (use the ID returned from createTeamTest or a known one)
-// getTeamTest(1, 1);
+getTeamTest(1, 1);
 //
 // 4. Add members to the team (user IDs must be enrolled in the course)
-// addMembersToTeamTest(1, 1, [
-//   { id: 8, role: 'student' },
-//   { id: 9, role: 'student' },
-// ]);
-//
+addMembersToTeamTest(1, 1, [
+  { id: 8, role: 'student' },
+  { id: 9, role: 'student' },
+]);
+
 // 5. Get team members
-// getTeamMembersTest(1, 1);
+getTeamMembersTest(1, 1);
 //
 // 6. Update team info
-// updateTeamTest(1, 1, {
-//   name: 'Team Alpha Updated',
-//   description: 'Updated description',
-// });
+updateTeamTest(1, 1, {
+  name: 'Team Alpha Updated',
+  description: 'Updated description',
+});
 //
 // 7. Update member roles
-// updateTeamMembersTest(1, 1, [
-//   { id: 8, role: 'TA' },
-//   { id: 9, role: 'student' },
-// ]);
+updateTeamMembersTest(1, 1, [
+  { id: 8, role: 'TA' },
+  { id: 9, role: 'student' },
+]);
 //
 // 8. Remove members
-// removeTeamMembersTest(1, 1, [8, 9]);
+removeTeamMembersTest(1, 1, [8, 9]);
