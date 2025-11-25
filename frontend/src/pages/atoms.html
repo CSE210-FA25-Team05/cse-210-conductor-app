@@ -43,13 +43,6 @@
         padding-right: 5px;
     }
 
-    .copy-content small {
-        color: #555;
-        font-size: 0.9em;
-    }
-
-
-
     .copy-status {
         color: #28a745;
     }
@@ -537,6 +530,106 @@
 
             <section>
                 <header>
+                    <h2 id="form">Forms</h2>
+                </header>
+
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <form>
+                            <fieldset>
+                                <input
+                                    name="first_name"
+                                    placeholder="First Name"
+                                    autocomplete="given-name"
+                                />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    autocomplete="email"
+                                />
+                            </fieldset>
+
+                            <input
+                                type="submit"
+                                value="subscribe"
+                            />
+                        </form>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <form>
+                            <fieldset>
+                                <label>
+                                    First Name
+                                    <input
+                                        name="first_name"
+                                        placeholder="First Name"
+                                        autocomplete="given-name"
+                                    />
+                                </label>
+                                <label>
+                                    Textarea
+                                    <textarea
+                                        name="first_name"
+                                        placeholder="First Name"
+                                    ></textarea>
+                                </label>
+                                <label>
+                                    Date
+                                    <input 
+                                        type="datetime-local" 
+                                        name="datetime-local" 
+                                        aria-label="Datetime local"
+                                    />
+                                </label>
+                                <label>
+                                    Email
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="Email"
+                                        autocomplete="email"
+                                    />
+                                </label>
+                            </fieldset>
+
+                            <input
+                                type="submit"
+                                value="subscribe"
+                            />
+                        </form>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <form>
+                            <label>
+                                first name
+                                <input
+                                    name="first_name"
+                                    placeholder="first name"
+                                    autocomplete="given-name"
+                                />
+                                <small>This is small text under input element.</small>
+                            </label>
+                        </form>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+            </section>
+
+            <section>
+                <header>
                 <h2 id="state-layer">State Layer</h2>
                 <p>.state-layer: adds hover and active styles to any element</p>
                 </header>
@@ -552,6 +645,7 @@
                 </article>
             </section>
 
+
             <aside id="toc">
                 <nav>
                     <ul>
@@ -560,10 +654,12 @@
                         <li><a href="#cards">Cards</a></li>
                         <li><a href="#buttons">Buttons</a></li>
                         <li><a href="#components">Components</a></li>
+                        <li><a href="#form">Forms</a></li>
                         <li><a href="#state-layer">State Layer</a></li>
                     </ul>
                 </nav>
             </aside>
+
         </main>
         <aside>
             <conductor-nav></conductor-nav>
