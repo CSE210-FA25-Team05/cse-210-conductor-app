@@ -55,12 +55,53 @@ class LecturesRepo {
   }
 
   /**
+   * Generate a random 6-character code.
+   * Uses the same pattern as course join codes.
+   *
+   * @returns {string} Generated code
+   */
+  generateCode() {
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let generatedCode = '';
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      generatedCode += characters.charAt(randomIndex);
+    }
+    return generatedCode;
+  }
+
+  /**
+   * Generate a unique code for a course.
+   * Ensures the code doesn't already exist in the course.
+   * Uses the same pattern as course join code generation.
+   *
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<string>} Unique 6-character code
+   */
+  async generateUniqueCode(courseId) {
+    let uniqueCode;
+    let exists;
+    do {
+      uniqueCode = this.generateCode();
+      exists = await this.db.lectures.findFirst({
+        where: {
+          course_id: courseId,
+          code: uniqueCode,
+          deleted_at: null,
+        },
+      });
+    } while (exists);
+    return uniqueCode;
+  }
+
+  /**
    * Create a new lecture in the database.
    *
    * @param {Object} data - Lecture data
    * @param {number} data.course_id - ID of the course
    * @param {Date|string} data.lecture_date - Date of the lecture
-   * @param {string|null} data.code - Optional lecture code
+   * @param {string|null} data.code - Optional lecture code (if not provided, will be auto-generated)
    * @returns {Promise<Object>} Created lecture object
    */
   async createLecture(data) {
@@ -70,11 +111,25 @@ class LecturesRepo {
         ? data.lecture_date
         : new Date(data.lecture_date);
 
+    // Auto-generate code if not provided
+    let code = data.code;
+    let codeGeneratedAt = null;
+    let codeExpiresAt = null;
+
+    if (!code) {
+      code = await this.generateUniqueCode(data.course_id);
+      // Set expiration timestamps: code valid for 5 minutes
+      codeGeneratedAt = new Date();
+      codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes
+    }
+
     return this.db.lectures.create({
       data: {
         course_id: data.course_id,
         lecture_date: lectureDate,
-        code: data.code || null,
+        code: code,
+        code_generated_at: codeGeneratedAt,
+        code_expires_at: codeExpiresAt,
       },
     });
   }
@@ -86,6 +141,8 @@ class LecturesRepo {
    * @param {Object} data - Update data
    * @param {Date|string} data.lecture_date - New lecture date
    * @param {string|null} data.code - New lecture code
+   * @param {boolean} data.regenerate_code - Whether to regenerate the code
+   * @param {number} data.course_id - Course ID (required if regenerating code)
    * @returns {Promise<Object>} Updated lecture object
    */
   async updateLecture(lectureId, data) {
@@ -101,15 +158,40 @@ class LecturesRepo {
           : new Date(data.lecture_date);
     }
 
-    // Add code if provided
-    if (data.code !== undefined) {
+    // Handle code regeneration
+    if (data.regenerate_code === true && data.course_id) {
+      const newCode = await this.generateUniqueCode(data.course_id);
+      updateData.code = newCode;
+      // Set expiration timestamps: code valid for 5 minutes
+      updateData.code_generated_at = new Date();
+      updateData.code_expires_at = new Date(
+        updateData.code_generated_at.getTime() + 5 * 60 * 1000
+      ); // 5 minutes
+    } else if (data.code !== undefined) {
       updateData.code = data.code;
+      // If manually setting code, clear expiration timestamps
+      updateData.code_generated_at = null;
+      updateData.code_expires_at = null;
     }
 
     return this.db.lectures.update({
       where: { id: lectureId },
       data: updateData,
     });
+  }
+
+  /**
+   * Check if a lecture code is still valid (not expired).
+   *
+   * @param {Object} lecture - Lecture object
+   * @returns {boolean} True if code is valid, false if expired or no code
+   */
+  isCodeValid(lecture) {
+    if (!lecture.code || !lecture.code_expires_at) {
+      return false;
+    }
+    const now = new Date();
+    return now <= new Date(lecture.code_expires_at);
   }
 
   /**

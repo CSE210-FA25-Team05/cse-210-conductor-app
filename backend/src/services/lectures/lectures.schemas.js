@@ -1,6 +1,7 @@
 import {
   createArrayReponseSchema,
   DateType,
+  DateTimeType,
   ErrorSchema,
 } from '../shared/shared.schemas.js';
 
@@ -8,7 +9,6 @@ export const CreateLectureParams = {
   type: 'object',
   properties: {
     lecture_date: DateType,
-    code: { type: 'string', nullable: true },
   },
   required: ['lecture_date'],
 };
@@ -17,7 +17,7 @@ export const UpdateLectureParams = {
   type: 'object',
   properties: {
     lecture_date: DateType,
-    code: { type: 'string', nullable: true },
+    regenerate_code: { type: 'boolean' },
   },
 };
 
@@ -28,6 +28,8 @@ export const LectureInfo = {
     course_id: { type: 'number' },
     lecture_date: DateType,
     code: { type: 'string', nullable: true },
+    code_generated_at: DateTimeType,
+    code_expires_at: DateTimeType,
   },
   required: ['id', 'course_id', 'lecture_date', 'code'],
 };
