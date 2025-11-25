@@ -5,12 +5,14 @@ nav {
   justify-content: flex-start;
   color: var(--color-text-primary);
   width: 100%;
-  padding: var(--spacing-small);
+  height: 100%;
+  padding: 0;
 }
 
 nav > ul {
-  list-style-type: none;
   margin: 0;
+  margin-top: var(--spacing-medium);
+  list-style-type: none;
   padding: 0;
 }
 
