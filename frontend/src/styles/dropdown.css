@@ -1,0 +1,64 @@
+details {
+    position: relative;
+    display: inline-block;
+}
+details[open]{
+    z-index: 100;
+}
+
+details>summary {
+    padding: var(--spacing-small) var(--spacing-medium);
+
+    border: var(--border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-neutral-light);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    white-space: nowrap;
+    list-style: none;
+    text-align: left;
+    cursor: pointer;
+}
+details[open]>summary {
+    outline: var(--outline-selected);
+}
+details[open]>ol,
+details[open]>ul,
+details[open]>article {
+    position: absolute;
+    left: 0;
+
+    margin-top: var(--spacing-small);
+
+    min-width: -moz-fit-content;
+    min-width: fit-content;
+    width: max-content;
+    max-width: 90vw;
+}
+details[open]>ol,
+details[open]>ul {
+    background-color: var(--color-neutral-light);
+    border-radius: var(--border-radius);
+    border: var(--border);
+    padding: var(--spacing-small) 0;
+}
+
+details[open]>ul>li,
+details[open]>ol>li {
+    border-radius: var(--border-radius);
+    padding: var(--spacing-small) var(--spacing-medium);
+    white-space: nowrap;
+}
+
+details>ul>li>a,
+details>ol>li>a {
+    width: 100%;
+    height: 100%;
+}
+summary::-webkit-details-marker {
+  display: none
+}
