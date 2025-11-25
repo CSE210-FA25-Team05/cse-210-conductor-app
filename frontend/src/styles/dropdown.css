@@ -1,3 +1,12 @@
+details,
+select {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.6;
+  height: auto;
+}
+
 details {
   position: relative;
   display: inline-block;
@@ -62,3 +71,33 @@ details > ol > li > a {
 summary::-webkit-details-marker {
   display: none;
 }
+
+/* Select */
+
+select {
+  /* Reset Default Styles */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  
+  padding: var(--spacing-small) var(--spacing-medium);
+  
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-neutral-light);
+  
+  white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: var(--outline-selected);
+}
+
+option {
+  background-color: var(--color-neutral-light);
+  padding: var(--spacing-small) var(--spacing-medium);
+}
+
