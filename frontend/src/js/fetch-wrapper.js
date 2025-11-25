@@ -10,49 +10,57 @@
  * - data?: Data in the response, if the response was successful.
  * - error?: Message describing the error, if it occured.
  */
-export async function fetchWrapper(url, options={}, timeoutDuration=1000, numRetries=0) {
+export async function fetchWrapper(
+  url,
+  options = {},
+  timeoutDuration = 1000,
+  numRetries = 0
+) {
   while (numRetries >= 0) {
     try {
-      let response = await fetch(url, {...options, signal: AbortSignal.timeout(timeoutDuration)});
+      let response = await fetch(url, {
+        ...options,
+        signal: AbortSignal.timeout(timeoutDuration),
+      });
 
       // Fetch worked, but there was a problem with the server
       if (!response.ok) {
         if (numRetries > 0) {
           numRetries -= 1;
-          continue
+          continue;
         }
         return {
           ok: false,
           status: response.status,
-          error: 'Server Error: Status ' + response.status
+          error: 'Server Error: Status ' + response.status,
         };
       }
 
       let data = await response.json();
-      
       // Good response
       return {
         ok: true,
         status: response.status,
-        data: data
+        data: data,
       };
-
     } catch (err) {
       if (numRetries > 0) {
         numRetries -= 1;
         continue
-      }
+      };
       if (err.name === 'TimeoutError') {
         // Fetch timed out
         return {
           ok: false,
-          error: 'Timeout Error: Took longer than ' + timeoutDuration + ' milliseconds to fetch'
+          error: 'Timeout Error: Took longer than ' +
+          timeoutDuration +
+          ' milliseconds to fetch',
         };
       } else {
         // Fetch failed
         return {
           ok: false,
-          error: 'Fetch Error: ' + err.message
+          error: 'Fetch Error: ' + err.message,
         };
       }
     }
