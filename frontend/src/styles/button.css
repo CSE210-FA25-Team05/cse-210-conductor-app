@@ -1,7 +1,7 @@
 /* Buttons */
 
-[type="submit"],
-[role="button"],
+[type='submit'],
+[role='button'],
 button {
   display: inline-flex;
   align-items: center;
@@ -18,31 +18,31 @@ button {
   color: var(--color-text-primary);
 }
 
-[type="submit"] .sm,
-[role="button"] .sm,
+[type='submit'] .sm,
+[role='button'] .sm,
 button .sm {
   padding: var(--spacing-extra-small) var(--spacing-small);
   font-size: var(--fs-50);
 }
 
-[type="submit"] .md,
-[role="button"] .md,
+[type='submit'] .md,
+[role='button'] .md,
 button .md {
   padding: var(--spacing-small) var(--spacing-medium);
   font-size: var(--fs-100);
 }
 
-[type="submit"] .lg,
-[role="button"] .lg,
+[type='submit'] .lg,
+[role='button'] .lg,
 button .lg {
   padding: var(--spacing-medium) var(--spacing-large);
   font-size: var(--fs-200);
 }
 
-[type="submit"] .material-icons,
-[role="button"] .material-icons,
-[type="submit"] i,
-[role="button"] i,
+[type='submit'] .material-icons,
+[role='button'] .material-icons,
+[type='submit'] i,
+[role='button'] i,
 button i,
 button .material-icons {
   display: inline-flex;
@@ -58,8 +58,8 @@ button.icon-round {
   padding: var(--spacing-small);
   border-radius: 999px;
 }
-[type="submit"]:disabled,
-[role="button"]:disabled,
+[type='submit']:disabled,
+[role='button']:disabled,
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
