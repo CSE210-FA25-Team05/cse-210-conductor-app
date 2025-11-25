@@ -89,8 +89,8 @@ class TeamsService {
     const members = Array.isArray(membersRaw)
       ? membersRaw
       : membersRaw
-      ? [membersRaw]
-      : [];
+        ? [membersRaw]
+        : [];
 
     if (members.length === 0) {
       return;

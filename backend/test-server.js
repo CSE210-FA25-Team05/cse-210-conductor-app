@@ -460,13 +460,10 @@ async function getAllTeamsTest(courseId) {
 // Get a single team
 async function getTeamTest(courseId, teamId) {
   console.log(`→ Fetching team id=${teamId} in course id=${courseId}...`);
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/teams/${teamId}`,
-    {
-      method: 'GET',
-      headers: headers(),
-    }
-  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/teams/${teamId}`, {
+    method: 'GET',
+    headers: headers(),
+  });
 
   console.log('Status:', res.status);
   const text = await res.text();
@@ -593,14 +590,11 @@ async function addMembersToTeamTest(courseId, teamId, members) {
 // Update team info
 async function updateTeamTest(courseId, teamId, updateData) {
   console.log(`→ Updating team id=${teamId} in course id=${courseId}...`);
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/teams/${teamId}`,
-    {
-      method: 'PATCH',
-      headers: headers(),
-      body: JSON.stringify(updateData),
-    }
-  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/teams/${teamId}`, {
+    method: 'PATCH',
+    headers: headers(),
+    body: JSON.stringify(updateData),
+  });
 
   console.log('Status:', res.status);
   const text = await res.text();

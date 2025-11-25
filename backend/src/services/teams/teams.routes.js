@@ -31,34 +31,28 @@ module.exports = async function teamsRoutes(fastify, options) {
   const teamsService = new TeamsService(teamsRepo);
 
   // GET /courses/:course_id/teams
-  fastify.get(
-    '/courses/:course_id/teams',
-    async (request, reply) => {
-      try {
-        const courseId = parseInt(request.params.course_id, 10);
-        const teams = await teamsService.listTeams(courseId);
-        return teams;
-      } catch (error) {
-        return mapAndReply(error, reply);
-      }
+  fastify.get('/courses/:course_id/teams', async (request, reply) => {
+    try {
+      const courseId = parseInt(request.params.course_id, 10);
+      const teams = await teamsService.listTeams(courseId);
+      return teams;
+    } catch (error) {
+      return mapAndReply(error, reply);
     }
-  );
+  });
 
   // GET /courses/:course_id/teams/:team_id
-  fastify.get(
-    '/courses/:course_id/teams/:team_id',
-    async (request, reply) => {
-      try {
-        const courseId = parseInt(request.params.course_id, 10);
-        const teamId = parseInt(request.params.team_id, 10);
+  fastify.get('/courses/:course_id/teams/:team_id', async (request, reply) => {
+    try {
+      const courseId = parseInt(request.params.course_id, 10);
+      const teamId = parseInt(request.params.team_id, 10);
 
-        const team = await teamsService.getTeam(courseId, teamId);
-        return team;
-      } catch (error) {
-        return mapAndReply(error, reply);
-      }
+      const team = await teamsService.getTeam(courseId, teamId);
+      return team;
+    } catch (error) {
+      return mapAndReply(error, reply);
     }
-  );
+  });
 
   // GET /courses/:course_id/teams/:team_id/members
   fastify.get(
@@ -78,19 +72,16 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // POST /courses/:course_id/teams
   // body: { name, description?, members?: [{ id, role }] }
-  fastify.post(
-    '/courses/:course_id/teams',
-    async (request, reply) => {
-      try {
-        const courseId = parseInt(request.params.course_id, 10);
+  fastify.post('/courses/:course_id/teams', async (request, reply) => {
+    try {
+      const courseId = parseInt(request.params.course_id, 10);
 
-        const team = await teamsService.createTeam(courseId, request.body);
-        reply.code(201).send(team);
-      } catch (error) {
-        return mapAndReply(error, reply);
-      }
+      const team = await teamsService.createTeam(courseId, request.body);
+      reply.code(201).send(team);
+    } catch (error) {
+      return mapAndReply(error, reply);
     }
-  );
+  });
 
   // POST /courses/:course_id/teams/:team_id/add_members
   // body: { id, role } OR [{ id, role }]
