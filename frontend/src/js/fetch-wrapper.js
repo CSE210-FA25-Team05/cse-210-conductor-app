@@ -52,8 +52,8 @@ export async function fetchWrapper(
         // Fetch timed out
         return {
           ok: false,
-          error: 
-          'Timeout Error: Took longer than ' +
+          error:
+            'Timeout Error: Took longer than ' +
             timeoutDuration +
             ' milliseconds to fetch',
         };
