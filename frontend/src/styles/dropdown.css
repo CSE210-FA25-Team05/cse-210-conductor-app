@@ -82,6 +82,7 @@ select {
   background-image: none;
 
   padding: var(--spacing-small) var(--spacing-medium);
+  padding-right: var(--spacing-large);
 
   border: var(--border);
   border-radius: var(--border-radius);
@@ -99,4 +100,32 @@ select:focus {
 option {
   background-color: var(--color-neutral-light);
   padding: var(--spacing-small) var(--spacing-medium);
+}
+
+/* Arrow icon to the right */
+details > summary::after {
+  font-family: 'Material Icons';
+  content: 'expand_more';
+  margin-left: var(--spacing-medium);
+}
+details[open] > summary::after {
+  transform: rotate(180deg);
+}
+/* Cannot add ::after to select, need a wrapper unfortunately */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+}
+.select-wrapper::after {
+  font-family: 'Material Icons';
+  content: 'expand_more';
+
+  position: absolute;
+  right: var(--spacing-medium);
+  top: 50%;
+  transform: translateY(-50%);
+
+  pointer-events: none;
+  color: inherit;
 }
