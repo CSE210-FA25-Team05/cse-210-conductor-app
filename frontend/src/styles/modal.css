@@ -1,0 +1,56 @@
+/* 
+* Modals are created using the Dialog element with an Article inside.
+*
+* The dialog is visible when it has a 'open' attributs and hidden otherwise.
+* */
+
+dialog {
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius);
+  /* Move to front */
+  z-index: 1000;
+}
+dialog > article {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0 !important;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+dialog[open] {
+  /* Center in Middle */
+  position: fixed;
+  inset: 0px;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: auto;
+
+  padding: 0;
+
+  /* Show */
+  opacity: 1;
+  visibility: visible;
+}
+
+dialog:not([open]) {
+  pointer-events: none;
+}
+
+dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@media (max-width: 500px) {
+  dialog {
+    width: 100dvw;
+    height: 90dvh;
+    margin: auto auto 0 auto; /* Anchor to bottom */
+  }
+}

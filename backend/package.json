@@ -5,13 +5,17 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "dev:test": "NODE_ENV=development TEST_MODE=true nodemon src/server.js",
     "test": "jest",
+    "test:api": "node test-server.js",
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node prisma/seed.js",
-    "test:prisma": "node test-prisma.js"
+    "test:prisma": "node test-prisma.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

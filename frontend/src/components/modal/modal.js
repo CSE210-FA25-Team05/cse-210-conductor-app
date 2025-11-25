@@ -1,4 +1,4 @@
-import styles from './modal.css?inline';
+import styles from '../../styles/styles.css?inline';
 
 class Modal extends HTMLElement {
   constructor() {
@@ -11,33 +11,57 @@ class Modal extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    this.shadowRoot.innerHTML = `
-      <style>${styles}</style>
-      <dialog id="dialog">
-        <header>
-          <button class="modal-close" id="closeBtn" aria-label="Close modal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </header>
-        <article class="modal-content">
-          <slot name="content"></slot>
-        </article>
-        <footer class="modal-buttons" id="buttons">
-          <slot name="buttons"></slot>
-        </footer>
-      </dialog>
-    `;
+    const dialog = document.createElement('dialog');
+    const article = document.createElement('article');
+    const header = document.createElement('header');
+    const footer = document.createElement('footer');
+    const closeButton = document.createElement('button');
+    const closeIcon = document.createElement('i');
 
-    this.dialog = this.shadowRoot.getElementById('dialog');
-    this.closeBtn = this.shadowRoot.getElementById('closeBtn');
-    this.buttonsSlot = this.shadowRoot.getElementById('buttons');
+    // Create the slots
+    const headerSlot = document.createElement('slot');
+    headerSlot.name = 'header';
 
-    this.closeBtn.addEventListener('click', this.handleCloseClick);
-    this.dialog.addEventListener('click', this.handleBackdropClick);
-    this.dialog.addEventListener('cancel', this.handleDialogCancel);
+    const contentSlot = document.createElement('slot');
+    contentSlot.name = 'content';
+
+    const buttonsSlot = document.createElement('slot');
+    buttonsSlot.name = 'buttons';
+
+    closeButton.classList = ['icon-only'];
+    article.classList = ['border'];
+    closeIcon.innerText = 'close'; // Set to close icon
+
+    // Header: header slot + close button
+    closeButton.appendChild(closeIcon);
+    header.appendChild(headerSlot);
+    header.appendChild(closeButton);
+
+    // Footer: buttons slot
+    footer.appendChild(buttonsSlot);
+
+    // Article: header + content slot + footer
+    article.appendChild(header);
+    article.appendChild(contentSlot);
+    article.appendChild(footer);
+
+    dialog.appendChild(article);
+
+    const style = document.createElement('style');
+    style.textContent = styles;
+
+    // Append to shadow root
+    this.shadowRoot.appendChild(style);
+    this.shadowRoot.appendChild(dialog);
+
+    // Add event listeners
+    closeButton.addEventListener('click', this.handleCloseClick);
+    dialog.addEventListener('click', this.handleBackdropClick);
+    dialog.addEventListener('cancel', this.handleDialogCancel);
+
+    this.dialog = dialog;
+    this.footer = footer;
+    this.closeBtn = closeButton;
 
     this.updateButtonAlignment();
   }
@@ -77,9 +101,9 @@ class Modal extends HTMLElement {
   }
 
   updateButtonAlignment() {
-    if (!this.buttonsSlot) return;
+    if (!this.footer) return;
     const align = this.getAttribute('button-align') || 'end';
-    this.buttonsSlot.style.justifyContent =
+    this.footer.style.justifyContent =
       align === 'start' ? 'flex-start' : 'flex-end';
   }
 

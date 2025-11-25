@@ -4,23 +4,17 @@ class LogoutButton extends HTMLElement {
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-
-    this.shadowRoot.innerHTML = `
-        <button> 
+    this.innerHTML = `
+        <button style="width: 100%"> 
             Log Out
         </button>
         `;
 
-    this.shadowRoot
-      .querySelector('button')
-      .addEventListener('click', this.handleClick);
+    this.querySelector('button').addEventListener('click', this.handleClick);
   }
 
   disconnectedCallback() {
-    this.shadowRoot
-      .querySelector('button')
-      .removeEventListener('click', this.handleClick);
+    this.querySelector('button').removeEventListener('click', this.handleClick);
   }
 
   async handleClick() {

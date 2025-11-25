@@ -25,6 +25,7 @@ fastify.register(swaggerUI, {
   },
   staticCSP: true,
   transformStaticCSP: (header) => header,
+  // eslint-disable-next-line no-unused-vars
   transformSpecification: (swaggerObject, request, reply) => {
     return swaggerObject;
   },
@@ -46,12 +47,15 @@ fastify.register(require('./prisma'));
 
 //decorators
 fastify.register(require('./decorators/auth'));
+fastify.register(require('./decorators/course'));
 
 //hooks
+fastify.register(require('./hooks/authenticate'));
 fastify.register(require('./hooks/profile-complete'));
 
 //services
 fastify.register(require('./services/auth'));
+fastify.register(require('./services/lectures'));
 
 //course routes
 fastify.register(require('./services/course/course.routes'), {

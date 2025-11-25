@@ -86,3 +86,27 @@ export const UpdateUserProfileSchema = {
     401: ErrorSchema,
   },
 };
+
+export const GetUserProfileByIdSchema = {
+  type: 'object',
+  properties: {
+    user_id: { type: 'number' },
+  },
+  required: ['user_id'],
+  summary: 'Get another user profile by ID',
+  description:
+    'Fetch a user profile by user ID. Requires appropriate permissions.',
+  tags: ['Profile'],
+  response: {
+    200: UserProfile,
+    401: ErrorSchema,
+    403: {
+      type: 'object',
+      properties: {
+        error: { type: 'string' },
+        message: { type: 'string' },
+      },
+    },
+    404: ErrorSchema,
+  },
+};
