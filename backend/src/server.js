@@ -58,6 +58,11 @@ fastify.register(require('./services/course/course.routes'), {
   prefix: '/api',
 });
 
+//teams routes
+fastify.register(require('./services/teams/teams.routes'), {
+  prefix: '/api',
+});
+
 //health check
 fastify.get('/api/health', async () => {
   return { ok: true, time: new Date().toISOString() };
