@@ -39,12 +39,11 @@ h6 {
   font-size: var(--fs-200);
 }
 p {
-  font-size: 80%;
-  color: var(--font-muted);
+  font-size: var(--fs-100);
 }
-input + small,
 small {
   font-size: var(--fs-50);
+  color: var(--color-text-secondary);
 }
 a {
   color: var(--color-text-primary);
