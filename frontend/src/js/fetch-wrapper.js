@@ -46,15 +46,16 @@ export async function fetchWrapper(
     } catch (err) {
       if (numRetries > 0) {
         numRetries -= 1;
-        continue
-      };
+        continue;
+      }
       if (err.name === 'TimeoutError') {
         // Fetch timed out
         return {
           ok: false,
-          error: 'Timeout Error: Took longer than ' +
-          timeoutDuration +
-          ' milliseconds to fetch',
+          error: 
+          'Timeout Error: Took longer than ' +
+            timeoutDuration +
+            ' milliseconds to fetch',
         };
       } else {
         // Fetch failed
