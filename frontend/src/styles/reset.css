@@ -28,6 +28,9 @@
   --card-padding-negative: calc(-1 * var(--card-padding));
   --border-radius: 0.5em;
   --border: solid 1px var(--color-border-light);
+  --border-form: solid 2px var(--color-border-light);
+  --outline-selected: solid 2px var(--color-primary-dark);
+  --border-selected: solid 2px var(--color-primary-light);
 
   /* Apply colors globally */
   background-color: var(--color-bg-white);

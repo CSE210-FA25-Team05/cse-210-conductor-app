@@ -43,6 +43,7 @@ p {
 }
 small {
   font-size: var(--fs-50);
+  color: var(--color-text-secondary);
 }
 a {
   color: var(--color-text-primary);
