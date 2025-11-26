@@ -26,6 +26,7 @@ details > summary {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  gap: var(--spacing-small);
 
   white-space: nowrap;
   list-style: none;
@@ -106,7 +107,6 @@ option {
 details > summary::after {
   font-family: 'Material Icons';
   content: 'expand_more';
-  margin-left: var(--spacing-medium);
 }
 details[open] > summary::after {
   transform: rotate(180deg);
