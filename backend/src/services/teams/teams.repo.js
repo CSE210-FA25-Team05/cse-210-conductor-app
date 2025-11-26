@@ -191,6 +191,41 @@ class TeamsRepo {
       },
     });
   }
+
+  /**
+   * Check if a course exists in the database.
+   *
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<boolean>} True if course exists, false otherwise
+   */
+  async courseExists(courseId) {
+    const course = await this.db.courses.findFirst({
+      where: {
+        id: courseId,
+        deleted_at: null,
+      },
+    });
+    return !!course;
+  }
+
+  /**
+   * Get user's role in a specific course.
+   *
+   * @param {number} userId - ID of the user
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<string|null>} Role ('professor', 'ta', 'student') or null if not enrolled
+   */
+  async getUserCourseRole(userId, courseId) {
+    const enrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: userId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+
+    return enrollment ? enrollment.role : null;
+  }
 }
 
 module.exports = TeamsRepo;
