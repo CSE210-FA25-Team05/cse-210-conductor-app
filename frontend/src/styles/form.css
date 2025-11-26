@@ -13,8 +13,8 @@ input {
   background-color: var(--color-bg-white);
   color: var(--color-text-primary);
 
-  padding: var(--spacing-small) var(--spacing-medium);
-  font-size: var(--fs-100);
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
   border-radius: var(--border-radius);
   margin-bottom: var(--spacing-medium);
   border: var(--border-form);

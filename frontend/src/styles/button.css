@@ -32,8 +32,8 @@ button .sm {
 [type='submit'] .md,
 [role='button'] .md,
 button .md {
-  padding: var(--button-padding-md);
-  font-size: var(--button-fs-md);
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
 }
 
 [type='submit'] .lg,

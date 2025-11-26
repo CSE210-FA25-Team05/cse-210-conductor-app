@@ -35,7 +35,14 @@
 
   --button-padding: var(--spacing-small) var(--spacing-medium);
   --button-fs: var(--fs-100);
+  --button-padding-sm: var(--spacing-extra-small) var(--spacing-small);
+  --button-fs-sm: var(--fs-50);
+  --button-padding-sm: var(--spacing-small) var(--spacing-medium);
+  --button-fs-sm: var(--fs-100);
+  --button-padding-lg: var(--spacing-medium) var(--spacing-large);
+  --button-fs-lg: var(--fs-200);
   --button-line-height: 1;
+
 
   /* Apply colors globally */
   background-color: var(--color-bg-white);
