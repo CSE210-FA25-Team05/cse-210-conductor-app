@@ -6,36 +6,41 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-small);
-  padding: var(--spacing-small) var(--spacing-medium);
-  font-size: var(--fs-100);
+
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
+  line-height: var(--button-line-height);
+
   border-radius: var(--border-radius);
   border: var(--border);
-  background-color: var(--color-primary-light);
+
   cursor: pointer;
   -webkit-appearance: none;
   text-decoration: none;
+
+  background-color: var(--color-primary-light);
   color: var(--color-text-primary);
 }
 
 [type='submit'] .sm,
 [role='button'] .sm,
 button .sm {
-  padding: var(--spacing-extra-small) var(--spacing-small);
-  font-size: var(--fs-50);
+  padding: var(--button-padding-sm);
+  font-size: var(--button-fs-sm);
 }
 
 [type='submit'] .md,
 [role='button'] .md,
 button .md {
-  padding: var(--spacing-small) var(--spacing-medium);
-  font-size: var(--fs-100);
+  padding: var(--button-padding-md);
+  font-size: var(--button-fs-md);
 }
 
 [type='submit'] .lg,
 [role='button'] .lg,
 button .lg {
-  padding: var(--spacing-medium) var(--spacing-large);
-  font-size: var(--fs-200);
+  padding: var(--button-padding-lg);
+  font-size: var(--button-fs-lg);
 }
 
 [type='submit'] .material-icons,

@@ -3,7 +3,7 @@ select {
   box-sizing: border-box;
   font-family: inherit;
   font-size: inherit;
-  line-height: 1.6;
+  line-height: var(--button-line-height);
   height: auto;
 }
 
@@ -16,7 +16,7 @@ details[open] {
 }
 
 details > summary {
-  padding: var(--spacing-small) var(--spacing-medium);
+  padding: var(--button-padding);
 
   border: var(--border);
   border-radius: var(--border-radius);
@@ -60,7 +60,7 @@ details[open] > ul {
 details[open] > ul > li,
 details[open] > ol > li {
   border-radius: var(--border-radius);
-  padding: var(--spacing-small) var(--spacing-medium);
+  padding: var(--button-padding);
   white-space: nowrap;
 }
 
@@ -82,7 +82,7 @@ select {
   -moz-appearance: none;
   background-image: none;
 
-  padding: var(--spacing-small) var(--spacing-medium);
+  padding: var(--button-padding);
   padding-right: var(--spacing-large);
 
   border: var(--border);
@@ -100,7 +100,7 @@ select:focus {
 
 option {
   background-color: var(--color-neutral-light);
-  padding: var(--spacing-small) var(--spacing-medium);
+  padding: var(--button-padding);
 }
 
 /* Arrow icon to the right */
