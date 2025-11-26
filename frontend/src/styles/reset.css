@@ -37,7 +37,6 @@
   --button-fs: var(--fs-100);
   --button-line-height: 1;
 
-
   /* Apply colors globally */
   background-color: var(--color-bg-white);
   color: var(--color-text-primary);
