@@ -3,6 +3,7 @@
  * elements using state layer should not use ::after.
 */
 
+details > summary,
 details[open] > ul > li,
 details[open] > ol > li,
 button:not([disabled]),
@@ -11,6 +12,8 @@ button:not([disabled]),
   cursor: pointer;
 }
 
+
+details > summary:before,
 details[open] > ul > li:after,
 details[open] > ol > li:after,
 button:not([disabled]):after,
@@ -29,6 +32,7 @@ button:not([disabled]):after,
   transform: scale(0);
 }
 
+details > summary:hover:before,
 details[open] > ul > li:hover:after,
 details[open] > ol > li:hover:after,
 button:not([disabled]):hover:after,
@@ -37,6 +41,7 @@ button:not([disabled]):hover:after,
   opacity: 0.08;
 }
 
+details > summary:active:before,
 details[open] > ul > li:active:after,
 details[open] > ol > li:active:after,
 button:not([disabled]):active:after,
