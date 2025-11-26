@@ -18,7 +18,9 @@ services:
       start_period: 5s
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod   
     depends_on:
       db:
         condition: service_healthy
@@ -38,7 +40,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - "5173:5173"
     volumes:
