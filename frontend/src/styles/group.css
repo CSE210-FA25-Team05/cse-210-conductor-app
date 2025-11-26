@@ -115,3 +115,16 @@
 [role='group'] > label:has(input[type='radio']:checked) {
   background-color: pink;
 }
+
+/* Sizes */
+[role='group'].group-sm summary,
+[role='group'].group-sm > button {
+  font-size: var(--button-fs-sm);
+  padding: var(--button-padding-sm);
+}
+
+[role='group'].group-lg summary,
+[role='group'].group-lg > button {
+  font-size: var(--button-fs-lg);
+  padding: var(--button-padding-lg);
+}
