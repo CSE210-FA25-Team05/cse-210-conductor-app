@@ -84,7 +84,6 @@
   z-index: 2;
 }
 
-
 /* Radio Group */
 
 [role='group'] > label {
@@ -102,18 +101,17 @@
 
 [role='group'] > label > input[type='radio'] {
   position: absolute;
-  top: 0; 
-  left: 0; 
+  top: 0;
+  left: 0;
   height: 100%;
   width: 100%;
   background-color: transparent;
   border: none;
   border-radius: 0;
-  margin: 0; 
+  margin: 0;
   padding: 0;
 }
 
 [role='group'] > label > input[type='radio']:checked {
-    background-color: pink;
-    
+  background-color: pink;
 }
