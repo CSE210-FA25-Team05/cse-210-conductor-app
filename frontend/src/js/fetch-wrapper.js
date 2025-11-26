@@ -20,12 +20,12 @@ export async function fetchWrapper(
     try {
       let response = await fetch(url, {
         ...options,
-        credentials: 'include',  // Tells the server who we are for authorization purposes
+        credentials: 'include', // Tells the server who we are for authorization purposes
         headers: {
-          "Content-Type": "application/json",
-          ...options.headers
-        },  // Tells the server we're giving them a json object in the body
-        signal: AbortSignal.timeout(timeoutDuration),  // Interupts the fetch request if it exceeds timeoutDuration number of milliseconds
+          'Content-Type': 'application/json',
+          ...options.headers,
+        }, // Tells the server we're giving them a json object in the body
+        signal: AbortSignal.timeout(timeoutDuration), // Interupts the fetch request if it exceeds timeoutDuration number of milliseconds
       });
 
       // Fetch worked, but there was a problem with the server
