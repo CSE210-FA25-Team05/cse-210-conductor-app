@@ -52,8 +52,8 @@ button .material-icons {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--fs-100);
-  line-height: 1;
+  font-size: var(--button-fs);
+  line-height: var(--button-line-height);
 }
 button.icon-only {
   padding: var(--spacing-small);
