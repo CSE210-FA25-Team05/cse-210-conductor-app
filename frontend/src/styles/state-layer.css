@@ -12,7 +12,6 @@ button:not([disabled]),
   cursor: pointer;
 }
 
-
 details > summary:before,
 details[open] > ul > li:after,
 details[open] > ol > li:after,
