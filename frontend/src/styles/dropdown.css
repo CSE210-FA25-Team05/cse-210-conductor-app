@@ -108,15 +108,21 @@ details > summary::after {
   font-family: 'Material Icons';
   content: 'expand_more';
 }
+
 details[open] > summary::after {
   transform: rotate(180deg);
 }
 /* Cannot add ::after to select, need a wrapper unfortunately */
+select {
+  color: var(--color-text-primary);
+}
+
 .select-wrapper {
   position: relative;
   display: inline-block;
   width: fit-content;
 }
+
 .select-wrapper::after {
   font-family: 'Material Icons';
   content: 'expand_more';
