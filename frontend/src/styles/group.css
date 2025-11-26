@@ -1,0 +1,119 @@
+[role='group'] {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+[role='group'] > label,
+[role='group'] > [type='submit'],
+[role='group'] > [role='button'],
+[role='group'] > button,
+[role='group'] > conductor-dropdown {
+  position: relative;
+  margin-left: -1px;
+  flex: 0 1 auto;
+}
+
+[role='group'] > conductor-dropdown {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+}
+
+[role='group'] > conductor-dropdown details,
+[role='group'] > conductor-dropdown summary {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[role='group'] > [type='submit'],
+[role='group'] > [role='button'],
+[role='group'] > button,
+[role='group'] > conductor-dropdown summary {
+  border-radius: 0;
+}
+
+[role='group'] > conductor-dropdown summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-small);
+
+  line-height: 1;
+  font-size: var(--fs-100);
+
+  border: var(--border);
+  background-color: var(--color-primary-light);
+  color: var(--color-text-primary);
+  cursor: pointer;
+
+  list-style: none;
+  margin: 0;
+  white-space: nowrap;
+}
+
+[role='group'] > conductor-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Corner Logic */
+
+[role='group'] > :first-child {
+  margin-left: 0;
+}
+
+[role='group'] > :first-child > input[type='radio'],
+[role='group'] > :first-child,
+[role='group'] > :first-child summary {
+  border-top-left-radius: var(--border-radius);
+  border-bottom-left-radius: var(--border-radius);
+}
+
+[role='group'] > :last-child > input[type='radio'],
+[role='group'] > :last-child,
+[role='group'] > :last-child summary {
+  border-top-right-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+}
+
+[role='group'] > label > input[type='radio']:hover,
+[role='group'] > label > input[type='radio']:focus,
+[role='group'] > button:hover,
+[role='group'] > button:focus,
+[role='group'] > conductor-dropdown:hover {
+  z-index: 2;
+}
+
+
+/* Radio Group */
+
+[role='group'] > label {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: var(--border);
+
+  padding: var(--spacing-small) var(--spacing-medium);
+  font-size: var(--fs-100);
+  line-height: 1;
+
+  position: relative;
+}
+
+[role='group'] > label > input[type='radio'] {
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  margin: 0; 
+  padding: 0;
+}
+
+[role='group'] > label > input[type='radio']:checked {
+    background-color: pink;
+    
+}
