@@ -118,11 +118,11 @@
 }
 
 [role='group'] > label:has(input[type='radio']:checked) {
-    color: var(--color-bg);
-    background-color: var(--color-fg);
-    border: none;
-    outline: none;
-    z-index: 3;
+  color: var(--color-bg);
+  background-color: var(--color-fg);
+  border: none;
+  outline: none;
+  z-index: 3;
 }
 
 /* Sizes */
