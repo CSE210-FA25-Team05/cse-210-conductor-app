@@ -4,6 +4,8 @@
 */
 
 [role='group'] > label,
+[role='button']:not([disabled]),
+[type='submit']:not([disabled]),
 details > summary,
 details[open] > ul > li,
 details[open] > ol > li,
@@ -15,6 +17,8 @@ button:not([disabled]),
 
 details > summary:before,
 [role='group'] > label:after,
+[role='button']:not([disabled]):after,
+[type='submit']:not([disabled]):after,
 details[open] > ul > li:after,
 details[open] > ol > li:after,
 button:not([disabled]):after,
@@ -35,6 +39,8 @@ button:not([disabled]):after,
 
 details > summary:hover:before,
 [role='group'] > label:hover:after,
+[type='submit']:not([disabled]):hover:after,
+[role='button']:not([disabled]):hover:after,
 details[open] > ul > li:hover:after,
 details[open] > ol > li:hover:after,
 button:not([disabled]):hover:after,
@@ -44,6 +50,8 @@ button:not([disabled]):hover:after,
 }
 
 details > summary:active:before,
+[type='submit']:not([disabled]):active:after,
+[role='button']:not([disabled]):active:after,
 [role='group'] > label:active:after,
 details[open] > ul > li:active:after,
 details[open] > ol > li:active:after,

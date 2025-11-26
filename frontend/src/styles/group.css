@@ -43,8 +43,9 @@
   font-size: var(--button-fs);
 
   border: var(--border);
-  background-color: var(--color-primary-light);
-  color: var(--color-text-primary);
+  border-color: var(--color-border);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
   cursor: pointer;
 
   list-style: none;
@@ -97,6 +98,10 @@
   line-height: var(--button-line-height);
 
   position: relative;
+
+  color: var(--color-fg);
+  background-color: var(--color-bg);
+  border-color: var(--color-bg);
 }
 
 [role='group'] > label > input[type='radio'] {
@@ -113,7 +118,11 @@
 }
 
 [role='group'] > label:has(input[type='radio']:checked) {
-  background-color: pink;
+    color: var(--color-bg);
+    background-color: var(--color-fg);
+    border: none;
+    outline: none;
+    z-index: 3;
 }
 
 /* Sizes */

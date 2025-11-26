@@ -13,13 +13,14 @@ button {
 
   border-radius: var(--border-radius);
   border: var(--border);
+  border-color: var(--color-border);
 
   cursor: pointer;
   -webkit-appearance: none;
   text-decoration: none;
 
-  background-color: var(--color-primary-light);
-  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }
 
 [type='submit'] .sm,

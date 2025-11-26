@@ -19,8 +19,10 @@ details > summary {
   padding: var(--button-padding);
 
   border: var(--border);
+  border-color: var(--color-border);
   border-radius: var(--border-radius);
-  background-color: var(--color-neutral-light);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 
   display: flex;
   flex-direction: row;
@@ -86,8 +88,10 @@ select {
   padding-right: var(--spacing-large);
 
   border: var(--border);
+  border-color: var(--color-border);
   border-radius: var(--border-radius);
-  background-color: var(--color-neutral-light);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 
   white-space: nowrap;
   text-align: left;
@@ -114,7 +118,7 @@ details[open] > summary::after {
 }
 /* Cannot add ::after to select, need a wrapper unfortunately */
 select {
-  color: var(--color-text-primary);
+  color: var(--color-fg);
 }
 
 .select-wrapper {
@@ -133,5 +137,5 @@ select {
   transform: translateY(-50%);
 
   pointer-events: none;
-  color: inherit;
+  color: var(--color-fg);
 }
