@@ -1,7 +1,7 @@
 /**
  * @description Makes an HTTP request and processes the response to return a consistent object.
  * @param {string} url - URL to send the HTTP request to.
- * @param {*} [options] - Fetch options.
+ * @param {*} [options] - Fetch options. Can be used to define things like the HTTP method and request body.
  * @param {number} [timeoutDuration] - Number of milliseconds before giving up on the request.
  * @param {number} [numRetries] - Number of times to retry the request when the request does not succeed.
  * @returns { ok: boolean, status: number, data?: json, error?: string} - An object containing:
@@ -20,7 +20,12 @@ export async function fetchWrapper(
     try {
       let response = await fetch(url, {
         ...options,
-        signal: AbortSignal.timeout(timeoutDuration),
+        credentials: 'include',  // Tells the server who we are for authorization purposes
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers
+        },  // Tells the server we're giving them a json object in the body
+        signal: AbortSignal.timeout(timeoutDuration),  // Interupts the fetch request if it exceeds timeoutDuration number of milliseconds
       });
 
       // Fetch worked, but there was a problem with the server
@@ -32,11 +37,18 @@ export async function fetchWrapper(
         return {
           ok: false,
           status: response.status,
-          error: 'Server Error: Status ' + response.status,
+          error: 'Server Error: ' + response.status + ' ' + response.statusText,
         };
       }
 
-      let data = await response.json();
+      // If returned data is in json format, turn it into json, otherwise turn it into plain text
+      const contentType = response.headers.get('content-type');
+      let data;
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        data = await response.text();
+      }
       // Good response
       return {
         ok: true,
