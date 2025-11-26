@@ -376,11 +376,13 @@
 
             </section>
 
+
             <section>
 
                 <header>
                 <h2 id="buttons">Buttons</h2>
                 </header>
+
 
                 <article class="copy-container">
                     <div class="copy-content">
@@ -492,6 +494,95 @@
                 <article class="copy-container">
                     <div class="copy-content">
                         <button disabled>Disabled Button</button>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+            </section>
+
+            <section>
+                <header>
+                <h2 id="button-group">Button Group</h2>
+                </header>
+
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <div role="group">
+                            <button>Left</button>
+                            <button>Middle</button>
+                            <conductor-dropdown>
+                                <details class="dropdown" name="atoms">
+                                    <summary>Dropdown</summary>
+                                    <ul>
+                                        <li><a href="#cards">Cards</a></li>
+                                        <li><a href="#typography">Typography</a></li>
+                                        <li><a href="#components">Components</a></li>
+                                        <li><a href="#buttons">Buttons</a></li>
+                                    </ul>
+                                </details>
+                            </conductor-dropdown>
+                            <conductor-dropdown>
+                                <details class="dropdown" name="atoms">
+                                    <summary>Dropdown with Article</summary>
+                                    <article class="border">
+                                        <header>
+                                            <h4>Inside a dropdown</h4>
+                                        </header>
+                                        <p>Content inside a dropdown</p>
+                                        <footer>
+                                            <button>Button inside a dropdown</button>
+                                        </footer>
+                                    </article>
+                                </details>
+                            </conductor-dropdown>
+                        </div>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <div role="group">
+                            <button class="icon-only"><i>home</i></button>
+                            <button class="icon-only"><i>close</i></button>
+                            <button class="icon-only"><i>cloud</i></button>
+                        </div>
+                    </div>
+                    <button class="copy-button icon-only"><i>content_copy</i></button>
+                    <span class="copy-status"></span>
+                </article>
+
+                <article class="copy-container">
+                    <div class="copy-content">
+                        <div role="group">
+
+                            <label for="view_list">Glad
+                                <input type="radio" 
+                                    name="view_options" 
+                                    id="view_list" 
+                                    checked
+                                />
+                            </label>
+                            <label for="view_list">Sad
+                                <input type="radio" 
+                                    name="view_options" 
+                                    id="view_list" 
+                                    checked
+                                />
+                            </label>
+
+                            <label for="view_list">Mad
+                                <input type="radio" 
+                                    name="view_options" 
+                                    id="view_list" 
+                                    checked
+                                />
+                            </label>
+                        </div>
                     </div>
                     <button class="copy-button icon-only"><i>content_copy</i></button>
                     <span class="copy-status"></span>
@@ -705,6 +796,7 @@
                         <li><a href="#colors">Colors</a></li>
                         <li><a href="#cards">Cards</a></li>
                         <li><a href="#buttons">Buttons</a></li>
+                        <li><a href="#button-group">Button Group</a></li>
                         <li><a href="#components">Components</a></li>
                         <li><a href="#dropdown">Dropdown</a></li>
                         <li><a href="#form">Forms</a></li>
