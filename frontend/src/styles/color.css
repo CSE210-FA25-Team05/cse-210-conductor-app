@@ -80,27 +80,32 @@
 
 /* Colors */
 .neutral {
-  background-color: var(--color-neutral-light);
-  color: var(--color-neutral-medium);
+  --color-bg: var(--color-neutral-light);
+  --color-fd: var(--color-neutral-medium);
   --color-state: var(--color-neutral-medium);
+  --color-border: var(--color-neutral-medium);
 }
 .primary {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary-dark);
+  --color-bg: var(--color-primary-light);
+  --color-fd: var(--color-primary-dark);
   --color-state: var(--color-primary-dark);
+  --color-border: var(--color-primary-medium);
 }
 .secondary {
-  background-color: var(--color-secondary-light);
-  color: var(--color-secondary-dark);
+  --color-bg: var(--color-secondary-light);
+  --color-fd: var(--color-secondary-dark);
   --color-state: var(--color-secondary-dark);
+  --color-border: var(--color-secondary-medium);
 }
 .error {
-  background-color: var(--color-error-light);
-  color: var(--color-error);
+  --color-bg: var(--color-error-light);
+  --color-fg: var(--color-error);
   --color-state: var(--color-error);
+  --color-border: var(--color-error);
 }
 .success {
-  background-color: var(--color-success-light);
-  color: var(--color-success);
+  --color-bg: var(--color-success-light);
+  --color-fg: var(--color-success);
   --color-state: var(--color-success);
+  --color-border: var(--color-success);
 }

@@ -1,5 +1,4 @@
 /* Buttons */
-
 [type='submit'],
 [role='button'],
 button {
@@ -7,36 +6,42 @@ button {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-small);
-  padding: var(--spacing-small) var(--spacing-medium);
-  font-size: var(--fs-100);
+
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
+  line-height: var(--button-line-height);
+
   border-radius: var(--border-radius);
-  border: 1px solid var(--color-border-dark);
-  background-color: var(--color-primary-light);
+  border: var(--border);
+  border-color: var(--color-border);
+
   cursor: pointer;
   -webkit-appearance: none;
   text-decoration: none;
-  color: var(--color-text-primary);
+
+  background-color: var(--color-bg);
+  color: var(--color-fg);
 }
 
 [type='submit'] .sm,
 [role='button'] .sm,
 button .sm {
-  padding: var(--spacing-extra-small) var(--spacing-small);
-  font-size: var(--fs-50);
+  padding: var(--button-padding-sm);
+  font-size: var(--button-fs-sm);
 }
 
 [type='submit'] .md,
 [role='button'] .md,
 button .md {
-  padding: var(--spacing-small) var(--spacing-medium);
-  font-size: var(--fs-100);
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
 }
 
 [type='submit'] .lg,
 [role='button'] .lg,
 button .lg {
-  padding: var(--spacing-medium) var(--spacing-large);
-  font-size: var(--fs-200);
+  padding: var(--button-padding-lg);
+  font-size: var(--button-fs-lg);
 }
 
 [type='submit'] .material-icons,
@@ -48,8 +53,8 @@ button .material-icons {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--fs-100);
-  line-height: 1;
+  font-size: var(--button-fs);
+  line-height: var(--button-line-height);
 }
 button.icon-only {
   padding: var(--spacing-small);
