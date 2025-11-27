@@ -20,10 +20,12 @@ const { mapAndReply } = require('../../utils/error-map');
  */
 
 const JournalRepo = require('./journal.repo');
+const JournalService = require('./journal.service');
 const journalSchemas = require('./journal.schemas');
 
 module.exports = async function journalRoutes(fastify, options) {
   const journalRepo = new JournalRepo(fastify.db);
+  const journalService = new JournalService(journalRepo);
 
   fastify.get(
     '/journals',
@@ -33,7 +35,7 @@ module.exports = async function journalRoutes(fastify, options) {
     async (request, reply) => {
       try {
         const course_id = request.params.course_id;
-        const res = await journalRepo.getJournalsByCourseId(course_id);
+        const res = await journalService.getJournalsByCourseId(course_id);
         return res;
       } catch (error) {
         console.error(error);
@@ -49,7 +51,7 @@ module.exports = async function journalRoutes(fastify, options) {
     async (request, reply) => {
       try {
         const journal_id = request.params.journal_id;
-        const res = await journalRepo.getJournalById(journal_id);
+        const res = await journalService.getJournalById(journal_id);
         return res;
       } catch (error) {
         console.error(error);
@@ -66,7 +68,7 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const user_id = request.params.user_id;
         const course_id = request.params.course_id;
-        const res = await journalRepo.getJournalsByUserIdAndCourseId(
+        const res = await journalService.getJournalsByUserIdAndCourseId(
           user_id,
           course_id
         );
@@ -86,7 +88,7 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const course_id = parseInt(request.params.course_id, 10);
         const { title, content, student_id } = request.body;
-        const res = await journalRepo.createJournalEntry(
+        const res = await journalService.createJournalEntry(
           student_id,
           course_id,
           title,
@@ -108,7 +110,7 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const journal_id = request.params.journal_id;
         const { title, content } = request.body;
-        const res = await journalRepo.updateJournalEntry(
+        const res = await journalService.updateJournalEntry(
           journal_id,
           title,
           content
@@ -128,7 +130,7 @@ module.exports = async function journalRoutes(fastify, options) {
     async (request, reply) => {
       try {
         const journal_id = request.params.journal_id;
-        const res = await journalRepo.deleteJournalEntry(journal_id);
+        const res = await journalService.deleteJournalEntry(journal_id);
         return res;
       } catch (error) {
         console.error(error);
