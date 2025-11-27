@@ -25,7 +25,7 @@ class LogoutButton extends HTMLElement {
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-      window.location.href = '/login';
+      window.location.replace('/login');
     } catch (error) {
       console.error(error.message);
     }
