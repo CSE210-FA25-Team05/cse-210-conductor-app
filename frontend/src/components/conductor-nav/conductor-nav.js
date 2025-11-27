@@ -1,4 +1,4 @@
-import logoutButton from '../logout-button/logout-button.js'; // IMP
+import '/src/components/logout-button/logout-button.js'; // IMP
 
 class ConductorNav extends HTMLElement {
   constructor() {

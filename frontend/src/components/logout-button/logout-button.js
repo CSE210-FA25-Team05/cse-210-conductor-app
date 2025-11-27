@@ -19,15 +19,13 @@ class LogoutButton extends HTMLElement {
 
   async handleClick() {
     try {
-      const response = await fetch('http://localhost:3001/auth/logout', {
+      const response = await fetch('/auth/logout', {
         method: 'POST',
       });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-      const data = await response.json();
-      console.log(data);
-      window.location.href = 'login.html';
+      window.location.href = '/login';
     } catch (error) {
       console.error(error.message);
     }
