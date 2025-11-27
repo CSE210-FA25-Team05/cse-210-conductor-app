@@ -1,7 +1,8 @@
 :root {
   view-transition-name: root;
 
-  font-family: Inter, Roboto, system-ui, sans-serif;
+  --font-family: Inter, Roboto, system-ui, sans-serif;
+  font-family: var(--font-family);
   line-height: 1.6;
 
   text-underline-offset: 0.1rem;
@@ -32,7 +33,19 @@
   --outline-selected: solid 2px var(--color-primary-dark);
   --border-selected: solid 2px var(--color-primary-light);
 
+  --button-padding: var(--spacing-small) var(--spacing-medium);
+  --button-fs: var(--fs-100);
+  --button-padding-sm: var(--spacing-extra-small) var(--spacing-small);
+  --button-fs-sm: var(--fs-50);
+  --button-padding-lg: var(--spacing-medium) var(--spacing-large);
+  --button-fs-lg: var(--fs-200);
+  --button-line-height: 1;
+
   /* Apply colors globally */
+  --color-bg: var(--color-bg-white);
+  --color-fg: var(--color-text-primary);
+  --color-border: var(--color-border-light);
+  --color-state: var(--color-primary-dark);
   background-color: var(--color-bg-white);
   color: var(--color-text-primary);
 }
