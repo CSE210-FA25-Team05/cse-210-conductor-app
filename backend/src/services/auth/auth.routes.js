@@ -60,7 +60,9 @@ async function routes(fastify) {
         });
 
         reply.clearCookie('oauth_state', { path: '/' });
-        reply.redirect(process.env.FRONTEND_URL || 'http://localhost:3000/');
+        reply.redirect(
+          process.env.FRONTEND_URL + '/dashboard' || 'http://localhost:3000/'
+        );
       } catch (e) {
         req.log.error(e);
         reply.redirect(
