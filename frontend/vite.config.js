@@ -4,7 +4,6 @@ import path from "path";
 export default defineConfig({
 
   build: {
-
     rollupOptions: {
       input: {
         atoms: path.resolve(__dirname, "./src/pages/atoms.html"),

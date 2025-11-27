@@ -5,8 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Conductor</title>
         <link rel="stylesheet" href="../styles/styles.css">
-        <script src="../js/auth.js"></script>
-        <script src="../js/load-theme.js"></script>
+        <!-- This is a hack that needs to be removed when building the Vite files - otherwise components will FOUC before properly rendering. Delete when building for production.  -->
+        <script>const start = Date.now();while (Date.now() - start < 100) {}</script>
+        <script type="module" src="../js/common.js"></script>
     </head>
     <body>
         <main>
@@ -15,6 +16,5 @@
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
-        <script type="module" src="../components/conductor-nav/conductor-nav.js"></script>
     </body>
 </html>
