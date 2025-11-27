@@ -6,11 +6,11 @@ class ConductorNav extends HTMLElement {
 
     this.paths = {
       // Display name -> href
-      Dashboard: 'dashboard.html',
-      Signals: 'signals.html',
-      Interactions: 'interactions.html',
-      Atoms: 'atoms.html',
-      Journals: 'journals.html',
+      Dashboard: 'dashboard',
+      Signals: 'signals',
+      Interactions: 'interactions',
+      Atoms: 'atoms',
+      Journals: 'journals',
     };
   }
 
