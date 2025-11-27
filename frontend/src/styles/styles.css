@@ -14,3 +14,9 @@
 @import url('classes.css');
 @import url('modal.css');
 @import url('form.css');
+
+conductor-nav:not(:defined),
+modal-component:not(:defined),
+theme-toggle:not(:defined) {
+  display: none;
+}
