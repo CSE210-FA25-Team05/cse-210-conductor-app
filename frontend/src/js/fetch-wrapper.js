@@ -91,15 +91,16 @@ export async function fetchWrapper(
  * - data?: Data in the response, if the response was successful.
  * - error?: Message describing the error, if it occured.
  */
-export async function getWrapper(
-  url,
-  timeoutDuration = 1000,
-  numRetries = 0
-) {
+export async function getWrapper(url, timeoutDuration = 1000, numRetries = 0) {
   let options = {
-    method: "GET"
-  }
-  let fetchResponse = await fetchWrapper(url, options, timeoutDuration, numRetries);
+    method: 'GET',
+  };
+  let fetchResponse = await fetchWrapper(
+    url,
+    options,
+    timeoutDuration,
+    numRetries
+  );
   return fetchResponse;
 }
 
@@ -120,9 +121,14 @@ export async function deleteWrapper(
   numRetries = 0
 ) {
   let options = {
-    method: "DELETE"
-  }
-  let fetchResponse = await fetchWrapper(url, options, timeoutDuration, numRetries);
+    method: 'DELETE',
+  };
+  let fetchResponse = await fetchWrapper(
+    url,
+    options,
+    timeoutDuration,
+    numRetries
+  );
   return fetchResponse;
 }
 
@@ -145,10 +151,15 @@ export async function postWrapper(
   numRetries = 0
 ) {
   let options = {
-    method: "POST",
-    body: JSON.stringify(body)
-  }
-  let fetchResponse = await fetchWrapper(url, options, timeoutDuration, numRetries);
+    method: 'POST',
+    body: JSON.stringify(body),
+  };
+  let fetchResponse = await fetchWrapper(
+    url,
+    options,
+    timeoutDuration,
+    numRetries
+  );
   return fetchResponse;
 }
 
@@ -171,9 +182,14 @@ export async function patchWrapper(
   numRetries = 0
 ) {
   let options = {
-    method: "PATCH",
-    body: JSON.stringify(body)
-  }
-  let fetchResponse = await fetchWrapper(url, options, timeoutDuration, numRetries);
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  };
+  let fetchResponse = await fetchWrapper(
+    url,
+    options,
+    timeoutDuration,
+    numRetries
+  );
   return fetchResponse;
 }
