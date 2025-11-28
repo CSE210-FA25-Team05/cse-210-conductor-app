@@ -1,21 +1,14 @@
-import styles from './theme-toggle.css?inline';
-
 class ThemeToggle extends HTMLElement {
+  constructor() {
+    super();
+  }
+
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-
-    const style = document.createElement('style');
-    style.textContent = styles;
-
-    this.shadowRoot.innerHTML = `
-      <p class="label-theme">Dark Mode On:</p>
-      <label class="theme-toggle">
-        <input type="checkbox" id="toggle">
-        <span class="slider"></span>
-      </label>
-    `;
-
-    const toggle = this.shadowRoot.querySelector('#toggle');
+    const label = document.createElement('label');
+    const toggle = document.createElement('input');
+    toggle.setAttribute('type', 'checkbox');
+    label.appendChild(toggle);
+    this.appendChild(label);
 
     // Restore saved theme state
     if (localStorage.getItem('theme') === 'dark') {
@@ -34,8 +27,6 @@ class ThemeToggle extends HTMLElement {
         localStorage.setItem('theme', 'light');
       }
     });
-
-    this.shadowRoot.appendChild(style);
   }
 }
 

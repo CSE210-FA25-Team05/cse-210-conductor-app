@@ -27,7 +27,7 @@ We currently have 7 unit tests for the backend, testing functionality and securi
 On Github actions, there already exists a Docker build for our frontend and backend on commit. Environmental variables are standardized and there's a Postgres check to start only when database is running. It is functional and implemented with Buildx and Prisma. We are currently working on making it fully functional. Can be ran locally via "docker compose up --build". 
 
 ### Deployment
-Our Docker can deploy the app via monorepo. Initialize Docker with Docker compose up --build, then connect to the frontend host http://localhost:5173, backend API: http://localhost:3001, postgres: localhost:5432. We've achieved a running MVP of the app where the user can navigate through tabs and see from student and instructor view, look at activity, and add posts. Stop the server and deployment with Docker compose down.
+Our Docker can deploy the app via monorepo. Initialize Docker with Docker compose up --build, then connect to the frontend host http://localhost:8080, backend API: http://localhost:3001, postgres: localhost:5432. We've achieved a running MVP of the app where the user can navigate through tabs and see from student and instructor view, look at activity, and add posts. Stop the server and deployment with Docker compose down.
 
 ---
 

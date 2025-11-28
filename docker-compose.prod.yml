@@ -1,7 +1,10 @@
+version: "3.9"
+
 services:
   db:
     image: postgres:16
-    restart: always
+    container_name: conductor-prod-db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: conductor
       POSTGRES_PASSWORD: conductor
@@ -10,39 +13,38 @@ services:
       - db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U conductor -d conductor_db"]
-      interval: 3s
+      interval: 5s
       timeout: 3s
       retries: 5
+      start_period: 5s
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod   
+      dockerfile: Dockerfile.prod
+    container_name: conductor-prod-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env 
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://conductor:conductor@db:5432/conductor_db
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - ./backend/.env
-    environment:
-      DATABASE_URL: ${DOCKER_DATABASE_URL}
-      NODE_ENV: ${NODE_ENV:-development}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
     ports:
       - "3001:3001"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "8080:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
+    container_name: conductor-prod-frontend
+    restart: unless-stopped
     depends_on:
       - backend
+    ports:
+      - "8080:80"
 
 volumes:
   db_data:
