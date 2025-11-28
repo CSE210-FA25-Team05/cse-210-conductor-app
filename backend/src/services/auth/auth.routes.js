@@ -85,6 +85,9 @@ async function routes(fastify) {
 
       await authService.logout(sessionId, req.log);
 
+      reply.header('Clear-Site-Data', '"cache", "cookies", "storage"');
+      reply.header('Cache-Control', 'no-store, max-age=0');
+
       reply.clearCookie('sid', { path: '/' });
       reply.send({ ok: true });
     }
