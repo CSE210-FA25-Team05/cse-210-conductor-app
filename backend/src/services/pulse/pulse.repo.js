@@ -22,9 +22,9 @@ class PulseRepo {
     });
   }
 
-  async updateConfig(course, configId, configObj, db = this.db) {
+  async updateConfig(courseId, configId, configObj, db = this.db) {
     return db.pulse_configs.update({
-      where: { id: configId, course_id: course.id },
+      where: { id: configId, course_id: courseId },
       data: { config: configObj },
     });
   }
@@ -45,14 +45,30 @@ class PulseRepo {
         value,
         description,
       },
+      include: {
+        users: {
+          select: { first_name: true, last_name: true },
+        },
+      },
     });
   }
 
-  // Atomically set is_editable = false if currently true
   async lockConfigIfEditable(courseId, db = this.db) {
     return db.pulse_configs.updateMany({
       where: { course_id: courseId, is_editable: true },
       data: { is_editable: false },
+    });
+  }
+
+  async getPulses(courseId, filters = {}, db = this.db) {
+    return db.pulses.findMany({
+      where: { course_id: courseId, ...filters },
+      orderBy: { created_at: 'desc' },
+      include: {
+        users: {
+          select: { first_name: true, last_name: true },
+        },
+      },
     });
   }
 }
