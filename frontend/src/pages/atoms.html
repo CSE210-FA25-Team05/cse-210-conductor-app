@@ -4,10 +4,9 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Conductor</title>
-        <link rel="stylesheet" href="../styles/styles.css">
-        <!-- This is a hack that needs to be removed when building the Vite files - otherwise components will FOUC before properly rendering. Delete when building for production.  -->
-        <script>const start = Date.now();while (Date.now() - start < 100) {}</script>
-        <script type="module" src="../js/common.js"></script>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" src="/src/js/common.js"></script>
+        <script type="module" src="/src/components/bundle.js"></script>
     </head>
     <style>
         

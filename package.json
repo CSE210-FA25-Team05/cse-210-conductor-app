@@ -28,5 +28,9 @@
     "eslint-plugin-prettier": "^5.5.4",
     "husky": "^9.1.7",
     "prettier": "^3.6.2"
+  },
+  "dependencies": {
+    "@fastify/swagger": "^9.6.1",
+    "@fastify/swagger-ui": "^5.2.3"
   }
 }
