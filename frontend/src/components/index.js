@@ -1,6 +1,5 @@
 //Import web components
-import './conductor-nav/conductor-nav.js';
-import './logout-button/logout-button.js';
-import './modal/modal.js';
-import './oauth/google-oauth.js';
-import './theme-toggle/theme-toggle.js';
+import '/src/components/conductor-nav/conductor-nav.js';
+import '/src/components/modal/modal.js';
+import '/src/components/dropdown.js';
+import '/src/components/theme-toggle/theme-toggle.js';
