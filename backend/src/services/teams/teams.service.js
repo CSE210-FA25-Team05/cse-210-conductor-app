@@ -119,6 +119,10 @@ class TeamsService {
 
   /**
    * Add members to a team.
+   *
+   * Enforces that all provided user IDs are actually enrolled in the course
+   * before updating their team_id. If any are not enrolled, we throw
+   * BAD_REQUEST and do not perform any updates.
    */
   async addMembers(user, course, enrollment, teamId, membersRaw) {
     await this.assertCanModify(
@@ -135,7 +139,26 @@ class TeamsService {
         ? [membersRaw]
         : [];
 
-    if (members.length === 0) return;
+    if (members.length === 0) {
+      return;
+    }
+
+    const memberIds = members.map((m) => m.id);
+
+    const enrollments = await this.teamsRepo.getEnrollmentsForUsers(
+      course.id,
+      memberIds
+    );
+    const enrolledIds = new Set(enrollments.map((e) => e.user_id));
+    const missingIds = memberIds.filter((id) => !enrolledIds.has(id));
+
+    if (missingIds.length > 0) {
+      const e = new Error(
+        `Some users are not enrolled in this course: ${missingIds.join(', ')}`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
 
     await this.teamsRepo.addMembersToTeam(course.id, teamId, members);
   }

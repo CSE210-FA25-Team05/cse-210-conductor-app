@@ -1,3 +1,4 @@
+// backend/src/services/teams/teams.routes.js
 'use strict';
 
 const { mapAndReply } = require('../../utils/error-map');
@@ -8,16 +9,18 @@ const teamsSchemas = require('./teams.schemas');
 
 /**
  * Teams Routes Plugin
+ *
+ * Registered in server.js with prefix '/api', so all paths here are relative to '/api'.
  */
 
-module.exports = async function teamsRoutes(fastify, options) {
+module.exports = async function teamsRoutes(fastify) {
   const teamsRepo = new TeamsRepo(fastify.db);
   const teamsPermissions = new TeamsPermissions(teamsRepo);
   const teamsService = new TeamsService(teamsRepo, teamsPermissions);
 
   // GET /api/courses/:course_id/teams
   fastify.get(
-    '/api/courses/:course_id/teams',
+    '/courses/:course_id/teams',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.ListTeamsSchema,
@@ -38,7 +41,7 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // GET /api/courses/:course_id/teams/:team_id
   fastify.get(
-    '/api/courses/:course_id/teams/:team_id',
+    '/courses/:course_id/teams/:team_id',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.GetTeamSchema,
@@ -61,7 +64,7 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // GET /api/courses/:course_id/teams/:team_id/members
   fastify.get(
-    '/api/courses/:course_id/teams/:team_id/members',
+    '/courses/:course_id/teams/:team_id/members',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.GetTeamMembersSchema,
@@ -84,7 +87,7 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // POST /api/courses/:course_id/teams
   fastify.post(
-    '/api/courses/:course_id/teams',
+    '/courses/:course_id/teams',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.CreateTeamSchema,
@@ -106,7 +109,7 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // POST /api/courses/:course_id/teams/:team_id/add_members
   fastify.post(
-    '/api/courses/:course_id/teams/:team_id/add_members',
+    '/courses/:course_id/teams/:team_id/add_members',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.AddMembersSchema,
@@ -130,7 +133,7 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // PATCH /api/courses/:course_id/teams/:team_id
   fastify.patch(
-    '/api/courses/:course_id/teams/:team_id',
+    '/courses/:course_id/teams/:team_id',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.UpdateTeamSchema,
@@ -153,8 +156,9 @@ module.exports = async function teamsRoutes(fastify, options) {
   );
 
   // PATCH /api/courses/:course_id/teams/:team_id/update_members
+  // Returns updated members list
   fastify.patch(
-    '/api/courses/:course_id/teams/:team_id/update_members',
+    '/courses/:course_id/teams/:team_id/update_members',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.UpdateMembersSchema,
@@ -162,14 +166,14 @@ module.exports = async function teamsRoutes(fastify, options) {
     async (req, reply) => {
       try {
         const teamId = parseInt(req.params.team_id, 10);
-        await teamsService.updateMembers(
+        const members = await teamsService.updateMembers(
           req.user,
           req.course,
           req.enrollment,
           teamId,
           req.body
         );
-        return reply.code(204).send();
+        return reply.code(200).send({ members });
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -178,7 +182,7 @@ module.exports = async function teamsRoutes(fastify, options) {
 
   // DELETE /api/courses/:course_id/teams/:team_id/remove_members
   fastify.delete(
-    '/api/courses/:course_id/teams/:team_id/remove_members',
+    '/courses/:course_id/teams/:team_id/remove_members',
     {
       preHandler: fastify.loadCourse,
       schema: teamsSchemas.RemoveMembersSchema,

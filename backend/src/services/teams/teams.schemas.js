@@ -1,4 +1,4 @@
-// backend/src/teams/teams.schemas.js
+// backend/src/services/teams/teams.schemas.js
 import {
   createArrayReponseSchema,
   ErrorSchema,
@@ -7,7 +7,7 @@ import {
 export const TeamMemberRef = {
   type: 'object',
   properties: {
-    id: { type: 'integer' },        // user id
+    id: { type: 'integer' }, // user id
     role: { type: 'string', nullable: true },
   },
   required: ['id'],
@@ -224,7 +224,16 @@ export const UpdateMembersSchema = {
   },
   body: UpdateMembersBody,
   response: {
-    204: { type: 'null' },
+    200: {
+      type: 'object',
+      properties: {
+        members: createArrayReponseSchema({
+          type: 'object',
+          additionalProperties: true, // same shape as GetTeamMembers
+        }),
+      },
+      required: ['members'],
+    },
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,

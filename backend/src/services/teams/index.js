@@ -1,4 +1,4 @@
-// backend/src/teams/index.js (or wherever lectures/index.js lives)
+// backend/src/services/teams/index.js
 'use strict';
 
 /**

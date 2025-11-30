@@ -18,7 +18,10 @@ class TeamsRepo {
    */
   async getTeamsInCourse(courseId) {
     const teams = await this.db.teams.findMany({
-      where: { course_id: courseId },
+      where: {
+        course_id: courseId,
+        deleted_at: null,
+      },
       orderBy: { id: 'asc' },
     });
     return teams;
@@ -35,6 +38,7 @@ class TeamsRepo {
       where: {
         id: teamId,
         course_id: courseId,
+        deleted_at: null,
       },
     });
     return team;
@@ -51,6 +55,7 @@ class TeamsRepo {
       where: {
         course_id: courseId,
         team_id: teamId,
+        deleted_at: null,
       },
       include: {
         users: true,
@@ -60,16 +65,54 @@ class TeamsRepo {
   }
 
   /**
+   * Fetch enrollments for a list of user IDs in a given course.
+   *
+   * Used to validate that all requested members are actually enrolled
+   * before adding them to a team.
+   *
+   * @param {number} courseId
+   * @param {number[]} userIds
+   * @returns {Promise<Array>}
+   */
+  async getEnrollmentsForUsers(courseId, userIds) {
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      return [];
+    }
+
+    return this.db.enrollments.findMany({
+      where: {
+        course_id: courseId,
+        user_id: { in: userIds },
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
    * Create a new team in a course.
    * @param {number} courseId
    * @param {{ name: string, description?: string|null }} data
    * @returns {Promise<Object>}
    */
   async createTeam(courseId, data) {
-    const { name, description = null } = data || {};
+    let { name, description = null } = data || {};
 
     if (!name) {
       const e = new Error('name is required');
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    name = name.trim();
+    if (description != null) {
+      description = description.trim();
+      if (description.length === 0) {
+        description = null;
+      }
+    }
+
+    if (name.length === 0) {
+      const e = new Error('name must not be empty');
       e.code = 'BAD_REQUEST';
       throw e;
     }
@@ -100,9 +143,25 @@ class TeamsRepo {
       throw e;
     }
 
+    const updateData = { ...data };
+
+    if (typeof updateData.name === 'string') {
+      updateData.name = updateData.name.trim();
+      if (updateData.name.length === 0) {
+        const e = new Error('name must not be empty');
+        e.code = 'BAD_REQUEST';
+        throw e;
+      }
+    }
+
+    if (typeof updateData.description === 'string') {
+      const trimmed = updateData.description.trim();
+      updateData.description = trimmed.length > 0 ? trimmed : null;
+    }
+
     const updated = await this.db.teams.update({
       where: { id: teamId },
-      data,
+      data: updateData,
     });
 
     return updated;
@@ -128,6 +187,7 @@ class TeamsRepo {
           where: {
             course_id: courseId,
             user_id: m.id,
+            deleted_at: null,
           },
           data: {
             team_id: teamId,
@@ -158,6 +218,7 @@ class TeamsRepo {
             course_id: courseId,
             team_id: teamId,
             user_id: m.id,
+            deleted_at: null,
           },
           data: {
             role: m.role,
@@ -185,6 +246,7 @@ class TeamsRepo {
         course_id: courseId,
         team_id: teamId,
         user_id: { in: memberIds },
+        deleted_at: null,
       },
       data: {
         team_id: null,
