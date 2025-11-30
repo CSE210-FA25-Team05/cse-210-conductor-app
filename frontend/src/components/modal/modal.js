@@ -1,5 +1,3 @@
-import styles from '../../styles/styles.css?inline';
-
 class Modal extends HTMLElement {
   constructor() {
     super();
@@ -47,11 +45,12 @@ class Modal extends HTMLElement {
 
     dialog.appendChild(article);
 
-    const style = document.createElement('style');
-    style.textContent = styles;
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', '/src/styles/styles.css');
 
     // Append to shadow root
-    this.shadowRoot.appendChild(style);
+    this.shadowRoot.appendChild(link);
     this.shadowRoot.appendChild(dialog);
 
     // Add event listeners
