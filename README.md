@@ -56,7 +56,7 @@ docker compose up --build
 
 After it finishes:
 
-* **Frontend:** [http://localhost:5173](http://localhost:5173)
+* **Frontend:** [http://localhost:8080](http://localhost:8080)
 * **Backend API:** [http://localhost:3001](http://localhost:3001)
 * **Postgres:** localhost:5432 (internal service name: `db`)
 
@@ -81,8 +81,6 @@ docker compose down -v
 
 ### Frontend Development
 
-- **Hot reload enabled**: Changes to frontend code are reflected immediately at [http://localhost:5173](http://localhost:5173)
-- **SvelteKit**: The frontend uses SvelteKit for routing and components
 - **Frontend code**: Located in `frontend/src/`
 
 ### Backend Development

@@ -1,45 +1,31 @@
-import styles from './logout-button.css?inline';
-
 class LogoutButton extends HTMLElement {
   constructor() {
     super();
   }
 
   connectedCallback() {
-    const style = document.createElement('style');
-    style.textContent = styles;
-    this.attachShadow({ mode: 'open' });
-
-    this.shadowRoot.innerHTML = `
-        <button> 
+    this.innerHTML = `
+        <button style="width: 100%"> 
             Log Out
         </button>
         `;
 
-    this.shadowRoot
-      .querySelector('button')
-      .addEventListener('click', this.handleClick);
-
-    this.shadowRoot.appendChild(style);
+    this.querySelector('button').addEventListener('click', this.handleClick);
   }
 
   disconnectedCallback() {
-    this.shadowRoot
-      .querySelector('button')
-      .removeEventListener('click', this.handleClick);
+    this.querySelector('button').removeEventListener('click', this.handleClick);
   }
 
   async handleClick() {
     try {
-      const response = await fetch('http://localhost:3001/auth/logout', {
+      const response = await fetch('/auth/logout', {
         method: 'POST',
       });
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
       }
-      const data = await response.json();
-      console.log(data);
-      window.location.href = 'login.html';
+      window.location.replace('/login');
     } catch (error) {
       console.error(error.message);
     }

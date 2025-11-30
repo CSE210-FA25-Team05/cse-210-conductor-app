@@ -1,0 +1,111 @@
+:root[data-theme='light'],
+:root {
+  /* Light Mode Colors */
+  /* Primary Colors */
+  --color-primary-light: #bbc6cb;
+  --color-primary-medium: #455a64; /* buttons, links, accents */
+  --color-primary-dark: #263238; /* text, borders */
+
+  /* Secondary Colors */
+  --color-secondary-light: #cfd0d8;
+  --color-secondary-medium: #454b64;
+  --color-secondary-dark: #2d3142;
+
+  /* Error Color */
+  --color-error: #d32f2f;
+  --color-error-light: #ffcdd2;
+  --color-error-dark: #b71c1c;
+
+  /* Success Color */
+  --color-success: #388e3c;
+  --color-success-light: #c8e6c9;
+  --color-success-dark: #1b5e20;
+
+  /* Background Colors */
+  --color-bg-white: #ffffff; /* main background */
+  --color-bg-light: #eceff1; /* cards */
+  --color-bg-medium: #cfd8dc; /* hover states */
+
+  /* Text Colors */
+  --color-text-primary: #212121;
+  --color-text-secondary: #757575;
+  --color-text-disabled: #bdbdbd;
+
+  /* Border Color */
+  --color-border-light: #bac0c5;
+  --color-border-medium: #787e83;
+  --color-border-dark: #222426;
+
+  /* Neutral Colors */
+  --color-neutral-light: var(--color-bg-light);
+  --color-neutral-medium: var(--color-text-secondary);
+}
+
+:root[data-theme='dark'] {
+  /* Dark Mode Colors */
+  /* Primary Colors */
+  --color-primary-light: #263238;
+  --color-primary-medium: #98aeb8;
+  --color-primary-dark: #cfd8dc;
+
+  --color-secondary-light: #383d55;
+  --color-secondary-medium: #666f8d;
+  --color-secondary-dark: #cfd0d8;
+
+  --color-error: #ed9795;
+  --color-error-light: #cf3737;
+  --color-error-dark: #ffe1e4;
+
+  --color-success: #8ed792;
+  --color-success-light: #2e7d32;
+  --color-success-dark: #dcf6dd;
+
+  --color-bg-white: #2b353b;
+  --color-bg-light: #37474f;
+  --color-bg-medium: #455a64;
+
+  --color-text-primary: #e2e2e2;
+  --color-text-secondary: #b0bec5;
+  --color-text-disabled: #78909c;
+
+  --color-neutral-100: #37474f;
+  --color-neutral-400: #78909c;
+  --color-neutral-600: #b0bec5;
+
+  --color-border: #546e7a;
+  --color-border-dark: #bac0c5;
+  --color-border-medium: #787e83;
+  --color-border-light: #222426;
+}
+
+/* Colors */
+.neutral {
+  --color-bg: var(--color-neutral-light);
+  --color-fd: var(--color-neutral-medium);
+  --color-state: var(--color-neutral-medium);
+  --color-border: var(--color-neutral-medium);
+}
+.primary {
+  --color-bg: var(--color-primary-light);
+  --color-fd: var(--color-primary-dark);
+  --color-state: var(--color-primary-dark);
+  --color-border: var(--color-primary-medium);
+}
+.secondary {
+  --color-bg: var(--color-secondary-light);
+  --color-fd: var(--color-secondary-dark);
+  --color-state: var(--color-secondary-dark);
+  --color-border: var(--color-secondary-medium);
+}
+.error {
+  --color-bg: var(--color-error-light);
+  --color-fg: var(--color-error);
+  --color-state: var(--color-error);
+  --color-border: var(--color-error);
+}
+.success {
+  --color-bg: var(--color-success-light);
+  --color-fg: var(--color-success);
+  --color-state: var(--color-success);
+  --color-border: var(--color-success);
+}
