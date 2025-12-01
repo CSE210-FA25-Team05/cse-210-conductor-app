@@ -1,4 +1,5 @@
 import '/src/components/logout-button/logout-button.js'; // IMP
+import '/src/components/modal/modal.js'; // IMP
 
 class ConductorNav extends HTMLElement {
   constructor() {
@@ -15,6 +16,8 @@ class ConductorNav extends HTMLElement {
     };
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
     this.boundedHandleResize = this.handleResize.bind(this);
+    this.boundedHandleCloseModal = this.handleCloseModal.bind(this);
+    this.boundedHandleOpenModal = this.handleOpenModal.bind(this);
     this.parentAside = this.parentElement;
 
     this.boundedHandleResize();
@@ -50,14 +53,25 @@ class ConductorNav extends HTMLElement {
 
     // modal trigger button
     const modalButton = document.createElement('button');
-    const newIcon = document.createElement('i');
     modalButton.innerHTML = 'New<i>add</i>';
-    modalButton.addEventListener('click', () => {
-      const modal = document.getElementById('navModal');
-      if (modal) {
-        modal.open();
-      }
-    });
+    // modal
+    const modal = document.createElement('modal-component');
+    modal.setAttribute('button-align', 'end');
+    const modalHeader = document.createElement('h2');
+    modalHeader.setAttribute('slot', 'header');
+    modalHeader.innerText = "New Entry";
+    const modalContent = document.createElement('p');
+    modalContent.setAttribute('slot', 'content');
+    modalContent.innerText = 'Create a new entry for a Signal, Interaction, Meeting, etc here!'
+    const modalFooter = document.createElement('button');
+    modalFooter.setAttribute('slot', 'buttons');
+    modalFooter.innerText = 'Submit';
+    modal.appendChild(modalHeader);
+    modal.appendChild(modalContent);
+    modal.appendChild(modalFooter);
+    modalFooter.addEventListener('click', this.boundedHandleCloseModal);
+    modalButton.addEventListener('click', this.boundedHandleOpenModal);
+    this.modal = modal;
 
     header.appendChild(menuToggle);
     header.appendChild(modalButton);
@@ -67,6 +81,7 @@ class ConductorNav extends HTMLElement {
     this.appendChild(header);
     this.appendChild(nav);
     this.appendChild(footer);
+    this.appendChild(modal);
   }
 
   handleMenuToggleClick() {
@@ -79,6 +94,14 @@ class ConductorNav extends HTMLElement {
     } else {
       document.body.classList.remove('menu-closed');
     }
+  }
+
+  handleOpenModal() {
+    this.modal.open()
+  }
+
+  handleCloseModal() {
+    this.modal.close()
   }
 }
 
