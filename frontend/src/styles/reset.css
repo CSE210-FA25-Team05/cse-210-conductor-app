@@ -57,6 +57,7 @@
 @media (max-width: 576px) {
   :root {
     font-size: 16px;
+    --main-content-padding: var(--spacing-small);
   }
 }
 @media (min-width: 576px) and (max-width: 768px) {
@@ -220,7 +221,3 @@ table {
    v2.0 | 20110126
    License: none (public domain)
 */
-
-main {
-  padding: var(--main-content-padding);
-}
