@@ -151,19 +151,7 @@ async function routes(fastify) {
     },
     async (req, reply) => {
       try {
-        fastify.log.info(
-          { 
-            courseId: req.params.course_id, 
-            lectureId: req.params.lecture_id,
-            params: req.params 
-          }, 
-          'Activate attendance called'
-        );
         const lectureId = parseInt(req.params.lecture_id, 10);
-        if (isNaN(lectureId)) {
-          fastify.log.error({ lectureId: req.params.lecture_id }, 'Invalid lecture_id');
-          return reply.code(400).send({ error: 'Invalid lecture_id parameter' });
-        }
         const lecture = await lecturesService.activateAttendance(
           req.user,
           req.course,
@@ -172,7 +160,6 @@ async function routes(fastify) {
         );
         return reply.send(lecture);
       } catch (error) {
-        fastify.log.error({ error, params: req.params, stack: error.stack }, 'Activate attendance error');
         return mapAndReply(error, reply);
       }
     }
