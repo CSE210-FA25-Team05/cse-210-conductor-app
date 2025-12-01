@@ -150,6 +150,24 @@ class AttendancesRepo {
     });
     return !!lecture;
   }
+
+  /**
+   * Check if a user is enrolled in a course.
+   *
+   * @param {number} userId - ID of the user
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<boolean>} True if enrolled, false otherwise
+   */
+  async isUserEnrolledInCourse(userId, courseId) {
+    const enrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: userId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+    return !!enrollment;
+  }
 }
 
 module.exports = AttendancesRepo;

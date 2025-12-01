@@ -55,16 +55,25 @@ class AttendancesService {
       throw error;
     }
 
+    // Ensure the target user is enrolled in this course
+    const targetEnrolled = await this.attendancesRepo.isUserEnrolledInCourse(
+      attendanceData.user_id,
+      course.id
+    );
+    if (!targetEnrolled) {
+      const error = new Error(
+        'Target user is not enrolled in this course for attendance'
+      );
+      error.code = 'BAD_REQUEST';
+      throw error;
+    }
+
     // For students: verify code is correct and still valid (5 minutes expiration)
     // Professors/TAs can create attendance even if code is expired (manual attendance)
     const isStudent = enrollment === null || enrollment.role === 'student';
     if (isStudent && user.id === attendanceData.user_id) {
       // Check if code exists and hasn't expired
-      if (
-        !lecture.code ||
-        !lecture.code_expires_at ||
-        lecture.code_expires_at === ''
-      ) {
+      if (!lecture.code || !lecture.code_expires_at) {
         const error = new Error(
           'No valid attendance code available for this lecture'
         );

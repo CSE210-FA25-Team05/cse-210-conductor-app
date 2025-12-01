@@ -89,6 +89,10 @@ class LecturesRepo {
           course_id: courseId,
           code: uniqueCode,
           deleted_at: null,
+          // Only check codes that are currently active (not expired)
+          code_expires_at: {
+            gte: new Date(),
+          },
         },
       });
     } while (exists);

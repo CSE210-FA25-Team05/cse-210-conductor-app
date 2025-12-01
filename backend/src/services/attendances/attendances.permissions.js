@@ -23,11 +23,14 @@ class AttendancesPermissions {
    * @returns {Promise<boolean>} True if user can create attendance, false otherwise
    */
   async canCreateAttendance(user, course, enrollment, userId) {
+    // Must be enrolled in the course to create attendance
+    if (enrollment === null) {
+      return false;
+    }
+
     // Professors and TAs can create any attendance
-    if (enrollment !== null) {
-      if (enrollment.role === 'professor' || enrollment.role === 'ta') {
-        return true;
-      }
+    if (enrollment.role === 'professor' || enrollment.role === 'ta') {
+      return true;
     }
 
     // Students can only create their own attendance
@@ -46,11 +49,14 @@ class AttendancesPermissions {
    * @returns {Promise<boolean>} True if user can modify attendance, false otherwise
    */
   async canModifyAttendance(user, course, enrollment, attendance) {
+    // Must be enrolled in the course to modify attendance
+    if (enrollment === null) {
+      return false;
+    }
+
     // Professors and TAs can modify any attendance
-    if (enrollment !== null) {
-      if (enrollment.role === 'professor' || enrollment.role === 'ta') {
-        return true;
-      }
+    if (enrollment.role === 'professor' || enrollment.role === 'ta') {
+      return true;
     }
 
     // Students can only modify their own attendance
