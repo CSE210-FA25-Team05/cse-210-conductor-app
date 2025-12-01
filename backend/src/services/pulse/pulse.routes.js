@@ -53,12 +53,7 @@ async function routes(fastify) {
     async (req, reply) => {
       try {
         const course = req.course;
-
-        const configObj =
-          req.body && req.body.config ? req.body.config : req.body;
-        if (!configObj) {
-          return reply.bad_request('Missing config in request body');
-        }
+        const configObj = req.body;
 
         const saved = await pulseService.upsertConfig(course, configObj);
         return reply.code(200).send(saved);
@@ -80,17 +75,11 @@ async function routes(fastify) {
         const course = req.course;
         const student = req.user;
 
-        const option =
-          req.body &&
-          (req.body.option || req.body.value || req.body.option_key);
-        if (!option) return reply.bad_request('Missing option in request body');
+        const option = req.body.option.trim();
+        const description = req.body.description || null;
 
-        const description = req.body?.description || null;
-
-        const created = await pulseService.submitPulse({
-          course,
-          student,
-          optionKey: option,
+        const created = await pulseService.submitPulse(course, student, {
+          selectedOption: option,
           description,
         });
 

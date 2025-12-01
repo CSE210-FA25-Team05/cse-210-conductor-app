@@ -10,9 +10,47 @@ class PulseService {
     return this.pulseRepo.getConfig(course.id);
   }
 
+  sanitizeConfig(config) {
+    // Add any sanitization logic here if needed
+    config.options.forEach((option) => {
+      option.value = option.value.trim();
+    });
+
+    return config;
+  }
+
+  isConfigValid(configObj) {
+    const options = configObj.options;
+
+    // Ensure configObj has at least 2 options
+    if (!Array.isArray(options) || options.length < 2) {
+      return false;
+    }
+
+    // Ensure values are non-empty strings and unique
+    const seenValues = new Set();
+    for (const option of options) {
+      if (seenValues.has(option.value)) {
+        return false;
+      }
+      seenValues.add(option.value);
+    }
+
+    return true;
+  }
+
   // Update the pulse config. If the existing config is not editable, throws.
   // `configObj` is expected to be JSON-serializable (e.g., { options: [...] } or an array)
   async upsertConfig(course, configObj) {
+    configObj = this.sanitizeConfig(configObj);
+    if (!this.isConfigValid(configObj)) {
+      const e = new Error(
+        'Invalid pulse configuration: must have at least 2 unique options'
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
     const existing = await this.pulseRepo.getConfig(course.id);
     if (!existing) {
       return this.pulseRepo.createConfig(course.id, configObj, true);
@@ -29,11 +67,9 @@ class PulseService {
 
   // Submit a pulse atomically: validate option against config JSON, create pulse,
   // and flip is_editable -> false if it was true (performed in same transaction).
-  async submitPulse(course, user, config, { optionKey, description = null }) {
+  async submitPulse(course, user, { selectedOption, description = null }) {
     const created = await this.pulseRepo.db.$transaction(async (tx) => {
-      const cfg = config.is_editable
-        ? await this.pulseRepo.getConfig(course.id, tx)
-        : config;
+      const cfg = await this.pulseRepo.getConfig(course.id, tx);
       if (!cfg) {
         const e = new Error('Pulse configuration not found for course');
         e.code = 'NOT_FOUND';
@@ -41,24 +77,9 @@ class PulseService {
       }
 
       // Resolve options array in multiple possible shapes
-      let opts = [];
-      if (Array.isArray(cfg.config)) opts = cfg.config;
-      else if (cfg.config && Array.isArray(cfg.config.options))
-        opts = cfg.config.options;
-      else if (Array.isArray(cfg.options)) opts = cfg.options;
+      let opts = cfg.config.options;
 
-      if (!Array.isArray(opts) || opts.length === 0) {
-        const e = new Error('Pulse configuration options are empty or invalid');
-        e.code = 'BAD_REQUEST';
-        throw e;
-      }
-
-      const option = opts.find((o) => {
-        if (!o) return false;
-        if (o.key && String(o.key) === String(optionKey)) return true;
-        if (o.idx != null && String(o.idx) === String(optionKey)) return true;
-        return false;
-      });
+      const option = opts.find((o) => o.value === selectedOption);
 
       if (!option) {
         const e = new Error('Invalid pulse option');
@@ -66,9 +87,7 @@ class PulseService {
         throw e;
       }
 
-      const optionKeyResolved = option.key
-        ? String(option.key)
-        : String(option.idx);
+      const optionKeyResolved = option.value;
 
       const pulseData = {
         courseId: course.id,
