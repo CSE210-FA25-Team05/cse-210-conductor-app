@@ -10,18 +10,38 @@ import { postWrapper } from '/src/js/fetch-wrapper.js';
  * @property { string } term - School term the course takes course in.
  * @property { string } section - Course section.
  * @property { string } join_code - Code for enrolling in the course.
- * @property { string } start_date - Date the course begins on.
- * @property { string } end_date - Date the course ends on.
+ * @property { string } start_date - Date the course begins on, in YYYY-MM-DD format.
+ * @property { string } end_date - Date the course ends on, in YYYY-MM-DD format.
  */
 
 const BACKEND_URL = 'http://localhost:3001';
 
 /**
  * @description Get a list of all the courses.
- * @returns { Course[] } List of all the courses.
+ * @returns { Course[] } List of all the courses and their information.
  */
 export async function getCourses() {
   let response = await getWrapper(BACKEND_URL + '/api/courses');
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
+ * @description Create a new course.
+ * @param { object } newCourse - An object containing the new course's information.
+ * @param { string } newCourse.course_code - Course code.
+ * @param { string } newCourse.course_name - Course name.
+ * @param { string } newCourse.term - School term the course takes course in.
+ * @param { string } newCourse.section - Course section.
+ * @param { string } newCourse.join_code - Code for enrolling in the course.
+ * @param { string } newCourse.start_date - Date the course begins on, in YYYY-MM-DD 
+ * @param { string } newCourse.end_date - Date the course ends on, in YYYY-MM-DD format.
+ * @returns { Course } Created course and its information.
+ */
+export async function createCourse(newCourse) {
+  let response = await postWrapper(BACKEND_URL + '/api/courses', newCourse);
   if (!response.ok) {
     throw new Error(response.error);
   }
