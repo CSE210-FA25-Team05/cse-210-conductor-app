@@ -15,6 +15,7 @@ class PulseService {
     // Add any sanitization logic here if needed
     config.options.forEach((option) => {
       option.value = option.value.trim();
+      option.color = option.color.trim();
     });
 
     return config;
@@ -31,7 +32,7 @@ class PulseService {
     // Ensure values are unique
     const seenValues = new Set();
     for (const option of options) {
-      if (seenValues.has(option.value)) {
+      if (option.value.length === 0 || seenValues.has(option.value)) {
         return false;
       }
       seenValues.add(option.value);
@@ -40,7 +41,7 @@ class PulseService {
     // Ensure colors are unique
     const seenColors = new Set();
     for (const option of options) {
-      if (seenColors.has(option.color)) {
+      if (option.color.length === 0 || seenColors.has(option.color)) {
         return false;
       }
       seenColors.add(option.color);
@@ -55,7 +56,7 @@ class PulseService {
     configObj = this.sanitizeConfig(configObj);
     if (!this.isConfigValid(configObj)) {
       const e = new Error(
-        'Invalid pulse configuration: must have at least 2 unique options'
+        'Invalid pulse configuration: must have at least 2 options with non-empty, unique values and colors'
       );
       e.code = 'BAD_REQUEST';
       throw e;
@@ -138,7 +139,11 @@ class PulseService {
     // WHITELIST bucket to prevent SQL injection (can't parameterize function names)
     const validBuckets = ['hour', 'day', 'week', 'month'];
     if (!validBuckets.includes(bucket)) {
-      throw new Error('Invalid bucket parameter');
+      const e = new Error(
+        `Invalid bucket parameter. Must be one of: ${validBuckets.join(', ')}`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
     }
 
     // Build WHERE conditions safely with Prisma.sql
@@ -190,20 +195,27 @@ class PulseService {
 
   buildFiltersFromQuery(query, loggedInUser) {
     const filters = {};
+
+    // Pulse Ownership Filtering
     let useDefaultUserFilter = true;
     if (query.entire_class === true || query.entire_class === 'true') {
-      // No team_id or user_id filter
       useDefaultUserFilter = false;
     } else if (query.team_id != null) {
       const teamId = parseInt(query.team_id, 10);
       if (!isNaN(teamId)) {
         filters.team_id = teamId;
+        useDefaultUserFilter = false;
       }
     } else if (query.user_id != null) {
       const userId = parseInt(query.user_id, 10);
       if (!isNaN(userId)) {
         filters.user_id = userId;
+        useDefaultUserFilter = false;
       }
+    }
+    // Filter by logged in user's id by default if no ownership filters provided
+    if (useDefaultUserFilter) {
+      filters.user_id = loggedInUser.id;
     }
 
     if (query.values != null && query.values.length > 0) {
@@ -228,14 +240,6 @@ class PulseService {
       filters.bucket = query.bucket;
     }
 
-    // Filter by logged in user's id by default if no filters provided
-    if (
-      filters.team_id == null &&
-      filters.user_id == null &&
-      useDefaultUserFilter
-    ) {
-      filters.user_id = loggedInUser.id;
-    }
     return filters;
   }
 

@@ -75,6 +75,7 @@ const UpdatePulseConfigSchema = {
     401: ErrorSchema,
     403: ErrorSchema,
     404: ErrorSchema,
+    422: ErrorSchema,
   },
 };
 
@@ -94,11 +95,11 @@ const PulseSchema = {
     course_id: { type: 'integer' },
     user_id: { type: 'integer' },
     team_id: { type: 'integer', nullable: true },
-    user_first_name: { type: 'string' },
-    user_last_name: { type: 'string' },
+    user_first_name: { type: 'string', nullable: true },
+    user_last_name: { type: 'string', nullable: true },
     pulse_config_id: { type: 'integer' },
     value: { type: 'string' },
-    description: { type: 'string' },
+    description: { type: 'string', nullable: true },
     created_at: DateTimeType,
   },
   required: [

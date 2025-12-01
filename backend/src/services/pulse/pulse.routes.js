@@ -11,7 +11,6 @@
 
 const { mapAndReply } = require('../../utils/error-map');
 const PulseRepo = require('./pulse.repo');
-const CourseRepo = require('../course/course.repo');
 const PulseService = require('./pulse.service');
 const pulseSchemas = require('./pulse.schemas');
 const PulsePermissions = require('./pulse.permissions');
@@ -19,8 +18,7 @@ const PulsePermissions = require('./pulse.permissions');
 async function routes(fastify) {
   const pulseRepo = new PulseRepo(fastify.db);
   const pulsePermissions = new PulsePermissions(pulseRepo);
-  const courseRepo = new CourseRepo(fastify.db);
-  const pulseService = new PulseService(pulseRepo, courseRepo);
+  const pulseService = new PulseService(pulseRepo);
 
   // Get pulse config for a course
   fastify.get(
@@ -34,9 +32,9 @@ async function routes(fastify) {
         const course = req.course;
         const cfg = await pulseService.getConfig(course);
         if (!cfg) {
-          return reply.not_found('Pulse configuration not found for course');
+          return reply.notFound('Pulse configuration not found for course');
         }
-        return reply.send(cfg);
+        return reply.code(200).send(cfg);
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -77,7 +75,7 @@ async function routes(fastify) {
         const enrollment = req.enrollment;
 
         const option = req.body.option.trim();
-        const description = req.body.description || null;
+        const description = req.body.description?.trim() || null;
 
         const created = await pulseService.submitPulse(
           course,
@@ -132,11 +130,15 @@ async function routes(fastify) {
       schema: pulseSchemas.GetPulseStatsSchema,
     },
     async (req, reply) => {
-      const stats = await pulseService.getAggregatedStats(
-        req.course,
-        pulseService.buildFiltersFromQuery(req.query, req.user, false)
-      );
-      return reply.send({ stats });
+      try {
+        const stats = await pulseService.getAggregatedStats(
+          req.course,
+          pulseService.buildFiltersFromQuery(req.query, req.user)
+        );
+        return reply.send({ stats });
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
     }
   );
 }

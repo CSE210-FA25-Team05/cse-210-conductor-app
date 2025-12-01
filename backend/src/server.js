@@ -62,7 +62,7 @@ fastify.register(require('./services/course/course.routes'), {
   prefix: '/api',
 });
 
-fastify.register(require('./services/pulse/pulse.routes'), {
+fastify.register(require('./services/pulse'), {
   prefix: '/api',
 });
 
