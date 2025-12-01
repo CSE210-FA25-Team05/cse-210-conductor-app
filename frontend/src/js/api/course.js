@@ -15,3 +15,15 @@ import { postWrapper } from '/src/js/fetch-wrapper.js';
  */
 
 const BACKEND_URL = 'http://localhost:3001';
+
+/**
+ * @description Get a list of all the courses.
+ * @returns { Course[] } List of all the courses.
+ */
+export async function getCourses() {
+  let response = await getWrapper(BACKEND_URL + '/api/courses');
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
