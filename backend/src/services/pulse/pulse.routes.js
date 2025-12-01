@@ -4,9 +4,9 @@
  * Pulses Routes
  *
  * Endpoints implemented:
- * - GET  /api/courses/:course_id/pulses/config     - Get pulse config for a course
- * - PATCH /api/courses/:course_id/pulses/config    - Update pulse config (professor/TA only)
- * - POST /api/courses/:course_id/pulses            - Submit a pulse (authenticated student)
+ * - GET  /courses/:course_id/pulses/config     - Get pulse config for a course
+ * - PATCH /courses/:course_id/pulses/config    - Update pulse config (professor/TA only)
+ * - POST /courses/:course_id/pulses            - Submit a pulse (authenticated student)
  */
 
 const { mapAndReply } = require('../../utils/error-map');
@@ -24,7 +24,7 @@ async function routes(fastify) {
 
   // Get pulse config for a course
   fastify.get(
-    '/api/courses/:course_id/pulses/config',
+    '/courses/:course_id/pulses/config',
     {
       preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
       schema: pulseSchemas.GetPulseConfigSchema,
@@ -45,7 +45,7 @@ async function routes(fastify) {
 
   // Update pulse config (professor/TA only)
   fastify.patch(
-    '/api/courses/:course_id/pulses/config',
+    '/courses/:course_id/pulses/config',
     {
       preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
       schema: pulseSchemas.UpdatePulseConfigSchema,
@@ -70,7 +70,7 @@ async function routes(fastify) {
 
   // Submit a pulse
   fastify.post(
-    '/api/courses/:course_id/pulses',
+    '/courses/:course_id/pulses',
     {
       preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
       schema: pulseSchemas.CreatePulseSchema,
@@ -103,7 +103,7 @@ async function routes(fastify) {
 
   // Get pulses for a user in a course - TODO: pagination
   fastify.get(
-    '/api/courses/:course_id/pulses',
+    '/courses/:course_id/pulses',
     {
       preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
       schema: pulseSchemas.GetPulsesSchema,
