@@ -42,3 +42,16 @@ export async function updateProfile(newValues) {
   }
   return response.data;
 }
+
+/**
+ * @description Gets a requested user's profile information. Requires certain role permissions.
+ * @param { number } userID - ID of the user whose profile you want to see.
+ * @returns { ProfileInfo } Requested user's profile information.
+ */
+export async function getUserProfile(userID) {
+  let response = await getWrapper(BACKEND_URL + '/api/users/' + userID + '/profile');
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
