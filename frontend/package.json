@@ -2,5 +2,8 @@
   "name": "conductor-frontend",
   "private": true,
   "version": "0.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "zinggrid": "^2.1.5"
+  }
 }

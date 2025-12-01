@@ -11,6 +11,7 @@ class ConductorNav extends HTMLElement {
       Interactions: '/interactions',
       Atoms: '/atoms',
       Journals: '/journals',
+      ZingGrid: '/zinggrid',
     };
   }
 
