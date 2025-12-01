@@ -59,4 +59,3 @@ class AttendancesPermissions {
 }
 
 module.exports = AttendancesPermissions;
-

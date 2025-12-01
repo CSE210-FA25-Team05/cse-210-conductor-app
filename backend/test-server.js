@@ -357,9 +357,7 @@ async function createLectureTest(courseId, lectureData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Lecture created successfully (id=${data.id || 'unknown'})`
-    );
+    console.log(`Lecture created successfully (id=${data.id || 'unknown'})`);
     return data; // API returns lecture directly, not wrapped in 'lecture' property
   } else {
     console.error('Lecture creation failed');
@@ -465,7 +463,13 @@ async function activateAttendanceTest(courseId, lectureId) {
 }
 
 // Create attendance record (student marking their own attendance with code)
-async function createAttendanceTest(courseId, lectureId, userId, code, updateReason) {
+async function createAttendanceTest(
+  courseId,
+  lectureId,
+  userId,
+  code,
+  updateReason
+) {
   console.log(
     `Creating attendance for user id=${userId} in lecture id=${lectureId}...`
   );
@@ -719,13 +723,14 @@ async function runAttendanceTests() {
     method: 'GET',
     headers: headers(),
   });
-  
   let courseId;
   if (coursesRes.ok) {
     const courses = await coursesRes.json();
     if (courses && courses.length > 0) {
       courseId = courses[0].id;
-      console.log(`Using existing course id=${courseId} (${courses[0].course_code})`);
+      console.log(
+        `Using existing course id=${courseId} (${courses[0].course_code})`
+      );
     } else {
       console.log('No courses found. Creating a new course...');
       const newCourse = {

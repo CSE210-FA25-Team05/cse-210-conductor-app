@@ -12,4 +12,3 @@ const attendancesRoutes = require('./attendances.routes');
 module.exports = async function attendancesServicePlugin(fastify, _opts) {
   fastify.register(attendancesRoutes);
 };
-

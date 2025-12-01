@@ -153,4 +153,3 @@ class AttendancesRepo {
 }
 
 module.exports = AttendancesRepo;
-

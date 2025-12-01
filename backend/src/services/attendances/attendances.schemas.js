@@ -16,7 +16,6 @@ export const UpdateAttendanceParams = {
     update_reason: { type: 'string', nullable: true },
   },
 };
-
 export const AttendanceInfo = {
   type: 'object',
   properties: {

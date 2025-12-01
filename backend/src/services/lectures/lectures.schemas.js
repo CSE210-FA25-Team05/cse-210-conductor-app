@@ -148,7 +148,8 @@ export const DeleteLectureSchema = {
 };
 
 export const ActivateAttendanceSchema = {
-  summary: 'Activate attendance for a lecture (generate code and start 5-minute timer)',
+  summary:
+    'Activate attendance for a lecture (generate code and start 5-minute timer)',
   tags: ['Lectures'],
   params: {
     type: 'object',

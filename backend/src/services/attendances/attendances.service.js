@@ -27,13 +27,12 @@ class AttendancesService {
    */
   async createAttendance(user, course, enrollment, lecture, attendanceData) {
     // Check if attendance already exists
-    const existingAttendance =
-      await this.attendancesRepo.getAttendanceByStudentAndLecture(
-        attendanceData.user_id,
-        lecture.id
-      );
+    const existingAttendance = await this.attendancesRepo
+      .getAttendanceByStudentAndLecture(attendanceData.user_id, lecture.id);
     if (existingAttendance) {
-      const error = new Error('Attendance already exists for this user and lecture');
+      const error = new Error(
+        'Attendance already exists for this user and lecture'
+      );
       error.code = 'CONFLICT';
       throw error;
     }
@@ -56,8 +55,14 @@ class AttendancesService {
     const isStudent = enrollment === null || enrollment.role === 'student';
     if (isStudent && user.id === attendanceData.user_id) {
       // Check if code exists and hasn't expired
-      if (!lecture.code || !lecture.code_expires_at || lecture.code_expires_at === '') {
-        const error = new Error('No valid attendance code available for this lecture');
+      if (
+        !lecture.code ||
+        !lecture.code_expires_at ||
+        lecture.code_expires_at === ''
+      ) {
+        const error = new Error(
+          'No valid attendance code available for this lecture'
+        );
         error.code = 'EXPIRED';
         throw error;
       }
@@ -73,12 +78,16 @@ class AttendancesService {
       const now = new Date();
       const expiresAt = new Date(lecture.code_expires_at);
       if (isNaN(expiresAt.getTime())) {
-        const error = new Error('Invalid expiration date for attendance code');
+        const error = new Error(
+          'Invalid expiration date for attendance code'
+        );
         error.code = 'BAD_REQUEST';
         throw error;
       }
       if (now > expiresAt) {
-        const error = new Error('Attendance code has expired. You are marked as absent.');
+        const error = new Error(
+          'Attendance code has expired. You are marked as absent.'
+        );
         error.code = 'EXPIRED';
         throw error;
       }
@@ -126,14 +135,12 @@ class AttendancesService {
     }
 
     // Check permissions
-    const canModify = await this.attendancesPermissions.canModifyAttendance(
-      user,
-      course,
-      enrollment,
-      attendance
-    );
+    const canModify = await this.attendancesPermissions
+      .canModifyAttendance(user, course, enrollment, attendance);
     if (!canModify) {
-      const error = new Error('You do not have permission to modify this attendance');
+      const error = new Error(
+        'You do not have permission to modify this attendance'
+      );
       error.code = 'FORBIDDEN';
       throw error;
     }
@@ -168,14 +175,12 @@ class AttendancesService {
     }
 
     // Check permissions
-    const canModify = await this.attendancesPermissions.canModifyAttendance(
-      user,
-      course,
-      enrollment,
-      attendance
-    );
+    const canModify = await this.attendancesPermissions
+      .canModifyAttendance(user, course, enrollment, attendance);
     if (!canModify) {
-      const error = new Error('You do not have permission to delete this attendance');
+      const error = new Error(
+        'You do not have permission to delete this attendance'
+      );
       error.code = 'FORBIDDEN';
       throw error;
     }

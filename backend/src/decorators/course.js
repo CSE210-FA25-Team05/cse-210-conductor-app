@@ -34,7 +34,7 @@ const AuthRepo = require('../services/auth/auth.repo');
 const CoursePermissions = require('../services/course/course.permissions');
 const LecturesRepo = require('../services/lectures/lectures.repo');
 
-  // eslint-disable-next-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
 module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
   const courseRepo = new CourseRepo(fastify.db);
   const authRepo = new AuthRepo(fastify.db);
@@ -79,7 +79,9 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
   fastify.decorate('loadLecture', async function (req, reply) {
     // Require course to be loaded first
     if (!req.course) {
-      return reply.code(500).send({ error: 'Course must be loaded before lecture' });
+      return reply
+        .code(500)
+        .send({ error: 'Course must be loaded before lecture' });
     }
 
     // Parse lecture_id (schema validation ensures it's a valid integer, but params are still strings)

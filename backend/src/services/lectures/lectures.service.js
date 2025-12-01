@@ -198,7 +198,9 @@ class LecturesService {
       enrollment
     );
     if (!canModify) {
-      const error = new Error('Only professors and TAs can activate attendance');
+      const error = new Error(
+        'Only professors and TAs can activate attendance'
+      );
       error.code = 'FORBIDDEN';
       throw error;
     }
@@ -215,7 +217,9 @@ class LecturesService {
 
     // Check if code is already active and not expired
     if (this.lecturesRepo.isCodeValid(existingLecture)) {
-      const error = new Error('Attendance code is already active for this lecture');
+      const error = new Error(
+        'Attendance code is already active for this lecture'
+      );
       error.code = 'CONFLICT';
       throw error;
     }
