@@ -50,7 +50,8 @@ class ConductorNav extends HTMLElement {
 
     // modal trigger button
     const modalButton = document.createElement('button');
-    modalButton.textContent = 'Add Signal';
+    const newIcon = document.createElement('i');
+    modalButton.innerHTML = 'New<i>add</i>';
     modalButton.addEventListener('click', () => {
       const modal = document.getElementById('navModal');
       if (modal) {
