@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches: 
+      - main
+      - deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            BRANCH="${{ github.ref_name }}"
+            cd ~/conductor    
+            git fetch origin
+            git checkout $BRANCH
+            git pull origin $BRANCH
+            npm install
+            pm2 restart conductor || pm2 start backend/src/server.js

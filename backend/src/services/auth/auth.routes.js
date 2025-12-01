@@ -60,7 +60,9 @@ async function routes(fastify) {
         });
 
         reply.clearCookie('oauth_state', { path: '/' });
-        reply.redirect(process.env.FRONTEND_URL || 'http://localhost:3000/');
+        reply.redirect(
+          process.env.FRONTEND_URL + '/dashboard' || 'http://localhost:3000/'
+        );
       } catch (e) {
         req.log.error(e);
         reply.redirect(
@@ -82,6 +84,9 @@ async function routes(fastify) {
       const sessionId = req.cookies?.sid;
 
       await authService.logout(sessionId, req.log);
+
+      reply.header('Clear-Site-Data', '"cache", "cookies", "storage"');
+      reply.header('Cache-Control', 'no-store, max-age=0');
 
       reply.clearCookie('sid', { path: '/' });
       reply.send({ ok: true });

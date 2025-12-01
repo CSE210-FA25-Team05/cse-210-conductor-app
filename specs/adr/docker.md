@@ -161,7 +161,7 @@ Run Postgres in Docker, but run backend and frontend directly on the host.
 
 - Wire up environment variables:
   - Backend uses `DATABASE_URL=postgres://conductor:conductor@db:5432/conductor_db`
-  - Backend uses `FRONTEND_URL=http://localhost:5173` for CORS
+  - Backend uses `FRONTEND_URL=http://localhost:8080` for CORS
   - Frontend uses `VITE_BACKEND_URL=http://localhost:3001` to talk to the API
 
 - Add CI workflow:

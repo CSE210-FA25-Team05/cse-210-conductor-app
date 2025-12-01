@@ -1,5 +1,3 @@
-import styles from './google-oauth.css?inline';
-
 class GoogleOAuth extends HTMLElement {
   constructor() {
     super();
@@ -9,7 +7,7 @@ class GoogleOAuth extends HTMLElement {
     this.attachShadow({ mode: 'open' });
 
     this.shadowRoot.innerHTML = `
-        <style>${styles}</style>
+        <link rel="stylesheet" href="/src/components/oauth/google-oauth.css">
         <button class="gsi-material-button"> 
             <div class="gsi-material-button-state"></div>
             <div class="gsi-material-button-content-wrapper">
@@ -45,7 +43,7 @@ class GoogleOAuth extends HTMLElement {
     event.preventDefault();
 
     try {
-      window.location.href = 'http://localhost:3001/auth/oauth/google';
+      window.location.href = '/auth/oauth/google';
     } catch (error) {
       console.error('Failed to start Google OAuth flow', error);
     }
