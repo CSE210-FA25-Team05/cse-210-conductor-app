@@ -49,7 +49,9 @@ export async function updateProfile(newValues) {
  * @returns { ProfileInfo } Requested user's profile information.
  */
 export async function getUserProfile(userID) {
-  let response = await getWrapper(BACKEND_URL + '/api/users/' + userID + '/profile');
+  let response = await getWrapper(
+    BACKEND_URL + '/api/users/' + userID + '/profile'
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
