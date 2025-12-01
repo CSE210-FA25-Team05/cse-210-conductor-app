@@ -20,7 +20,7 @@ const BACKEND_URL = 'http://localhost:3001';
  * @returns { ProfileInfo } Current user's profile information.
  */
 export async function getProfile() {
-  let response = await getWrapper(BACKEND_URL + '/api/me/profile');
+  let response = await getWrapper(BACKEND_URL + '/me/profile');
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -36,7 +36,7 @@ export async function getProfile() {
  * @returns { ProfileInfo } Current user's updated profile information.
  */
 export async function updateProfile(newValues) {
-  let response = await postWrapper(BACKEND_URL + '/api/me/profile', newValues);
+  let response = await postWrapper(BACKEND_URL + '/me/profile', newValues);
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -50,7 +50,7 @@ export async function updateProfile(newValues) {
  */
 export async function getUserProfile(userID) {
   let response = await getWrapper(
-    BACKEND_URL + '/api/users/' + userID + '/profile'
+    BACKEND_URL + '/users/' + userID + '/profile'
   );
   if (!response.ok) {
     throw new Error(response.error);
