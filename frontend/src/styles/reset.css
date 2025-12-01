@@ -21,7 +21,8 @@
   --spacing-small: 0.5em;
   --spacing-extra-small: 0.25em;
 
-  --sidebar-width: 10em;
+  --sidebar-width: 12ch;
+  --sidebar-padding: var(--spacing-medium);
   --main-content-padding: 3em;
   --icon-button-size: 2.4rem;
   --card-padding: var(--spacing-medium);
