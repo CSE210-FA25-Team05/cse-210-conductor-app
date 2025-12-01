@@ -19,11 +19,9 @@ class PulsePermissions {
       }
     }
 
-    // Students can only view their own pulses
-    if (enrollment.role === 'student') {
-      if (filters.user_id != null) {
-        return filters.user_id === user.id;
-      }
+    // Anyone can only view their own pulses
+    if (filters.user_id != null) {
+      return filters.user_id === user.id;
     }
 
     return false;
