@@ -27,8 +27,11 @@ class AttendancesService {
    */
   async createAttendance(user, course, enrollment, lecture, attendanceData) {
     // Check if attendance already exists
-    const existingAttendance = await this.attendancesRepo
-      .getAttendanceByStudentAndLecture(attendanceData.user_id, lecture.id);
+    const existingAttendance =
+      await this.attendancesRepo.getAttendanceByStudentAndLecture(
+        attendanceData.user_id,
+        lecture.id
+      );
     if (existingAttendance) {
       const error = new Error(
         'Attendance already exists for this user and lecture'
@@ -45,7 +48,9 @@ class AttendancesService {
       attendanceData.user_id
     );
     if (!canCreate) {
-      const error = new Error('You do not have permission to create this attendance');
+      const error = new Error(
+        'You do not have permission to create this attendance'
+      );
       error.code = 'FORBIDDEN';
       throw error;
     }
@@ -66,21 +71,19 @@ class AttendancesService {
         error.code = 'EXPIRED';
         throw error;
       }
-      
+
       // Verify the code matches
       if (!attendanceData.code || attendanceData.code !== lecture.code) {
         const error = new Error('Invalid attendance code');
         error.code = 'BAD_REQUEST';
         throw error;
       }
-      
+
       // Check if code has expired
       const now = new Date();
       const expiresAt = new Date(lecture.code_expires_at);
       if (isNaN(expiresAt.getTime())) {
-        const error = new Error(
-          'Invalid expiration date for attendance code'
-        );
+        const error = new Error('Invalid expiration date for attendance code');
         error.code = 'BAD_REQUEST';
         throw error;
       }
@@ -135,8 +138,12 @@ class AttendancesService {
     }
 
     // Check permissions
-    const canModify = await this.attendancesPermissions
-      .canModifyAttendance(user, course, enrollment, attendance);
+    const canModify = await this.attendancesPermissions.canModifyAttendance(
+      user,
+      course,
+      enrollment,
+      attendance
+    );
     if (!canModify) {
       const error = new Error(
         'You do not have permission to modify this attendance'
@@ -175,8 +182,12 @@ class AttendancesService {
     }
 
     // Check permissions
-    const canModify = await this.attendancesPermissions
-      .canModifyAttendance(user, course, enrollment, attendance);
+    const canModify = await this.attendancesPermissions.canModifyAttendance(
+      user,
+      course,
+      enrollment,
+      attendance
+    );
     if (!canModify) {
       const error = new Error(
         'You do not have permission to delete this attendance'
@@ -190,4 +201,3 @@ class AttendancesService {
 }
 
 module.exports = AttendancesService;
-

@@ -670,49 +670,6 @@ async function deleteAttendanceTest(courseId, lectureId, attendanceId) {
   }
 }
 
-// Run tests
-
-// COURSE TESTS
-// addCourseTest();
-// updateCourseTest(16, {
-//   course_code: 'CSE291',
-//   course_name: 'AI Agent Updated',
-//   term: 'SP25',
-//   section: 'A00',
-//   start_date: '2025-03-31T00:00:00.000Z',
-//   end_date: '2025-06-15T00:00:00.000Z',
-// });
-// getAllCoursesTest();
-// deleteCourse(16);
-// getAllUsersInCourseTest(14);
-// getUserDetailsInCourseTest(14, 8);
-// addUserToCourseTest(17, 16);
-// joinCourseTest(17, 16, 'ABCDEF');
-// updateRoleTest(17, 16, 'TA');
-// removeUserFromCourseTest(17, 16);
-
-// LECTURES TESTS
-// Note: Use course_id=1 (test user is enrolled as professor in course 1)
-// Course 1 has lectures with IDs 1 and 2
-// getAllLecturesTest(1);
-// getLectureTest(1, 1);
-// createLectureTest(1, {
-//   lecture_date: '2025-11-20',
-// });
-// updateLectureTest(1, 1, {
-//   lecture_date: '2025-11-21',
-// });
-// deleteLectureTest(1, 2);
-
-// ============================================
-// ATTENDANCE TESTS
-// ============================================
-// Note: These tests assume:
-// - Course ID 1 exists
-// - Lecture ID 1 exists in course 1
-// - User ID 1 is enrolled as a student in course 1
-// - Test user (from AUTH_TOKEN) is a professor/TA in course 1
-
 // Example test flow:
 async function runAttendanceTests() {
   console.log('\n=== ATTENDANCE TESTS ===\n');
@@ -800,10 +757,7 @@ async function runAttendanceTests() {
 
   // 2. Activate attendance (generate code)
   console.log('\nStep 2: Activating attendance...');
-  const activatedLecture = await activateAttendanceTest(
-    courseId,
-    newLectureId
-  );
+  const activatedLecture = await activateAttendanceTest(courseId, newLectureId);
   if (!activatedLecture) {
     console.error('Failed to activate attendance. Aborting tests.');
     return;
@@ -825,9 +779,7 @@ async function runAttendanceTests() {
     const attendanceId = attendance.id;
 
     // 4. Test: Try to mark attendance again (should fail - duplicate)
-    console.log(
-      '\nStep 4: Testing duplicate attendance (should fail)...'
-    );
+    console.log('\nStep 4: Testing duplicate attendance (should fail)...');
     await createAttendanceTest(
       courseId,
       newLectureId,
@@ -855,7 +807,9 @@ async function runAttendanceTests() {
 
     // 8. Manual attendance (professor/TA marking without code)
     if (manualUserId && manualUserId !== studentUserId) {
-      console.log('\nStep 8: Manual attendance (professor/TA) for another user...');
+      console.log(
+        '\nStep 8: Manual attendance (professor/TA) for another user...'
+      );
       await createAttendanceManualTest(
         courseId,
         newLectureId,
@@ -871,6 +825,44 @@ async function runAttendanceTests() {
 
   console.log('\n=== ATTENDANCE TESTS COMPLETE ===\n');
 }
+
+// Run tests
+
+// COURSE TESTS
+// addCourseTest();
+// updateCourseTest(16, {
+//   course_code: 'CSE291',
+//   course_name: 'AI Agent Updated',
+//   term: 'SP25',
+//   section: 'A00',
+//   start_date: '2025-03-31T00:00:00.000Z',
+//   end_date: '2025-06-15T00:00:00.000Z',
+// });
+// getAllCoursesTest();
+// deleteCourse(16);
+// getAllUsersInCourseTest(14);
+// getUserDetailsInCourseTest(14, 8);
+// addUserToCourseTest(17, 16);
+// joinCourseTest(17, 16, 'ABCDEF');
+// updateRoleTest(17, 16, 'TA');
+// removeUserFromCourseTest(17, 16);
+
+// LECTURES TESTS
+// Note: Use course_id=1 (test user is enrolled as professor in course 1)
+// Course 1 has lectures with IDs 1 and 2
+// getAllLecturesTest(1);
+// getLectureTest(1, 1);
+// createLectureTest(1, {
+//   lecture_date: '2025-11-20',
+// });
+// updateLectureTest(1, 1, {
+//   lecture_date: '2025-11-21',
+// });
+// deleteLectureTest(1, 2);
+
+// ============================================
+// ATTENDANCE TESTS
+// ============================================
 
 // Uncomment to run attendance tests:
 runAttendanceTests();
