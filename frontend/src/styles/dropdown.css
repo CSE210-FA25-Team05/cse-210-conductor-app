@@ -1,0 +1,141 @@
+details,
+select {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: var(--button-line-height);
+  height: auto;
+}
+
+details {
+  position: relative;
+  display: inline-block;
+}
+details[open] {
+  z-index: 100;
+}
+
+details > summary {
+  padding: var(--button-padding);
+
+  border: var(--border);
+  border-color: var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-small);
+
+  white-space: nowrap;
+  list-style: none;
+  text-align: left;
+  cursor: pointer;
+}
+details[open] > summary {
+  outline: var(--outline-selected);
+}
+details[open] > ol,
+details[open] > ul,
+details[open] > article {
+  position: absolute;
+  left: 0;
+
+  margin-top: var(--spacing-small);
+
+  min-width: -moz-fit-content;
+  min-width: fit-content;
+  width: max-content;
+  max-width: 90vw;
+}
+details[open] > ol,
+details[open] > ul {
+  background-color: var(--color-neutral-light);
+  border-radius: var(--border-radius);
+  border: var(--border);
+  padding: var(--spacing-small) 0;
+}
+
+details[open] > ul > li,
+details[open] > ol > li {
+  border-radius: var(--border-radius);
+  padding: var(--button-padding);
+  white-space: nowrap;
+}
+
+details > ul > li > a,
+details > ol > li > a {
+  width: 100%;
+  height: 100%;
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Select */
+
+select {
+  /* Reset Default Styles */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+
+  padding: var(--button-padding);
+  padding-right: var(--spacing-large);
+
+  border: var(--border);
+  border-color: var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+
+  white-space: nowrap;
+  text-align: left;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: var(--outline-selected);
+}
+
+option {
+  background-color: var(--color-neutral-light);
+  padding: var(--button-padding);
+}
+
+/* Arrow icon to the right */
+details > summary::after {
+  font-family: 'Material Icons';
+  content: 'expand_more';
+}
+
+details[open] > summary::after {
+  transform: rotate(180deg);
+}
+/* Cannot add ::after to select, need a wrapper unfortunately */
+select {
+  color: var(--color-fg);
+}
+
+.select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: fit-content;
+}
+
+.select-wrapper::after {
+  font-family: 'Material Icons';
+  content: 'expand_more';
+
+  position: absolute;
+  right: var(--spacing-medium);
+  top: 50%;
+  transform: translateY(-50%);
+
+  pointer-events: none;
+  color: var(--color-fg);
+}

@@ -13,11 +13,12 @@
     "docs": "jsdoc -c jsdoc.json",
     "start:backend": "cd backend && npm start",
     "start:frontend": "cd frontend && npm start",
-    "prepare": "if [ \"$CI\" != \"true\" ]; then husky install; fi",
+    "prepare": "if [ \"$CI\" != \"true\" ]; then husky; fi",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "npx eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "npx prettier --check \"**/*.{js,jsx,ts,tsx,css}\"",
     "test": "cd backend && npm test",
+    "test:backend": "cd backend && npm test",
     "check:deps": "node checkdependencies.js"
   },
   "devDependencies": {
@@ -27,5 +28,9 @@
     "eslint-plugin-prettier": "^5.5.4",
     "husky": "^9.1.7",
     "prettier": "^3.6.2"
+  },
+  "dependencies": {
+    "@fastify/swagger": "^9.6.1",
+    "@fastify/swagger-ui": "^5.2.3"
   }
 }

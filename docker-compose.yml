@@ -6,8 +6,6 @@ services:
       POSTGRES_USER: conductor
       POSTGRES_PASSWORD: conductor
       POSTGRES_DB: conductor_db
-    ports:
-      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     healthcheck:
@@ -15,20 +13,20 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-      start_period: 5s
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod   
     depends_on:
       db:
         condition: service_healthy
     env_file:
       - ./backend/.env
     environment:
-      # Override DATABASE_URL with the Docker-specific host
       DATABASE_URL: ${DOCKER_DATABASE_URL}
       NODE_ENV: ${NODE_ENV:-development}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
     ports:
       - "3001:3001"
     volumes:
@@ -40,12 +38,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "8080:80"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      VITE_BACKEND_URL: http://localhost:3001
+      - ./frontend:/usr/share/nginx/html
     depends_on:
       - backend
 

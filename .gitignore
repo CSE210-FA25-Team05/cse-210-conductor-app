@@ -3,3 +3,4 @@ backend/.env
 .env
 *.log
 .DS_Store
+temp.js

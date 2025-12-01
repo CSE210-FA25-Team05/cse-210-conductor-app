@@ -1,16 +1,10 @@
-FROM node:22-alpine
-
+# Stage 1: Install Node Modules
+FROM node:20-alpine AS builder
 WORKDIR /app
-
 COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the frontend source
-COPY . .
-
-# Expose Vite dev server port
-EXPOSE 5173
-
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+RUN npm ci
+# Stage 2: NGINX
+FROM nginx:1.29.3
+COPY ./ /usr/share/nginx/html
+COPY --from=builder /app/node_modules /usr/share/nginx/html/node_modules
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
