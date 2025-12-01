@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Conductor</title>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" async src="/src/js/common.js"></script>
+    </head>
+    <body>
+        <main>
+            <h1>Zing Grid Playground</h1>
+            <theme-toggle></theme-toggle>
+            <a href="https://www.zinggrid.com/docs" target="_blank">Zing Grid Documentation</a>
+            <zing-grid
+                id="example-grid"
+                data='[
+                    {
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "age": 45
+                    },
+                    {
+                        "firstName": "Jane",
+                        "lastName": "Doe",
+                        "age": 44
+                    }
+                ]'
+                theme="default"
+                caption="Meet the Doe Family">
+            </zing-grid>
+        </main>
+        <aside>
+            <conductor-nav></conductor-nav>
+        </aside>
+    </body>
+</html>

@@ -60,7 +60,9 @@ async function routes(fastify) {
         });
 
         reply.clearCookie('oauth_state', { path: '/' });
-        reply.redirect(process.env.FRONTEND_URL || 'http://localhost:3000/');
+        reply.redirect(
+          process.env.FRONTEND_URL + '/dashboard' || 'http://localhost:3000/'
+        );
       } catch (e) {
         req.log.error(e);
         reply.redirect(
@@ -83,6 +85,9 @@ async function routes(fastify) {
 
       await authService.logout(sessionId, req.log);
 
+      reply.header('Clear-Site-Data', '"cache", "cookies", "storage"');
+      reply.header('Cache-Control', 'no-store, max-age=0');
+
       reply.clearCookie('sid', { path: '/' });
       reply.send({ ok: true });
     }
@@ -92,7 +97,6 @@ async function routes(fastify) {
   fastify.get(
     '/me/profile',
     {
-      preHandler: fastify.authenticate,
       schema: authSchemas.GetUserProfileSchema,
     },
     async (req) => {
@@ -105,7 +109,6 @@ async function routes(fastify) {
   fastify.get(
     '/users/:user_id/profile',
     {
-      preHandler: fastify.authenticate,
       schema: authSchemas.GetUserProfileByIdSchema,
     },
     async (req, reply) => {
@@ -141,7 +144,6 @@ async function routes(fastify) {
   fastify.post(
     '/me/profile',
     {
-      preHandler: fastify.authenticate,
       schema: authSchemas.UpdateUserProfileSchema,
     },
     async (req, reply) => {

@@ -1,0 +1,36 @@
+form > fieldset {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+}
+
+textarea,
+input {
+  background-color: var(--color-bg-white);
+  color: var(--color-text-primary);
+
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-medium);
+  border: var(--border-form);
+
+  -webkit-appearance: none;
+}
+
+input:has(+ small) {
+  margin-bottom: 0;
+}
+input + small {
+  margin-bottom: var(--spacing-medium);
+}
+
+textarea:focus,
+input:focus {
+  outline: var(--outline-selected);
+  border: var(--border-selected);
+}
