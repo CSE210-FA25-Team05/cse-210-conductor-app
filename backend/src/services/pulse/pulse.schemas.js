@@ -129,8 +129,20 @@ const CreatePulseSchema = {
   },
 };
 
+const PulseFiltersSchema = {
+  type: 'object',
+  properties: {
+    team_id: { type: 'integer' },
+    user_id: { type: 'integer' },
+    entire_class: { type: 'boolean' },
+    values: createArrayReponseSchema({ type: 'string' }),
+    start_date: DateTimeType,
+    end_date: DateTimeType,
+  },
+};
+
 const GetPulsesSchema = {
-  summary: 'Get Pulse Records for User in Course',
+  summary: 'Get Pulse Records',
   tags: ['Pulse'],
   params: {
     type: 'object',
@@ -139,19 +151,61 @@ const GetPulsesSchema = {
     },
     required: ['course_id'],
   },
-  querystring: {
-    type: 'object',
-    properties: {
-      team_id: { type: 'integer' },
-      user_id: { type: 'integer' },
-      entire_class: { type: 'boolean' },
-      values: createArrayReponseSchema({ type: 'string' }),
-    },
-  },
+  querystring: PulseFiltersSchema,
   response: {
     200: {
       type: 'array',
       items: PulseSchema,
+    },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
+const PulseStatsQuerySchema = {
+  type: 'object',
+  properties: {
+    team_id: { type: 'integer' },
+    user_id: { type: 'integer' },
+    entire_class: { type: 'boolean' },
+    values: createArrayReponseSchema({ type: 'string' }),
+    start_date: DateTimeType,
+    end_date: DateTimeType,
+    bucket: {
+      type: 'string',
+      enum: ['hour', 'day', 'week', 'month'],
+    },
+  },
+};
+
+const GetPulseStatsSchema = {
+  summary: 'Get Pulse Stats',
+  tags: ['Pulse'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+    },
+    required: ['course_id'],
+  },
+  querystring: PulseStatsQuerySchema,
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        stats: createArrayReponseSchema({
+          type: 'object',
+          properties: {
+            bucket: DateTimeType,
+            value: { type: 'string' },
+            count: { type: 'integer' },
+          },
+          required: ['bucket', 'value', 'count'],
+        }),
+      },
+      required: ['stats'],
     },
     400: ErrorSchema,
     401: ErrorSchema,
@@ -165,4 +219,5 @@ module.exports = {
   UpdatePulseConfigSchema,
   CreatePulseSchema,
   GetPulsesSchema,
+  GetPulseStatsSchema,
 };

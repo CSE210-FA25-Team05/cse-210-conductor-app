@@ -124,6 +124,21 @@ async function routes(fastify) {
       }
     }
   );
+
+  fastify.get(
+    '/courses/:course_id/pulses/stats',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
+      schema: pulseSchemas.GetPulseStatsSchema,
+    },
+    async (req, reply) => {
+      const stats = await pulseService.getAggregatedStats(
+        req.course,
+        pulseService.buildFiltersFromQuery(req.query, req.user, false)
+      );
+      return reply.send({ stats });
+    }
+  );
 }
 
 module.exports = routes;

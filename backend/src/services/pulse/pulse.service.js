@@ -1,5 +1,6 @@
 'use strict';
 
+const { Prisma } = require('@prisma/client');
 class PulseService {
   constructor(pulseRepo) {
     this.pulseRepo = pulseRepo;
@@ -131,10 +132,68 @@ class PulseService {
     return pulses.map(this.mapPulseToResponse);
   }
 
+  async getAggregatedStats(course, filters = {}) {
+    const { start_date, end_date, bucket = 'week', team_id, user_id } = filters;
+
+    // WHITELIST bucket to prevent SQL injection (can't parameterize function names)
+    const validBuckets = ['hour', 'day', 'week', 'month'];
+    if (!validBuckets.includes(bucket)) {
+      throw new Error('Invalid bucket parameter');
+    }
+
+    // Build WHERE conditions safely with Prisma.sql
+    const conditions = [Prisma.sql`course_id = ${course.id}`];
+
+    if (team_id != null) {
+      conditions.push(Prisma.sql`team_id = ${team_id}`);
+    }
+
+    if (user_id != null) {
+      conditions.push(Prisma.sql`user_id = ${user_id}`);
+    }
+
+    if (filters.values != null && filters.values.length > 0) {
+      conditions.push(Prisma.sql`value IN (${Prisma.join(filters.values)})`);
+    }
+
+    if (start_date) {
+      conditions.push(Prisma.sql`created_at >= ${start_date}`);
+    }
+
+    if (end_date) {
+      conditions.push(Prisma.sql`created_at < ${end_date}`);
+    }
+
+    // Combine WHERE clauses safely
+    const whereClause = Prisma.join(conditions, ' AND ');
+
+    // Build safe query (bucket is whitelisted, all values are parameterized)
+    const query = Prisma.sql`
+      SELECT 
+        DATE_TRUNC(${bucket}, created_at) as bucket,
+        value,
+        COUNT(*)::int as count
+      FROM pulses
+      WHERE ${whereClause}
+      GROUP BY bucket, value
+      ORDER BY bucket ASC, value ASC
+    `;
+
+    const results = await this.pulseRepo.db.$queryRaw(query);
+
+    return results.map((r) => ({
+      bucket: r.bucket,
+      value: r.value,
+      count: r.count,
+    }));
+  }
+
   buildFiltersFromQuery(query, loggedInUser) {
     const filters = {};
+    let useDefaultUserFilter = true;
     if (query.entire_class === true || query.entire_class === 'true') {
-      return filters;
+      // No team_id or user_id filter
+      useDefaultUserFilter = false;
     } else if (query.team_id != null) {
       const teamId = parseInt(query.team_id, 10);
       if (!isNaN(teamId)) {
@@ -151,11 +210,32 @@ class PulseService {
       filters.values = query.values;
     }
 
-    // Filter by logged in user's id by default if no filters provided
-    if (filters.team_id == null && filters.user_id == null) {
-      filters.user_id = loggedInUser.id;
+    if (query.start_date) {
+      const startDate = new Date(query.start_date);
+      if (!isNaN(startDate.getTime())) {
+        filters.start_date = startDate;
+      }
     }
 
+    if (query.end_date) {
+      const endDate = new Date(query.end_date);
+      if (!isNaN(endDate.getTime())) {
+        filters.end_date = endDate;
+      }
+    }
+
+    if (query.bucket) {
+      filters.bucket = query.bucket;
+    }
+
+    // Filter by logged in user's id by default if no filters provided
+    if (
+      filters.team_id == null &&
+      filters.user_id == null &&
+      useDefaultUserFilter
+    ) {
+      filters.user_id = loggedInUser.id;
+    }
     return filters;
   }
 
