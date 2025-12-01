@@ -13,6 +13,8 @@ export const JournalEntryType = {
     course_id: { type: 'number' },
     title: { type: 'string' },
     content: { type: 'string' },
+    created_at: DateTimeType,
+    updated_at: DateTimeType,
   },
   required: ['id', 'student_id', 'course_id', 'title', 'content'],
 };
