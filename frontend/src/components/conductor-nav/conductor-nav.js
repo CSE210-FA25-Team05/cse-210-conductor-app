@@ -59,10 +59,11 @@ class ConductorNav extends HTMLElement {
     modal.setAttribute('button-align', 'end');
     const modalHeader = document.createElement('h2');
     modalHeader.setAttribute('slot', 'header');
-    modalHeader.innerText = "New Entry";
+    modalHeader.innerText = 'New Entry';
     const modalContent = document.createElement('p');
     modalContent.setAttribute('slot', 'content');
-    modalContent.innerText = 'Create a new entry for a Signal, Interaction, Meeting, etc here!'
+    modalContent.innerText =
+      'Create a new entry for a Signal, Interaction, Meeting, etc here!';
     const modalFooter = document.createElement('button');
     modalFooter.setAttribute('slot', 'buttons');
     modalFooter.innerText = 'Submit';
@@ -97,11 +98,11 @@ class ConductorNav extends HTMLElement {
   }
 
   handleOpenModal() {
-    this.modal.open()
+    this.modal.open();
   }
 
   handleCloseModal() {
-    this.modal.close()
+    this.modal.close();
   }
 }
 
