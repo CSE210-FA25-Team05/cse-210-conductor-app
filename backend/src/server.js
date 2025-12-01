@@ -42,6 +42,9 @@ fastify.register(cors, {
 fastify.register(cookie);
 fastify.register(sensible);
 
+//add open telemetry tracing
+require('../../tracing');
+
 //db connection
 fastify.register(require('./prisma'));
 
