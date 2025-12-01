@@ -9,19 +9,17 @@ import { postWrapper } from '/src/js/fetch-wrapper.js';
  * @property { string } course_name - Course name.
  * @property { string } term - School term the course takes course in.
  * @property { string } section - Course section.
- * @property { string } join_code - Code for enrolling in the course.
+ * @property { string } join_code - Code for enrolling in the course. Must be exactly 6 characters long.
  * @property { string } start_date - Date the course begins on, in YYYY-MM-DD format.
  * @property { string } end_date - Date the course ends on, in YYYY-MM-DD format.
  */
-
-const BACKEND_URL = 'http://localhost:3001';
 
 /**
  * @description Get a list of all the courses with their information.
  * @returns { Course[] } List of all the courses with their information.
  */
 export async function getCourses() {
-  let response = await getWrapper(BACKEND_URL + '/api/courses');
+  let response = await getWrapper('/api/courses');
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -41,7 +39,7 @@ export async function getCourses() {
  * @returns { Course } Created course with its information.
  */
 export async function createCourse(newCourse) {
-  let response = await postWrapper(BACKEND_URL + '/api/courses', newCourse);
+  let response = await postWrapper('/api/courses', newCourse);
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -49,12 +47,12 @@ export async function createCourse(newCourse) {
 }
 
 /**
- * @description Get a specific course's information by its course ID.
+ * @description Use course ID to get a specific course's information.
  * @param { number } courseID - ID of the course you want to view.
  * @returns { Course } Requested course with its information.
  */
 export async function getCourseWithID(courseID) {
-  let response = await getWrapper(BACKEND_URL + '/api/courses/' + courseID);
+  let response = await getWrapper('/api/courses/${courseID}');
   if (!response.ok) {
     throw new Error(response.error);
   }
