@@ -59,3 +59,12 @@ conductor-nav > footer {
   margin-bottom: var(--spacing-large);
   width: fit-content;
 }
+
+/* Fill screen on mobile */
+@media (max-width: 576px) {
+
+  conductor-nav {
+    width: calc(100dvw - var(--sidebar-padding) * 2);
+  }
+
+}
