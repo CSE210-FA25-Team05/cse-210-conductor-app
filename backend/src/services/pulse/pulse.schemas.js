@@ -1,6 +1,10 @@
 'use strict';
 
-const { ErrorSchema, DateTimeType, createArrayReponseSchema } = require('../shared/shared.schemas');
+const {
+  ErrorSchema,
+  DateTimeType,
+  createArrayReponseSchema,
+} = require('../shared/shared.schemas');
 
 const CourseParams = {
   type: 'object',
