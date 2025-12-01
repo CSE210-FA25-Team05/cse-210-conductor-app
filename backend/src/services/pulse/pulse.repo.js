@@ -33,14 +33,16 @@ class PulseRepo {
     const {
       courseId,
       configId,
-      studentId,
+      userId,
+      teamId = null,
       value,
       description = null,
     } = pulseData;
     return db.pulses.create({
       data: {
         course_id: courseId,
-        user_id: studentId,
+        user_id: userId,
+        team_id: teamId,
         pulse_config_id: configId,
         value,
         description,

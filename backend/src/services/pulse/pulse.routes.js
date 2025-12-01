@@ -73,15 +73,21 @@ async function routes(fastify) {
     async (req, reply) => {
       try {
         const course = req.course;
-        const student = req.user;
+        const user = req.user;
+        const enrollment = req.enrollment;
 
         const option = req.body.option.trim();
         const description = req.body.description || null;
 
-        const created = await pulseService.submitPulse(course, student, {
-          selectedOption: option,
-          description,
-        });
+        const created = await pulseService.submitPulse(
+          course,
+          user,
+          enrollment,
+          {
+            selectedOption: option,
+            description,
+          }
+        );
 
         return reply.code(201).send(created);
       } catch (error) {

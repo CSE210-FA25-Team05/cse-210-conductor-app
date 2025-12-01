@@ -76,7 +76,12 @@ class PulseService {
 
   // Submit a pulse atomically: validate option against config JSON, create pulse,
   // and flip is_editable -> false if it was true (performed in same transaction).
-  async submitPulse(course, user, { selectedOption, description = null }) {
+  async submitPulse(
+    course,
+    user,
+    enrollment,
+    { selectedOption, description = null }
+  ) {
     const created = await this.pulseRepo.db.$transaction(async (tx) => {
       const cfg = await this.pulseRepo.getConfig(course.id, tx);
       if (!cfg) {
@@ -101,7 +106,8 @@ class PulseService {
       const pulseData = {
         courseId: course.id,
         configId: cfg.id,
-        studentId: user.id,
+        userId: user.id,
+        teamId: enrollment.team_id,
         value: optionKeyResolved,
         description,
       };
@@ -153,13 +159,7 @@ class PulseService {
     const where = {};
 
     if (filters.team_id != null) {
-      where.users = {
-        enrollments: {
-          some: {
-            team_id: filters.team_id,
-          },
-        },
-      };
+      where.team_id = filters.team_id;
     } else if (filters.user_id != null) {
       where.user_id = filters.user_id;
     }
@@ -171,6 +171,7 @@ class PulseService {
       id: pulse.id,
       course_id: pulse.course_id,
       user_id: pulse.user_id,
+      team_id: pulse.team_id,
       user_first_name: pulse.users?.first_name || null,
       user_last_name: pulse.users?.last_name || null,
       pulse_config_id: pulse.pulse_config_id,
