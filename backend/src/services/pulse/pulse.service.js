@@ -147,6 +147,10 @@ class PulseService {
       }
     }
 
+    if (query.values != null && query.values.length > 0) {
+      filters.values = query.values;
+    }
+
     // Filter by logged in user's id by default if no filters provided
     if (filters.team_id == null && filters.user_id == null) {
       filters.user_id = loggedInUser.id;
@@ -163,6 +167,11 @@ class PulseService {
     } else if (filters.user_id != null) {
       where.user_id = filters.user_id;
     }
+
+    if (filters.values != null) {
+      where.value = { in: filters.values };
+    }
+
     return where;
   }
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const { ErrorSchema, DateTimeType } = require('../shared/shared.schemas');
+const { ErrorSchema, DateTimeType, createArrayReponseSchema } = require('../shared/shared.schemas');
 
 const CourseParams = {
   type: 'object',
@@ -141,6 +141,7 @@ const GetPulsesSchema = {
       team_id: { type: 'integer' },
       user_id: { type: 'integer' },
       entire_class: { type: 'boolean' },
+      values: createArrayReponseSchema({ type: 'string' }),
     },
   },
   response: {
