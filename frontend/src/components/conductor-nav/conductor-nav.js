@@ -14,7 +14,11 @@ class ConductorNav extends HTMLElement {
       ZingGrid: '/zinggrid',
     };
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
+    this.boundedHandleResize = this.handleResize.bind(this);
     this.parentAside = this.parentElement;
+
+    this.boundedHandleResize();
+    window.addEventListener('resize', this.boundedHandleResize);
   }
 
   connectedCallback() {
@@ -66,6 +70,14 @@ class ConductorNav extends HTMLElement {
 
   handleMenuToggleClick() {
     document.body.classList.toggle('menu-closed');
+  }
+
+  handleResize() {
+    if (window.innerWidth < 600) {
+      document.body.classList.add('menu-closed');
+    } else {
+      document.body.classList.remove('menu-closed');
+    }
   }
 }
 
