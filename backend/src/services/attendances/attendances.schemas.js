@@ -3,10 +3,11 @@ import { ErrorSchema } from '../shared/shared.schemas.js';
 export const CreateAttendanceParams = {
   type: 'object',
   properties: {
-    student_id: { type: 'integer' },
+    user_id: { type: 'integer' },
+    code: { type: 'string', nullable: true }, // Required for students, optional for professors/TAs
     update_reason: { type: 'string', nullable: true },
   },
-  required: ['student_id'],
+  required: ['user_id'],
 };
 
 export const UpdateAttendanceParams = {
@@ -22,11 +23,11 @@ export const AttendanceInfo = {
     id: { type: 'number' },
     course_id: { type: 'number' },
     lecture_id: { type: 'number' },
-    student_id: { type: 'number' },
+    user_id: { type: 'number' },
     updated_by: { type: 'number', nullable: true },
     update_reason: { type: 'string', nullable: true },
   },
-  required: ['id', 'course_id', 'lecture_id', 'student_id'],
+  required: ['id', 'course_id', 'lecture_id', 'user_id'],
 };
 
 export const CreateAttendanceSchema = {

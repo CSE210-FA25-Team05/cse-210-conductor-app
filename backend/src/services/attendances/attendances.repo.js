@@ -32,16 +32,16 @@ class AttendancesRepo {
   }
 
   /**
-   * Get attendance by student and lecture.
+   * Get attendance by user and lecture.
    *
-   * @param {number} studentId - ID of the student
+   * @param {number} userId - ID of the user
    * @param {number} lectureId - ID of the lecture
    * @returns {Promise<Object|null>} Attendance object or null if not found
    */
-  async getAttendanceByStudentAndLecture(studentId, lectureId) {
+  async getAttendanceByStudentAndLecture(userId, lectureId) {
     return this.db.attendances.findFirst({
       where: {
-        student_id: studentId,
+        user_id: userId,
         lecture_id: lectureId,
         deleted_at: null,
       },
@@ -72,7 +72,7 @@ class AttendancesRepo {
    * @param {Object} data - Attendance data
    * @param {number} data.course_id - ID of the course
    * @param {number} data.lecture_id - ID of the lecture
-   * @param {number} data.student_id - ID of the student
+   * @param {number} data.user_id - ID of the user
    * @param {number|null} data.updated_by - ID of the user who updated (optional)
    * @param {string|null} data.update_reason - Reason for update (optional)
    * @returns {Promise<Object>} Created attendance object
@@ -82,7 +82,7 @@ class AttendancesRepo {
       data: {
         course_id: data.course_id,
         lecture_id: data.lecture_id,
-        student_id: data.student_id,
+        user_id: data.user_id,
         updated_by: data.updated_by || null,
         update_reason: data.update_reason || null,
       },

@@ -19,10 +19,10 @@ class AttendancesPermissions {
    * @param {Object} user - User object
    * @param {Object} course - Course object
    * @param {Object|null} enrollment - Enrollment object (null if not enrolled)
-   * @param {number} studentId - ID of the student for the attendance
+   * @param {number} userId - ID of the user for the attendance
    * @returns {Promise<boolean>} True if user can create attendance, false otherwise
    */
-  async canCreateAttendance(user, course, enrollment, studentId) {
+  async canCreateAttendance(user, course, enrollment, userId) {
     // Professors and TAs can create any attendance
     if (enrollment !== null) {
       if (enrollment.role === 'professor' || enrollment.role === 'ta') {
@@ -31,7 +31,7 @@ class AttendancesPermissions {
     }
 
     // Students can only create their own attendance
-    return user.id === studentId;
+    return user.id === userId;
   }
 
   /**
@@ -54,7 +54,7 @@ class AttendancesPermissions {
     }
 
     // Students can only modify their own attendance
-    return user.id === attendance.student_id;
+    return user.id === attendance.user_id; // Database field is user_id
   }
 }
 

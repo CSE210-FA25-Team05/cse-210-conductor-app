@@ -31,6 +31,14 @@ async function routes(fastify) {
     },
     async (req, reply) => {
       try {
+        fastify.log.info(
+          { 
+            body: req.body, 
+            lecture: req.lecture,
+            user: req.user?.id 
+          }, 
+          'Creating attendance'
+        );
         const attendance = await attendancesService.createAttendance(
           req.user,
           req.course,
@@ -40,6 +48,15 @@ async function routes(fastify) {
         );
         return reply.code(201).send(attendance);
       } catch (error) {
+        fastify.log.error(
+          { 
+            error: error.message, 
+            stack: error.stack,
+            code: error.code,
+            body: req.body 
+          }, 
+          'Error creating attendance'
+        );
         return mapAndReply(error, reply);
       }
     }

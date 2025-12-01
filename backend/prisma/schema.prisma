@@ -148,7 +148,7 @@ model attendances {
   id            Int       @id @default(autoincrement())
   course_id     Int       @map("course_id")
   lecture_id    Int       @map("lecture_id")
-  user_id       Int       @map("user_id")
+  user_id       Int
   updated_by    Int?      @map("updated_by")
   update_reason String?   @map("update_reason") @db.Text
   created_at    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)

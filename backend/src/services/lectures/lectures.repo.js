@@ -97,11 +97,11 @@ class LecturesRepo {
 
   /**
    * Create a new lecture in the database.
+   * Note: Attendance code is NOT auto-generated. Use activateAttendance() to generate code.
    *
    * @param {Object} data - Lecture data
    * @param {number} data.course_id - ID of the course
    * @param {Date|string} data.lecture_date - Date of the lecture
-   * @param {string|null} data.code - Optional lecture code (if not provided, will be auto-generated)
    * @returns {Promise<Object>} Created lecture object
    */
   async createLecture(data) {
@@ -111,25 +111,14 @@ class LecturesRepo {
         ? data.lecture_date
         : new Date(data.lecture_date);
 
-    // Auto-generate code if not provided
-    let code = data.code;
-    let codeGeneratedAt = null;
-    let codeExpiresAt = null;
-
-    if (!code) {
-      code = await this.generateUniqueCode(data.course_id);
-      // Set expiration timestamps: code valid for 5 minutes
-      codeGeneratedAt = new Date();
-      codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes
-    }
-
+    // Do NOT auto-generate code - code will be generated when attendance is activated
     return this.db.lectures.create({
       data: {
         course_id: data.course_id,
         lecture_date: lectureDate,
-        code: code,
-        code_generated_at: codeGeneratedAt,
-        code_expires_at: codeExpiresAt,
+        code: null,
+        code_generated_at: null,
+        code_expires_at: null,
       },
     });
   }
@@ -177,6 +166,30 @@ class LecturesRepo {
     return this.db.lectures.update({
       where: { id: lectureId },
       data: updateData,
+    });
+  }
+
+  /**
+   * Activate attendance for a lecture by generating a code and starting the 5-minute timer.
+   * This should be called when the professor/TA clicks "Start Attendance" button.
+   *
+   * @param {number} lectureId - ID of the lecture
+   * @param {number} courseId - ID of the course (for generating unique code)
+   * @returns {Promise<Object>} Updated lecture object with code and expiration timestamps
+   */
+  async activateAttendance(lectureId, courseId) {
+    const code = await this.generateUniqueCode(courseId);
+    const codeGeneratedAt = new Date();
+    const codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes
+
+    return this.db.lectures.update({
+      where: { id: lectureId },
+      data: {
+        code: code,
+        code_generated_at: codeGeneratedAt,
+        code_expires_at: codeExpiresAt,
+        updated_at: new Date(),
+      },
     });
   }
 

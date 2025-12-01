@@ -31,7 +31,7 @@ export const LectureInfo = {
     code_generated_at: DateTimeType,
     code_expires_at: DateTimeType,
   },
-  required: ['id', 'course_id', 'lecture_date', 'code'],
+  required: ['id', 'course_id', 'lecture_date'], // code is optional (can be null before activation)
 };
 
 export const GetAllLecturesSchema = {
@@ -144,5 +144,27 @@ export const DeleteLectureSchema = {
     401: ErrorSchema,
     403: ErrorSchema,
     404: ErrorSchema,
+  },
+};
+
+export const ActivateAttendanceSchema = {
+  summary: 'Activate attendance for a lecture (generate code and start 5-minute timer)',
+  tags: ['Lectures'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
+    },
+    required: ['course_id', 'lecture_id'],
+  },
+  body: false,
+  response: {
+    200: LectureInfo,
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+    409: ErrorSchema,
   },
 };

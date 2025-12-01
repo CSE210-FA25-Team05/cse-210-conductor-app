@@ -20,7 +20,8 @@ class AttendancesService {
    * @param {Object|null} enrollment - Enrollment object (from req.enrollment, null if not enrolled)
    * @param {Object} lecture - Lecture object (from req.lecture)
    * @param {Object} attendanceData - Attendance data
-   * @param {number} attendanceData.student_id - ID of the student
+   * @param {number} attendanceData.user_id - ID of the user (student)
+   * @param {string|null} attendanceData.code - Attendance code (required for students)
    * @param {string|null} attendanceData.update_reason - Reason for update (optional)
    * @returns {Promise<Object>} Created attendance object
    */
@@ -28,11 +29,11 @@ class AttendancesService {
     // Check if attendance already exists
     const existingAttendance =
       await this.attendancesRepo.getAttendanceByStudentAndLecture(
-        attendanceData.student_id,
+        attendanceData.user_id,
         lecture.id
       );
     if (existingAttendance) {
-      const error = new Error('Attendance already exists for this student and lecture');
+      const error = new Error('Attendance already exists for this user and lecture');
       error.code = 'CONFLICT';
       throw error;
     }
@@ -42,7 +43,7 @@ class AttendancesService {
       user,
       course,
       enrollment,
-      attendanceData.student_id
+      attendanceData.user_id
     );
     if (!canCreate) {
       const error = new Error('You do not have permission to create this attendance');
@@ -50,18 +51,32 @@ class AttendancesService {
       throw error;
     }
 
-    // For students: check if code is still valid (5 minutes expiration)
+    // For students: verify code is correct and still valid (5 minutes expiration)
     // Professors/TAs can create attendance even if code is expired (manual attendance)
     const isStudent = enrollment === null || enrollment.role === 'student';
-    if (isStudent && user.id === attendanceData.student_id) {
+    if (isStudent && user.id === attendanceData.user_id) {
       // Check if code exists and hasn't expired
-      if (!lecture.code || !lecture.code_expires_at) {
+      if (!lecture.code || !lecture.code_expires_at || lecture.code_expires_at === '') {
         const error = new Error('No valid attendance code available for this lecture');
         error.code = 'EXPIRED';
         throw error;
       }
+      
+      // Verify the code matches
+      if (!attendanceData.code || attendanceData.code !== lecture.code) {
+        const error = new Error('Invalid attendance code');
+        error.code = 'BAD_REQUEST';
+        throw error;
+      }
+      
+      // Check if code has expired
       const now = new Date();
       const expiresAt = new Date(lecture.code_expires_at);
+      if (isNaN(expiresAt.getTime())) {
+        const error = new Error('Invalid expiration date for attendance code');
+        error.code = 'BAD_REQUEST';
+        throw error;
+      }
       if (now > expiresAt) {
         const error = new Error('Attendance code has expired. You are marked as absent.');
         error.code = 'EXPIRED';
@@ -72,7 +87,7 @@ class AttendancesService {
     return await this.attendancesRepo.createAttendance({
       course_id: course.id,
       lecture_id: lecture.id,
-      student_id: attendanceData.student_id,
+      user_id: attendanceData.user_id,
       updated_by: user.id,
       update_reason: attendanceData.update_reason || null,
     });
