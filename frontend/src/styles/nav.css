@@ -62,9 +62,7 @@ conductor-nav > footer {
 
 /* Fill screen on mobile */
 @media (max-width: 576px) {
-
   conductor-nav {
     width: calc(100dvw - var(--sidebar-padding) * 2);
   }
-
 }
