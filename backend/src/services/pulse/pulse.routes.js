@@ -47,7 +47,7 @@ async function routes(fastify) {
   fastify.patch(
     '/courses/:course_id/pulses/config',
     {
-      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
+      preHandler: [fastify.loadCourse, fastify.requireProfessorInCourse],
       schema: pulseSchemas.UpdatePulseConfigSchema,
     },
     async (req, reply) => {
