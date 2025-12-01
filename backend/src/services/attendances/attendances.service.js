@@ -98,7 +98,7 @@ class AttendancesService {
       }
       if (now > expiresAt) {
         const error = new Error(
-          'Attendance code has expired. You are marked as absent.'
+          'Attendance code has expired. Please contact your instructor if you were present.'
         );
         error.code = 'EXPIRED';
         throw error;
