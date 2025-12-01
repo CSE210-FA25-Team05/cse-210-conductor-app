@@ -14,7 +14,7 @@ class ConductorNav extends HTMLElement {
       ZingGrid: '/zinggrid',
     };
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
-    this.parentAside = this.parentElement
+    this.parentAside = this.parentElement;
   }
 
   connectedCallback() {
@@ -53,7 +53,6 @@ class ConductorNav extends HTMLElement {
         modal.open();
       }
     });
-
 
     header.appendChild(menuToggle);
     header.appendChild(modalButton);
