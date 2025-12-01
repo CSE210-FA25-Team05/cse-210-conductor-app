@@ -27,13 +27,22 @@ class PulseService {
       return false;
     }
 
-    // Ensure values are non-empty strings and unique
+    // Ensure values are unique
     const seenValues = new Set();
     for (const option of options) {
       if (seenValues.has(option.value)) {
         return false;
       }
       seenValues.add(option.value);
+    }
+
+    // Ensure colors are unique
+    const seenColors = new Set();
+    for (const option of options) {
+      if (seenColors.has(option.color)) {
+        return false;
+      }
+      seenColors.add(option.color);
     }
 
     return true;
