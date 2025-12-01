@@ -13,12 +13,15 @@ class ConductorNav extends HTMLElement {
       Journals: '/journals',
       ZingGrid: '/zinggrid',
     };
+    this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
+    this.parentAside = this.parentElement
   }
 
   connectedCallback() {
     const nav = document.createElement('nav');
     const ul = document.createElement('ul');
-    const bottom = document.createElement('div');
+    const header = document.createElement('header');
+    const footer = document.createElement('footer');
     const logoutButtonInstance = document.createElement('logout-button');
 
     for (const displayName of Object.keys(this.paths)) {
@@ -32,6 +35,15 @@ class ConductorNav extends HTMLElement {
       ul.appendChild(li);
     }
 
+    // Menu 0pen/close toggle button
+    const menuToggle = document.createElement('button');
+    const icon = document.createElement('i');
+    menuToggle.classList = 'icon-only';
+    menuToggle.id = 'menu-toggle';
+    icon.innerText = 'menu';
+    menuToggle.appendChild(icon);
+    menuToggle.addEventListener('click', this.boundedHandleMenuToggleClick);
+
     // modal trigger button
     const modalButton = document.createElement('button');
     modalButton.textContent = 'Add Signal';
@@ -42,13 +54,19 @@ class ConductorNav extends HTMLElement {
       }
     });
 
-    nav.appendChild(modalButton);
-    bottom.appendChild(logoutButtonInstance);
 
+    header.appendChild(menuToggle);
+    header.appendChild(modalButton);
     nav.appendChild(ul);
-    nav.appendChild(bottom);
+    footer.appendChild(logoutButtonInstance);
 
+    this.appendChild(header);
     this.appendChild(nav);
+    this.appendChild(footer);
+  }
+
+  handleMenuToggleClick() {
+    document.body.classList.toggle('menu-closed');
   }
 }
 
