@@ -17,8 +17,8 @@ import { postWrapper } from '/src/js/fetch-wrapper.js';
 const BACKEND_URL = 'http://localhost:3001';
 
 /**
- * @description Get a list of all the courses.
- * @returns { Course[] } List of all the courses and their information.
+ * @description Get a list of all the courses with their information.
+ * @returns { Course[] } List of all the courses with their information.
  */
 export async function getCourses() {
   let response = await getWrapper(BACKEND_URL + '/api/courses');
@@ -36,12 +36,25 @@ export async function getCourses() {
  * @param { string } newCourse.term - School term the course takes course in.
  * @param { string } newCourse.section - Course section.
  * @param { string } newCourse.join_code - Code for enrolling in the course.
- * @param { string } newCourse.start_date - Date the course begins on, in YYYY-MM-DD 
+ * @param { string } newCourse.start_date - Date the course begins on, in YYYY-MM-DD
  * @param { string } newCourse.end_date - Date the course ends on, in YYYY-MM-DD format.
- * @returns { Course } Created course and its information.
+ * @returns { Course } Created course with its information.
  */
 export async function createCourse(newCourse) {
   let response = await postWrapper(BACKEND_URL + '/api/courses', newCourse);
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
+ * @description Get a specific course's information by its course ID.
+ * @param { number } courseID - ID of the course you want to view.
+ * @returns { Course } Requested course with its information.
+ */
+export async function getCourseWithID(courseID) {
+  let response = await getWrapper(BACKEND_URL + '/api/courses/' + courseID);
   if (!response.ok) {
     throw new Error(response.error);
   }
