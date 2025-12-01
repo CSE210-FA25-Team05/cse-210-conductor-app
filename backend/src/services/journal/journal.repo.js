@@ -20,7 +20,7 @@ class JournalRepo {
     }
     const entry = await this.db.journals.create({
       data: {
-        student_id: userId,
+        user_id: userId,
         course_id: courseId,
         title: title,
         content: content,
@@ -68,7 +68,7 @@ class JournalRepo {
   async getJournalsByUserIdAndCourseId(userId, courseId) {
     const entries = await this.db.journals.findMany({
       where: {
-        student_id: userId,
+        user_id: userId,
         course_id: courseId,
         deleted_at: null,
       },

@@ -9,14 +9,14 @@ export const JournalEntryType = {
   type: 'object',
   properties: {
     id: { type: 'number' },
-    student_id: { type: 'number' },
+    user_id: { type: 'number' },
     course_id: { type: 'number' },
     title: { type: 'string' },
     content: { type: 'string' },
     created_at: DateTimeType,
     updated_at: DateTimeType,
   },
-  required: ['id', 'student_id', 'course_id', 'title', 'content'],
+  required: ['id', 'user_id', 'course_id', 'title', 'content'],
 };
 
 export const GetJournalByCourseSchema = {
@@ -84,9 +84,9 @@ export const CreateJournalSchema = {
     properties: {
       title: { type: 'string' },
       content: { type: 'string' },
-      student_id: { type: 'number' },
+      user_id: { type: 'number' },
     },
-    required: ['title', 'content', 'student_id'],
+    required: ['title', 'content', 'user_id'],
   },
   response: {
     201: JournalEntryType,

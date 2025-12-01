@@ -87,9 +87,9 @@ module.exports = async function journalRoutes(fastify, options) {
     async (request, reply) => {
       try {
         const course_id = parseInt(request.params.course_id, 10);
-        const { title, content, student_id } = request.body;
+        const { title, content, user_id } = request.body;
         const res = await journalService.createJournalEntry(
-          student_id,
+          user_id,
           course_id,
           title,
           content
