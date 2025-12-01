@@ -5,4 +5,4 @@ import '/src/components/index.js';
 import '/src/js/utils/load-theme.js';
 
 //Import ZingGrid
-// import 'zinggrid';
+import '/node_modules/zinggrid/dist/zinggrid.min.js';
