@@ -21,7 +21,8 @@
   --spacing-small: 0.5em;
   --spacing-extra-small: 0.25em;
 
-  --sidebar-width: 10em;
+  --sidebar-width: 12ch;
+  --sidebar-padding: var(--spacing-medium);
   --main-content-padding: 3em;
   --icon-button-size: 2.4rem;
   --card-padding: var(--spacing-medium);
@@ -57,6 +58,7 @@
 @media (max-width: 576px) {
   :root {
     font-size: 16px;
+    --main-content-padding: var(--spacing-small);
   }
 }
 @media (min-width: 576px) and (max-width: 768px) {
@@ -220,7 +222,3 @@ table {
    v2.0 | 20110126
    License: none (public domain)
 */
-
-main {
-  padding: var(--main-content-padding);
-}
