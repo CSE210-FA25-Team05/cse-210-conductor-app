@@ -13,10 +13,45 @@ class CourseRepo {
 
   /**
    * Get all courses.
+   * NOTE: This is currently only used for internal operations. The public
+   * /api/courses endpoint should use getCoursesForUser to scope results
+   * to the authenticated user.
    * @returns {Promise<Array>} List of all courses
    */
   async getAllCourse() {
     const courses = await this.db.courses.findMany();
+    return courses;
+  }
+
+  /**
+   * Get all courses for a specific user (by enrollment).
+   * @param {number} userId - ID of the user
+   * @returns {Promise<Array>} List of courses the user is enrolled in
+   */
+  async getCoursesForUser(userId) {
+    // Find all enrollments for this user
+    const enrollments = await this.db.enrollments.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        course_id: true,
+      },
+    });
+
+    const courseIds = enrollments.map((e) => e.course_id);
+    if (courseIds.length === 0) {
+      return [];
+    }
+
+    // Fetch the corresponding courses, excluding soft-deleted ones
+    const courses = await this.db.courses.findMany({
+      where: {
+        id: { in: courseIds },
+        deleted_at: null,
+      },
+    });
+
     return courses;
   }
 
