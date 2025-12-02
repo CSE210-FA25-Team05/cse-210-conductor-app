@@ -580,7 +580,6 @@ const journalId = 11; // change as needed
 // });
 // deleteLectureTest(1, 2);
 
-
 // await getJournalEntriesTest(courseId, userId);
 // await createJournalEntryTest(courseId, {
 //   user_id: userId,
