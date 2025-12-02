@@ -39,28 +39,27 @@ const BACKEND_URL = 'http://localhost:3001';
  * @returns { Lecture[] } List of lectures for the course.
  */
 export async function getLectures(courseId) {
-    const response = await getWrapper(
-      `${BACKEND_URL}/api/courses/${courseId}/lectures`
-    );
-    if (!response.ok) {
-      throw new Error(response.error);
-    }
-    return response.data.lectures ?? response.data;
+  const response = await getWrapper(
+    `${BACKEND_URL}/api/courses/${courseId}/lectures`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
   }
-  
-  /**
-   * @description Get a single lecture. Wraps `GET /api/courses/{course_id}/lectures/{lecture_id}`.
-   * @param {number|string} courseId - Unique identifier of the course.
-   * @param {number|string} lectureId - Unique identifier of the lecture.
-   * @returns { Lecture } The requested lecture.
-   */
-  export async function getLecture(courseId, lectureId) {
-    const response = await getWrapper(
-      `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
-    );
-    if (!response.ok) {
-      throw new Error(response.error);
-    }
-    return response.data;
+  return response.data.lectures ?? response.data;
+}
+
+/**
+ * @description Get a single lecture. Wraps `GET /api/courses/{course_id}/lectures/{lecture_id}`.
+ * @param {number|string} courseId - Unique identifier of the course.
+ * @param {number|string} lectureId - Unique identifier of the lecture.
+ * @returns { Lecture } The requested lecture.
+ */
+export async function getLecture(courseId, lectureId) {
+  const response = await getWrapper(
+    `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
   }
-  
+  return response.data;
+}
