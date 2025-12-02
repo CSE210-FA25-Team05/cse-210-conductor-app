@@ -14,7 +14,7 @@ class ConductorNav extends HTMLElement {
       Journals: '/journals',
       ZingGrid: '/zinggrid',
       ChartJS: 'chartjs',
-      StreamGraph: '/d3'
+      StreamGraph: '/d3',
     };
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
     this.boundedHandleResize = this.handleResize.bind(this);
