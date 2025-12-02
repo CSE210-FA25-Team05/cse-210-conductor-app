@@ -63,3 +63,54 @@ export async function getLecture(courseId, lectureId) {
   }
   return response.data;
 }
+
+/**
+ * @description Create a new lecture. Wraps `POST /api/courses/{course_id}/lectures`.
+ * @param {number|string} courseId - Unique identifier of the course.
+ * @param {LecturePayload} lectureBody - Fields for the new lecture.
+ * @returns { Lecture } Created lecture with its information.
+ */
+export async function createLecture(courseId, lectureBody) {
+    const response = await postWrapper(
+        `${BACKEND_URL}/api/courses/${courseId}/lectures`,
+        lectureBody
+    );
+    if (!response.ok) {
+        throw new Error(response.error);
+    }
+    return response.data;
+}
+
+/**
+ * @description Update an existing lecture. Wraps `PATCH /api/courses/{course_id}/lectures/{lecture_id}`.
+ * @param {number|string} courseId - Unique identifier of the course.
+ * @param {number|string} lectureId - Unique identifier of the lecture to update.
+ * @param {LecturePayload} lectureBody - Fields to update on the lecture.
+ * @returns { Lecture } Updated lecture object.
+ */
+export async function updateLecture(courseId, lectureId, lectureBody) {
+    const response = await patchWrapper(
+        `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`,
+        lectureBody
+    );
+    if (!response.ok) {
+        throw new Error(response.error);
+    }
+    return response.data;
+}
+
+/**
+ * @description Delete a lecture. Wraps `DELETE /api/courses/{course_id}/lectures/{lecture_id}`.
+ * @param {number|string} courseId - Unique identifier of the course.
+ * @param {number|string} lectureId - Unique identifier of the lecture to delete.
+ * @returns {{ message: string }} Confirmation message.
+ */
+export async function deleteLecture(courseId, lectureId) {
+    const response = await deleteWrapper(
+        `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
+    );
+    if (!response.ok) {
+        throw new Error(response.error);
+    }
+    return response.data;
+}
