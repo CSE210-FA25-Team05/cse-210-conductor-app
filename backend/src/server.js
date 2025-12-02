@@ -62,9 +62,9 @@ fastify.register(require('./services/course/course.routes'), {
   prefix: '/api',
 });
 
-//teams routes
-fastify.register(require('./services/teams/teams.routes'), {
-  prefix: '/api',
+//journal routes
+fastify.register(require('./services/journal/journal.routes'), {
+  prefix: '/api/courses/:course_id',
 });
 
 //health check
