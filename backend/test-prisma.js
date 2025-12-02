@@ -1,25 +1,34 @@
-// Quick Prisma test - run with: node test-prisma.js
+// backend/test-prisma.js
 require('dotenv').config();
-const prisma = require('./src/prisma');
+const { PrismaClient } = require('@prisma/client');
 
-async function test() {
-  try {
-    console.log('🔌 Testing Prisma connection...');
-    await prisma.$connect();
+const prisma = new PrismaClient();
 
-    const count = await prisma.user.count();
-    console.log(`✅ Connected! Found ${count} users in database.`);
+async function main() {
+  console.log('🔌 Testing Prisma connection...');
+  console.log('   DATABASE_URL =', process.env.DATABASE_URL);
 
-    const users = await prisma.user.findMany({ take: 3 });
-    console.log('📋 Sample users:');
-    users.forEach((u) => console.log(`   - ${u.email} (${u.globalRole})`));
+  // This should exist on a PrismaClient instance
+  await prisma.$connect();
+  console.log('✅ prisma.$connect() OK');
 
-    await prisma.$disconnect();
-    console.log('✅ Test passed!');
-  } catch (error) {
-    console.error('❌ Error:', error.message);
-    process.exit(1);
+  // List tables as a safe sanity check
+  const rows = await prisma.$queryRaw`
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+    ORDER BY table_name;
+  `;
+  console.log('📋 Tables in public schema:');
+  for (const row of rows) {
+    console.log('  -', row.table_name);
   }
 }
 
-test();
+main()
+  .catch((err) => {
+    console.error('❌ Error:', err);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
