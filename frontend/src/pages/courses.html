@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Conductor</title>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" async src="/src/js/common.js"></script>
+    </head>
+    <body>
+        <main>
+            <h1>Courses</h1>
+
+            <h2>Your Courses</h2>
+            <ul>
+                <li><a href="/course/123/dashboard">Course 123</a></li>
+                <li><a href="/course/456/dashboard">Course 456</a></li>
+                <li><a href="/course/789/dashboard">Course 789</a></li>
+            </ul>
+            <h2>Join Course</h2>
+            <form id="joinCourseForm">
+                <label for="course-id">Course ID
+                    <input 
+                        type="text" 
+                        id="course-id" 
+                        name="course-id" 
+                        required 
+                    />
+                </label>
+                <button type="submit">Join Course</button>
+            </form>
+
+            <pre id="response"></pre>
+
+
+            <script>
+            document
+                .getElementById("joinCourseForm")
+                .addEventListener("submit", async (event) => {
+                    event.preventDefault();
+
+                    const courseId = document.getElementById("course-id").value;
+
+                    try {
+
+                        let response = await fetch(`/api/me/profile`, {
+                            method: "GET",
+                            credentials: 'include',
+                        });
+                        const json = await response.json();
+                        const userId = json.id;
+
+                        console.log('userID', userId);
+                        response = await fetch(`/api/courses/${courseId}/join`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                user_id: parseInt(userId),
+                            }),
+                        });
+
+                        const result = await response.json();
+                        document.getElementById("response").textContent = JSON.stringify(
+                            result,
+                            null,
+                            2
+                        );
+                    } catch (err) {
+                        document.getElementById("response").textContent =
+                            "Error: " + err.message;
+                    }
+                });
+            </script>
+    </body>
+
+</html>
