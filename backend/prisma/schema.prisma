@@ -179,6 +179,7 @@ model interaction_configs {
   id            Int       @id @default(autoincrement())
   course_id     Int       @map("course_id")
   config        Json      @map("config") @db.JsonB
+  is_editable   Boolean   @default(true) @map("is_editable")
   created_at    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
   updated_at    DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
   deleted_at    DateTime? @map("deleted_at") @db.Timestamp(6)
