@@ -3,6 +3,7 @@ CREATE TABLE "interaction_configs" (
     "id" SERIAL NOT NULL,
     "course_id" INTEGER NOT NULL,
     "config" JSONB NOT NULL,
+    "is_editable" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP(6),
