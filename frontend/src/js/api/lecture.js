@@ -4,30 +4,31 @@
 // PATCH  /api/courses/{course_id}/lectures/{lecture_id}
 // DELETE /api/courses/{course_id}/lectures/{lecture_id}
 
-import {
-  getWrapper,
-  postWrapper,
-  patchWrapper,
-  deleteWrapper,
-} from '/src/js/fetch-wrapper.js';
+import { getWrapper } from '/src/js/fetch-wrapper.js';
+import { postWrapper } from '/src/js/fetch-wrapper.js';
+import { patchWrapper } from '/src/js/fetch-wrapper.js';
+import { deleteWrapper } from '/src/js/fetch-wrapper.js';
 
 /**
  * @typedef Lecture
- * @typedef {Object} FetchResult
- * @property {boolean} ok - Whether the request was successful.
- * @property {number} status - HTTP status code of the response.
- * @property {any} [data] - Parsed response data (JSON or text) when the request succeeds.
- * @property {string} [error] - Error message when the request fails.
+ * @type { object }
+ * @property { number } id - Lecture ID.
+ * @property { number } course_id - course ID.
+ * @property { string } [title] - Title of the lecture.
+ * @property { string } [description] - Description or summary of the lecture.
+ * @property { string } [date] - ISO 8601 date string for when the lecture occurs.
+ * @property { string } [slidesUrl] - Optional URL to lecture slides/resources.
+ * @property { string } [recordingUrl] - Optional URL to lecture recording.
  */
 
 /**
- * @typedef {Object} LectureContent
- * @property {number} id - Unique identifier of the lecture.
- * @property {string} [title] - Title of the lecture.
- * @property {string} [description] - Description or summary of the lecture.
- * @property {string} [date] - ISO 8601 date string for when the lecture occurs.
- * @property {string} [slidesUrl] - Optional URL to lecture slides/resources.
- * @property {string} [recordingUrl] - Optional URL to lecture recording.
+ * @typedef LecturePayload
+ * @type { object }
+ * @property { string } [title] - Title of the lecture.
+ * @property { string } [description] - Description or summary of the lecture.
+ * @property { string } [date] - ISO 8601 date string for when the lecture occurs.
+ * @property { string } [slidesUrl] - Optional URL to lecture slides/resources.
+ * @property { string } [recordingUrl] - Optional URL to lecture recording.
  */
 
 const BACKEND_URL = 'http://localhost:3001';
