@@ -516,12 +516,11 @@ async function main() {
       config: {
         text: 'Record an interaction with students',
         options: [
-          { value: 'happy', color: 'rgb(0, 255, 0)' },
-          { value: 'positive', color: 'rgb(255, 243, 21)' },
+          { value: 'positive', color: 'rgb(0, 255, 0)' },
+          { value: 'negative', color: 'rgb(255, 0, 0)' },
           { value: 'neutral', color: 'rgb(0, 0, 255)' },
         ],
       },
-      is_editable: true,
     },
   });
 
@@ -531,12 +530,11 @@ async function main() {
       config: {
         text: 'Record an interaction with students',
         options: [
-          { value: 'happy', color: 'rgb(0, 255, 0)' },
-          { value: 'positive', color: 'rgb(255, 243, 21)' },
+          { value: 'positive', color: 'rgb(0, 255, 0)' },
+          { value: 'negative', color: 'rgb(255, 0, 0)' },
           { value: 'neutral', color: 'rgb(0, 0, 255)' },
         ],
       },
-      is_editable: true,
     },
   });
 
@@ -546,7 +544,7 @@ async function main() {
       course_id: cse210.id,
       author_id: professor.id,
       interaction_config_id: cse210_interaction_config.id,
-      value: 'happy',
+      value: 'positive',
       description:
         'John answered a question about design patterns during lecture. Great explanation!',
       created_at: new Date('2025-10-01T10:30:00Z'),
@@ -582,7 +580,7 @@ async function main() {
       course_id: cse110.id,
       author_id: ta.id,
       interaction_config_id: cse110_interaction_config.id,
-      value: 'happy',
+      value: 'positive',
       description:
         'John helped another student debug their code during lab. Great teamwork!',
       created_at: new Date('2025-10-02T15:30:00Z'),
@@ -594,9 +592,9 @@ async function main() {
       course_id: cse110.id,
       author_id: professor.id,
       interaction_config_id: cse110_interaction_config.id,
-      value: 'positive',
+      value: 'negative',
       description:
-        'Jane participated actively in class discussion about loops and arrays.',
+        'Student missed multiple office hours appointments without notice.',
       created_at: new Date('2025-10-02T09:45:00Z'),
     },
   });
@@ -607,7 +605,6 @@ async function main() {
     data: {
       interaction_id: interaction1.id,
       user_id: john.id,
-      role: 'participant',
     },
   });
 
@@ -616,7 +613,6 @@ async function main() {
     data: {
       interaction_id: interaction2.id,
       user_id: jane.id,
-      role: 'participant',
     },
   });
 
@@ -625,7 +621,6 @@ async function main() {
     data: {
       interaction_id: interaction3.id,
       user_id: john.id,
-      role: 'participant',
     },
   });
 
@@ -633,7 +628,6 @@ async function main() {
     data: {
       interaction_id: interaction3.id,
       user_id: jane.id,
-      role: 'participant',
     },
   });
 
@@ -642,7 +636,6 @@ async function main() {
     data: {
       interaction_id: interaction4.id,
       user_id: john.id,
-      role: 'participant',
     },
   });
 
@@ -651,7 +644,6 @@ async function main() {
     data: {
       interaction_id: interaction5.id,
       user_id: jane.id,
-      role: 'participant',
     },
   });
 
