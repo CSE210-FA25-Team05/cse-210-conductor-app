@@ -12,10 +12,7 @@ class CourseRepo {
   }
 
   /**
-   * Get all courses.
-   * NOTE: This is currently only used for internal operations. The public
-   * /api/courses endpoint should use getCoursesForUser to scope results
-   * to the authenticated user.
+   * Get all courses. This is used for internal operations.
    * @returns {Promise<Array>} List of all courses
    */
   async getAllCourse() {
