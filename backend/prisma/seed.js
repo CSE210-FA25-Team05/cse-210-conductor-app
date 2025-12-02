@@ -515,11 +515,7 @@ async function main() {
       course_id: cse210.id,
       config: {
         text: 'Record an interaction with students',
-        options: [
-          { value: 'positive', color: 'rgb(0, 255, 0)' },
-          { value: 'negative', color: 'rgb(255, 0, 0)' },
-          { value: 'neutral', color: 'rgb(0, 0, 255)' },
-        ],
+        options: ['positive', 'negative', 'neutral'],
       },
     },
   });
@@ -529,11 +525,7 @@ async function main() {
       course_id: cse110.id,
       config: {
         text: 'Record an interaction with students',
-        options: [
-          { value: 'positive', color: 'rgb(0, 255, 0)' },
-          { value: 'negative', color: 'rgb(255, 0, 0)' },
-          { value: 'neutral', color: 'rgb(0, 0, 255)' },
-        ],
+        options: ['positive', 'negative', 'neutral'],
       },
     },
   });
