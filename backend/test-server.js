@@ -424,7 +424,127 @@ async function deleteLectureTest(courseId, lectureId) {
   }
 }
 
+// test creation of journal entries
+async function createJournalEntryTest(courseId, journalData) {
+  console.log('→ Creating journal entry...');
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/journals`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(journalData),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry created successfully (id=${data.id})`);
+  } else {
+    console.error('❌ Journal entry creation failed');
+    process.exit(1);
+  }
+}
+
+// update journal entry test
+async function updateJournalEntryTest(courseId, journalId, updateData) {
+  console.log(`→ Updating journal entry id=${journalId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/${journalId}`,
+    {
+      method: 'PATCH',
+      headers: headers(),
+      body: JSON.stringify(updateData),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry id=${journalId} updated successfully`);
+  } else {
+    console.error(`❌ Failed to update journal entry id=${journalId}`);
+  }
+}
+// delete journal entry test
+async function deleteJournalEntryTest(courseId, journalId) {
+  console.log(`→ Deleting journal entry id=${journalId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/${journalId}`,
+    {
+      method: 'DELETE',
+      headers: headers(),
+      body: JSON.stringify({}),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry id=${journalId} deleted successfully`);
+  } else {
+    console.error(`❌ Failed to delete journal entry id=${journalId}`);
+  }
+}
+// get journal entries test
+async function getJournalEntriesTest(courseId, userId) {
+  console.log(
+    `→ Fetching journal entries for user id=${userId} in course id=${courseId}...`
+  );
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/user/${userId}`,
+    {
+      method: 'GET',
+      headers: headers(),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`
+    );
+  } else {
+    console.error(
+      `❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`
+    );
+  }
+}
 // Run tests
+
+const courseId = 6; // change as needed
+const userId = 7; // change as needed
+const journalId = 11; // change as needed
 
 // COURSE TESTS
 // addCourseTest();
@@ -448,14 +568,25 @@ async function deleteLectureTest(courseId, lectureId) {
 // LECTURES TESTS
 // Note: Use course_id=1 (test user is enrolled as professor in course 1)
 // Course 1 has lectures with IDs 1 and 2
-getAllLecturesTest(1);
-getLectureTest(1, 1);
-createLectureTest(1, {
-  lecture_date: '2025-11-20',
-  code: 'TEST-L1',
-});
-updateLectureTest(1, 1, {
-  lecture_date: '2025-11-21',
-  code: 'UPDATED-L1',
-});
-deleteLectureTest(1, 2);
+// getAllLecturesTest(1);
+// getLectureTest(1, 1);
+// createLectureTest(1, {
+//   lecture_date: '2025-11-20',
+//   code: 'TEST-L1',
+// });
+// updateLectureTest(1, 1, {
+//   lecture_date: '2025-11-21',
+//   code: 'UPDATED-L1',
+// });
+// deleteLectureTest(1, 2);
+
+// await getJournalEntriesTest(courseId, userId);
+// await createJournalEntryTest(courseId, {
+//   user_id: userId,
+//   title: 'Test Journal Entry',
+//   content: 'This is a test journal entry.',
+// });
+// await updateJournalEntryTest(courseId, journalId, {
+//   content: 'This is an updated test journal entry.',
+// });
+// await deleteJournalEntryTest(courseId, journalId);
