@@ -8,6 +8,11 @@ async function main() {
 
   // Clear existing data (optional - comment out if you want to keep existing data)
   console.log('Clearing existing data...');
+  await prisma.interaction_participants.deleteMany();
+  await prisma.interactions.deleteMany();
+  await prisma.interaction_configs.deleteMany();
+  await prisma.pulses.deleteMany();
+  await prisma.pulse_configs.deleteMany();
   await prisma.attendances.deleteMany();
   await prisma.lectures.deleteMany();
   await prisma.ta_teams.deleteMany();
@@ -501,6 +506,144 @@ async function main() {
       description:
         'Concerned about the upcoming deadlines and progress of team 5.',
       created_at: new Date('2025-10-08T09:10:00Z'),
+    },
+  });
+
+  console.log('Creating interaction configs...');
+  const cse210_interaction_config = await prisma.interaction_configs.create({
+    data: {
+      course_id: cse210.id,
+      config: {
+        options: [
+          { value: 'positive', color: 'rgb(0, 255, 0)' },
+          { value: 'negative', color: 'rgb(255, 0, 0)' },
+          { value: 'neutral', color: 'rgb(128, 128, 128)' },
+        ],
+      },
+      is_editable: false,
+    },
+  });
+
+  const cse110_interaction_config = await prisma.interaction_configs.create({
+    data: {
+      course_id: cse110.id,
+      config: {
+        options: [
+          { value: 'positive', color: 'rgb(0, 255, 0)' },
+          { value: 'negative', color: 'rgb(255, 0, 0)' },
+          { value: 'neutral', color: 'rgb(128, 128, 128)' },
+        ],
+      },
+      is_editable: true,
+    },
+  });
+
+  console.log('Creating interactions...');
+  const interaction1 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'John answered a question about design patterns during lecture. Great explanation!',
+      created_at: new Date('2025-10-01T10:30:00Z'),
+    },
+  });
+
+  const interaction2 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'Jane came to office hours and asked thoughtful questions about the project requirements.',
+      created_at: new Date('2025-10-02T14:00:00Z'),
+    },
+  });
+
+  const interaction3 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'neutral',
+      description:
+        'Team discussion during class about project scope. Need to follow up.',
+      created_at: new Date('2025-10-03T11:15:00Z'),
+    },
+  });
+
+  const interaction4 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: ta.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'positive',
+      description:
+        'John helped another student debug their code during lab. Great teamwork!',
+      created_at: new Date('2025-10-02T15:30:00Z'),
+    },
+  });
+
+  const interaction5 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: professor.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'negative',
+      description:
+        'Student missed multiple office hours appointments without notice.',
+      created_at: new Date('2025-10-02T09:45:00Z'),
+    },
+  });
+
+  console.log('Creating interaction participants...');
+  // Interaction 1: John participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction1.id,
+      user_id: john.id,
+    },
+  });
+
+  // Interaction 2: Jane participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction2.id,
+      user_id: jane.id,
+    },
+  });
+
+  // Interaction 3: Both John and Jane participated in team discussion
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction3.id,
+      user_id: john.id,
+    },
+  });
+
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction3.id,
+      user_id: jane.id,
+    },
+  });
+
+  // Interaction 4: John participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction4.id,
+      user_id: john.id,
+    },
+  });
+
+  // Interaction 5: Jane participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction5.id,
+      user_id: jane.id,
     },
   });
 
