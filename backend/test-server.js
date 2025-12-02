@@ -542,6 +542,10 @@ async function getJournalEntriesTest(courseId, userId) {
 }
 // Run tests
 
+const courseId = 6; // change as needed
+const userId = 7; // change as needed
+const journalId = 11; // change as needed
+
 // COURSE TESTS
 // addCourseTest();
 // updateCourseTest(16, {
@@ -564,14 +568,26 @@ async function getJournalEntriesTest(courseId, userId) {
 // LECTURES TESTS
 // Note: Use course_id=1 (test user is enrolled as professor in course 1)
 // Course 1 has lectures with IDs 1 and 2
-getAllLecturesTest(1);
-getLectureTest(1, 1);
-createLectureTest(1, {
-  lecture_date: '2025-11-20',
-  code: 'TEST-L1',
-});
-updateLectureTest(1, 1, {
-  lecture_date: '2025-11-21',
-  code: 'UPDATED-L1',
-});
-deleteLectureTest(1, 2);
+// getAllLecturesTest(1);
+// getLectureTest(1, 1);
+// createLectureTest(1, {
+//   lecture_date: '2025-11-20',
+//   code: 'TEST-L1',
+// });
+// updateLectureTest(1, 1, {
+//   lecture_date: '2025-11-21',
+//   code: 'UPDATED-L1',
+// });
+// deleteLectureTest(1, 2);
+
+
+// await getJournalEntriesTest(courseId, userId);
+// await createJournalEntryTest(courseId, {
+//   user_id: userId,
+//   title: 'Test Journal Entry',
+//   content: 'This is a test journal entry.',
+// });
+// await updateJournalEntryTest(courseId, journalId, {
+//   content: 'This is an updated test journal entry.',
+// });
+// await deleteJournalEntryTest(courseId, journalId);
