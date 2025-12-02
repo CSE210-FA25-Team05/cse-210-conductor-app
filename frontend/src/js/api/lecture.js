@@ -71,14 +71,14 @@ export async function getLecture(courseId, lectureId) {
  * @returns { Lecture } Created lecture with its information.
  */
 export async function createLecture(courseId, lectureBody) {
-    const response = await postWrapper(
-        `${BACKEND_URL}/api/courses/${courseId}/lectures`,
-        lectureBody
-    );
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
-    return response.data;
+  const response = await postWrapper(
+    `${BACKEND_URL}/api/courses/${courseId}/lectures`,
+    lectureBody
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
 }
 
 /**
@@ -89,14 +89,14 @@ export async function createLecture(courseId, lectureBody) {
  * @returns { Lecture } Updated lecture object.
  */
 export async function updateLecture(courseId, lectureId, lectureBody) {
-    const response = await patchWrapper(
-        `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`,
-        lectureBody
-    );
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
-    return response.data;
+  const response = await patchWrapper(
+    `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`,
+    lectureBody
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
 }
 
 /**
@@ -106,11 +106,11 @@ export async function updateLecture(courseId, lectureId, lectureBody) {
  * @returns {{ message: string }} Confirmation message.
  */
 export async function deleteLecture(courseId, lectureId) {
-    const response = await deleteWrapper(
-        `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
-    );
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
-    return response.data;
+  const response = await deleteWrapper(
+    `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
 }
