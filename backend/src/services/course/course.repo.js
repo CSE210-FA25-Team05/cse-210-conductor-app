@@ -12,11 +12,31 @@ class CourseRepo {
   }
 
   /**
-   * Get all courses.
+   * Get all courses. This is used for internal operations.
    * @returns {Promise<Array>} List of all courses
    */
   async getAllCourse() {
     const courses = await this.db.courses.findMany();
+    return courses;
+  }
+
+  /**
+   * Get all courses for a specific user (by enrollment).
+   * @param {number} userId - ID of the user
+   * @returns {Promise<Array>} List of courses the user is enrolled in
+   */
+  async getCoursesForUser(userId) {
+    const courses = await this.db.courses.findMany({
+      where: {
+        deleted_at: null,
+        enrollments: {
+          some: {
+            user_id: userId,
+          },
+        },
+      },
+    });
+
     return courses;
   }
 
