@@ -42,7 +42,8 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.getAllCourse();
+        // Return only courses the authenticated user is enrolled in / associated with
+        const res = await courseService.getCoursesForUser(request.user.id);
         return res;
       } catch (error) {
         console.error(error);
