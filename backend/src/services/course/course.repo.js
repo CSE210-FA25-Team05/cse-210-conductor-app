@@ -26,26 +26,14 @@ class CourseRepo {
    * @returns {Promise<Array>} List of courses the user is enrolled in
    */
   async getCoursesForUser(userId) {
-    // Find all enrollments for this user
-    const enrollments = await this.db.enrollments.findMany({
-      where: {
-        user_id: userId,
-      },
-      select: {
-        course_id: true,
-      },
-    });
-
-    const courseIds = enrollments.map((e) => e.course_id);
-    if (courseIds.length === 0) {
-      return [];
-    }
-
-    // Fetch the corresponding courses, excluding soft-deleted ones
     const courses = await this.db.courses.findMany({
       where: {
-        id: { in: courseIds },
         deleted_at: null,
+        enrollments: {
+          some: {
+            user_id: userId,
+          },
+        },
       },
     });
 
