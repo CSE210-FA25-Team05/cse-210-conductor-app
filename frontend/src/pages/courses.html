@@ -15,31 +15,36 @@
 
             <h1>Courses</h1>
 
-            <h2>Your Courses</h2>
-            <ul id="courses-list"></ul>
-            <pre id="courses-response" style="color: red;"></pre>
+            <article>
+                <h2>Your Courses</h2>
+                <ul id="courses-list"></ul>
+                <pre id="courses-response" style="color: red;"></pre>
+            </article>
 
+            <article>
             <h2>Join Course</h2>
-            <form id="joinCourseForm">
-                <label for="course-id">Course ID
-                    <input 
-                        type="text" 
-                        id="course-id" 
-                        name="course-id" 
-                        required 
-                    />
-                </label>
-                <label for="join-code">Join Code
-                    <input
-                        type="text" 
-                        id="join-code" 
-                        name="join-code" 
-                        required 
-                    />
-                </label>
-                <button type="submit">Join Course</button>
-            </form>
+                <form id="joinCourseForm">
+                    <label for="course-id">Course ID
+                        <input 
+                            type="text" 
+                            id="course-id" 
+                            name="course-id" 
+                            required 
+                        />
+                    </label>
+                    <label for="join-code">Join Code
+                        <input
+                            type="text" 
+                            id="join-code" 
+                            name="join-code" 
+                            required 
+                        />
+                    </label>
+                    <button type="submit">Join Course</button>
+                </form>
+            </article>
 
+            <article>
             <h2>Create Course</h2>
 
             <pre id="response"></pre>
@@ -84,8 +89,8 @@
             </form>
             <pre id="create-response"></pre>
 
-            <button id="getCoursesButton">Get all courses for user</button>
             <pre id="get-response"></pre>
+            </article>
 
 
             <script>
