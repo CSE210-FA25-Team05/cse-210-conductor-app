@@ -5,18 +5,18 @@ const { mapAndReply } = require('../../utils/error-map');
 /**
  * Journal Routes Plugin
  * GET
- * /api/courses/:course_id/journals - get all journals of a course
- * /api/courses/:course_id/journals/entry/:journal_id - get specific journal entry
- * /api/courses/:course_id/journals/user/:user_id - get journals of the authenticated user
+ * /courses/:course_id/journals - get all journals of a course
+ * /courses/:course_id/journals/entry/:journal_id - get specific journal entry
+ * /courses/:course_id/journals/user/:user_id - get journals of the authenticated user
  *
  * POST
- * /api/courses/:course_id/journals - create a new journal entry
+ * /courses/:course_id/journals - create a new journal entry
  *
  * PATCH
- * /api/courses/:course_id/journals/:journal_id - update a journal entry
+ * /courses/:course_id/journals/:journal_id - update a journal entry
  *
  * DELETE
- * /api/courses/:course_id/journals/:journal_id - delete a journal entry
+ * /courses/:course_id/journals/:journal_id - delete a journal entry
  */
 
 const JournalRepo = require('./journal.repo');
