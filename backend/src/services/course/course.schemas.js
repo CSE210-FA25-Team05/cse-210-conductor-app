@@ -104,7 +104,7 @@ export const GetCourseSchema = {
   params: {
     type: 'object',
     properties: {
-      course_id: { type: 'number' },
+      course_id: { type: 'string' },
     },
   },
   response: {
