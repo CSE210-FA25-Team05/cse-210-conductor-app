@@ -56,6 +56,8 @@ model users {
   sessions          sessions[]
   journals          journals[]
   pulses            pulses[]
+  interactions      interactions[] @relation("InteractionAuthor")
+  interaction_participants interaction_participants[]
 }
 
 model courses {
@@ -78,6 +80,8 @@ model courses {
   journals    journals[]
   pulse_configs pulse_configs[]
   pulses      pulses[]
+  interaction_configs interaction_configs[]
+  interactions interactions[]
 
   @@unique([course_code, term, section])
 }
@@ -93,6 +97,7 @@ model teams {
   courses     courses   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   enrollments enrollments[]
   ta_teams    ta_teams[]
+  pulses      pulses[]
 
   @@unique([course_id, name])
 }
@@ -171,6 +176,53 @@ model sessions {
   users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
+model interaction_configs {
+  id            Int       @id @default(autoincrement())
+  course_id     Int       @map("course_id")
+  config        Json      @map("config") @db.JsonB
+  is_editable   Boolean   @default(true) @map("is_editable")
+  created_at    DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updated_at    DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  deleted_at    DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  courses       courses       @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  interactions  interactions[]
+
+  @@map("interaction_configs")
+}
+
+model interactions {
+  id                  Int       @id @default(autoincrement())
+  course_id           Int       @map("course_id")
+  author_id           Int       @map("author_id")
+  interaction_config_id Int     @map("interaction_config_id")
+  value               String    @map("value") @db.VarChar(255)
+  description         String?   @map("description")
+  created_at          DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  deleted_at          DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  courses             courses                    @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  authors             users                      @relation("InteractionAuthor", fields: [author_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  interaction_configs interaction_configs        @relation(fields: [interaction_config_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  participants        interaction_participants[]
+
+  @@map("interactions")
+}
+
+model interaction_participants {
+  id              Int       @id @default(autoincrement())
+  interaction_id  Int       @map("interaction_id")
+  user_id         Int       @map("user_id")
+  created_at      DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  deleted_at      DateTime? @map("deleted_at") @db.Timestamp(6)
+
+  interactions interactions @relation(fields: [interaction_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users        @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([interaction_id, user_id])
+  @@map("interaction_participants")
+}
+
 model journals {
   id            Int       @id @default(autoincrement())
   course_id     Int       @map("course_id")
@@ -203,6 +255,7 @@ model pulses {
   id              Int           @id @default(autoincrement())
   course_id       Int           @map("course_id")
   user_id         Int           @map("user_id")
+  team_id         Int?          @map("team_id")
   pulse_config_id Int           @map("pulse_config_id")
   value           String        @map("value") @db.VarChar(255)
   description     String?       @map("description")
@@ -210,5 +263,11 @@ model pulses {
 
   courses         courses       @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users           users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  teams           teams?        @relation(fields: [team_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   pulse_configs   pulse_configs @relation(fields: [pulse_config_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([course_id, created_at])
+  @@index([course_id, user_id, created_at])
+  @@index([course_id, team_id, created_at])
+  @@index([course_id, value, created_at])
 }
