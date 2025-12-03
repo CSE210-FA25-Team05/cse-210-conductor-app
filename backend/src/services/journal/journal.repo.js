@@ -84,7 +84,7 @@ class JournalRepo {
    * @returns {Promise<object>} updated journal entry
    */
   async updateJournalEntry(journal_id, title, content) {
-    const entry = await this.db.journals.updateMany({
+    const entry = await this.db.journals.update({
       where: {
         id: journal_id,
         deleted_at: null,
