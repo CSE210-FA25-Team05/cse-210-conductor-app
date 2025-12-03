@@ -129,22 +129,15 @@ class LecturesService {
       throw error;
     }
 
-    if (
-      !updateData.lecture_date &&
-      updateData.code === undefined &&
-      updateData.regenerate_code !== true
-    ) {
+    if (!updateData.lecture_date) {
       return existingLecture;
     }
 
-    const finalUpdateData = {
-      lecture_date: updateData.lecture_date || existingLecture.lecture_date,
-      code: updateData.code,
-      regenerate_code: updateData.regenerate_code,
-      course_id: course.id, // Required for code regeneration
-    };
-
-    return await this.lecturesRepo.updateLecture(lectureId, finalUpdateData);
+    return await this.lecturesRepo.updateLecture(
+      lectureId,
+      course.id,
+      updateData
+    );
   }
 
   /**
@@ -178,7 +171,7 @@ class LecturesService {
       throw error;
     }
 
-    await this.lecturesRepo.deleteLecture(lectureId);
+    await this.lecturesRepo.deleteLecture(lectureId, course.id);
   }
 
   /**
@@ -205,25 +198,9 @@ class LecturesService {
       throw error;
     }
 
-    const existingLecture = await this.lecturesRepo.getLectureById(
-      lectureId,
-      course.id
-    );
-    if (!existingLecture) {
-      const error = new Error('Lecture not found');
-      error.code = 'NOT_FOUND';
-      throw error;
-    }
-
-    // Check if code is already active and not expired
-    if (this.lecturesRepo.isCodeValid(existingLecture)) {
-      const error = new Error(
-        'Attendance code is already active for this lecture'
-      );
-      error.code = 'CONFLICT';
-      throw error;
-    }
-
+    // activateAttendance handles checking if lecture exists and belongs to course
+    // It also handles the case where code is already active (returns existing lecture)
+    // Once attendance is activated, it cannot be reactivated (one activation per lecture)
     return await this.lecturesRepo.activateAttendance(lectureId, course.id);
   }
 }

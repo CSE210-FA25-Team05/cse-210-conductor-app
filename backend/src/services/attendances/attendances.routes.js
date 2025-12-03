@@ -3,6 +3,8 @@
 /**
  * Attendances Routes
  *
+ * GET    /api/courses/:course_id/lectures/:lecture_id/attendances - Get all attendances for a lecture
+ * GET    /api/courses/:course_id/lectures/:lecture_id/attendances/stats - Get attendance statistics
  * POST   /api/courses/:course_id/lectures/:lecture_id/attendances - Create a new attendance record
  * PATCH  /api/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id - Update an attendance record
  * DELETE /api/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id - Delete an attendance record
@@ -22,9 +24,54 @@ async function routes(fastify) {
     attendancesPermissions
   );
 
+  // Get all attendances for a lecture
+  fastify.get(
+    '/courses/:course_id/lectures/:lecture_id/attendances',
+    {
+      preHandler: [fastify.loadCourse, fastify.loadLecture],
+      schema: attendancesSchemas.GetAttendancesSchema,
+    },
+    async (req, reply) => {
+      try {
+        const attendances =
+          await attendancesService.getAttendancesByLecture(
+            req.user,
+            req.course,
+            req.enrollment,
+            req.lecture
+          );
+        return reply.send({ attendances });
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // Get attendance statistics for a lecture
+  fastify.get(
+    '/courses/:course_id/lectures/:lecture_id/attendances/stats',
+    {
+      preHandler: [fastify.loadCourse, fastify.loadLecture],
+      schema: attendancesSchemas.GetAttendanceStatsSchema,
+    },
+    async (req, reply) => {
+      try {
+        const stats = await attendancesService.getAttendanceStats(
+          req.user,
+          req.course,
+          req.enrollment,
+          req.lecture
+        );
+        return reply.send(stats);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
   // Create a new attendance record
   fastify.post(
-    '/api/courses/:course_id/lectures/:lecture_id/attendances',
+    '/courses/:course_id/lectures/:lecture_id/attendances',
     {
       preHandler: [fastify.loadCourse, fastify.loadLecture],
       schema: attendancesSchemas.CreateAttendanceSchema,
@@ -47,7 +94,7 @@ async function routes(fastify) {
 
   // Update an attendance record
   fastify.patch(
-    '/api/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id',
+    '/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id',
     {
       preHandler: [fastify.loadCourse, fastify.loadLecture],
       schema: attendancesSchemas.UpdateAttendanceSchema,
@@ -72,7 +119,7 @@ async function routes(fastify) {
 
   // Delete an attendance record
   fastify.delete(
-    '/api/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id',
+    '/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id',
     {
       preHandler: [fastify.loadCourse, fastify.loadLecture],
       schema: attendancesSchemas.DeleteAttendanceSchema,

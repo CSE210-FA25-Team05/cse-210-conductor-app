@@ -17,7 +17,6 @@ export const UpdateLectureParams = {
   type: 'object',
   properties: {
     lecture_date: DateType,
-    regenerate_code: { type: 'boolean' },
   },
 };
 
@@ -31,7 +30,7 @@ export const LectureInfo = {
     code_generated_at: DateTimeType,
     code_expires_at: DateTimeType,
   },
-  required: ['id', 'course_id', 'lecture_date'], // code is optional (can be null before activation)
+  required: ['id', 'course_id', 'lecture_date', 'code'], // code is required but nullable (can be null before activation)
 };
 
 export const GetAllLecturesSchema = {

@@ -91,14 +91,17 @@ class AttendancesRepo {
 
   /**
    * Update an existing attendance record.
+   * Conditions on course_id and lecture_id to ensure proper nesting validation.
    *
    * @param {number} attendanceId - ID of the attendance to update
+   * @param {number} courseId - Course ID for validation
+   * @param {number} lectureId - Lecture ID for validation
    * @param {Object} data - Update data
    * @param {number|null} data.updated_by - ID of the user who updated
    * @param {string|null} data.update_reason - Reason for update
    * @returns {Promise<Object>} Updated attendance object
    */
-  async updateAttendance(attendanceId, data) {
+  async updateAttendance(attendanceId, courseId, lectureId, data) {
     const updateData = {
       updated_at: new Date(),
     };
@@ -112,43 +115,36 @@ class AttendancesRepo {
     }
 
     return this.db.attendances.update({
-      where: { id: attendanceId },
+      where: {
+        id: attendanceId,
+        course_id: courseId,
+        lecture_id: lectureId,
+      },
       data: updateData,
     });
   }
 
   /**
    * Soft delete an attendance record by setting deleted_at timestamp.
+   * Conditions on course_id and lecture_id to ensure proper nesting validation.
    *
    * @param {number} attendanceId - ID of the attendance to delete
+   * @param {number} courseId - Course ID for validation
+   * @param {number} lectureId - Lecture ID for validation
    * @returns {Promise<Object>} Updated attendance object
    */
-  async deleteAttendance(attendanceId) {
+  async deleteAttendance(attendanceId, courseId, lectureId) {
     return this.db.attendances.update({
-      where: { id: attendanceId },
+      where: {
+        id: attendanceId,
+        course_id: courseId,
+        lecture_id: lectureId,
+      },
       data: {
         deleted_at: new Date(),
         updated_at: new Date(),
       },
     });
-  }
-
-  /**
-   * Check if a lecture exists and belongs to the course.
-   *
-   * @param {number} lectureId - ID of the lecture
-   * @param {number} courseId - ID of the course
-   * @returns {Promise<boolean>} True if lecture exists and belongs to course, false otherwise
-   */
-  async lectureExists(lectureId, courseId) {
-    const lecture = await this.db.lectures.findFirst({
-      where: {
-        id: lectureId,
-        course_id: courseId,
-        deleted_at: null,
-      },
-    });
-    return !!lecture;
   }
 
   /**
@@ -167,6 +163,44 @@ class AttendancesRepo {
       },
     });
     return !!enrollment;
+  }
+
+  /**
+   * Get attendance statistics for a lecture.
+   * Returns total enrolled students, total present, and attendance percentage.
+   *
+   * @param {number} lectureId - ID of the lecture
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<Object>} Statistics object with total_enrolled, total_present, attendance_percentage
+   */
+  async getAttendanceStats(lectureId, courseId) {
+    // Get total enrolled students in the course
+    const totalEnrolled = await this.db.enrollments.count({
+      where: {
+        course_id: courseId,
+        role: 'student',
+        deleted_at: null,
+      },
+    });
+
+    // Get total present (attendances for this lecture)
+    const totalPresent = await this.db.attendances.count({
+      where: {
+        lecture_id: lectureId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+
+    // Calculate attendance percentage
+    const attendancePercentage =
+      totalEnrolled > 0 ? (totalPresent / totalEnrolled) * 100 : 0;
+
+    return {
+      total_enrolled: totalEnrolled,
+      total_present: totalPresent,
+      attendance_percentage: Math.round(attendancePercentage * 100) / 100, // Round to 2 decimal places
+    };
   }
 }
 

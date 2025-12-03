@@ -10,5 +10,5 @@ const attendancesRoutes = require('./attendances.routes');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = async function attendancesServicePlugin(fastify, _opts) {
-  fastify.register(attendancesRoutes);
+  fastify.register(attendancesRoutes, { prefix: '/api' });
 };

@@ -26,7 +26,7 @@ export const AttendanceInfo = {
     updated_by: { type: 'number', nullable: true },
     update_reason: { type: 'string', nullable: true },
   },
-  required: ['id', 'course_id', 'lecture_id', 'user_id'],
+  required: ['id', 'course_id', 'lecture_id', 'user_id', 'updated_by', 'update_reason'],
 };
 
 export const CreateAttendanceSchema = {
@@ -93,6 +93,67 @@ export const DeleteAttendanceSchema = {
         message: { type: 'string' },
       },
       required: ['message'],
+    },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
+export const GetAttendancesSchema = {
+  summary: 'Get all attendances for a lecture',
+  tags: ['Attendances'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
+    },
+    required: ['course_id', 'lecture_id'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        attendances: {
+          type: 'array',
+          items: AttendanceInfo,
+        },
+      },
+      required: ['attendances'],
+    },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
+export const GetAttendanceStatsSchema = {
+  summary: 'Get attendance statistics for a lecture',
+  tags: ['Attendances'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
+    },
+    required: ['course_id', 'lecture_id'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        total_enrolled: { type: 'number' },
+        total_present: { type: 'number' },
+        attendance_percentage: { type: 'number' },
+      },
+      required: [
+        'total_enrolled',
+        'total_present',
+        'attendance_percentage',
+      ],
     },
     400: ErrorSchema,
     401: ErrorSchema,

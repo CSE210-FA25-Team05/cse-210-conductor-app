@@ -71,7 +71,16 @@ class AttendancesService {
     // For students: verify code is correct and still valid (5 minutes expiration)
     // Professors/TAs can create attendance even if code is expired (manual attendance)
     const isStudent = enrollment === null || enrollment.role === 'student';
-    if (isStudent && user.id === attendanceData.user_id) {
+    if (isStudent) {
+      // Students can only create their own attendance
+      if (user.id !== attendanceData.user_id) {
+        const error = new Error(
+          'Students can only create attendance for themselves'
+        );
+        error.code = 'FORBIDDEN';
+        throw error;
+      }
+
       // Check if code exists and hasn't expired
       if (!lecture.code || !lecture.code_expires_at) {
         const error = new Error(
@@ -161,10 +170,15 @@ class AttendancesService {
       throw error;
     }
 
-    return await this.attendancesRepo.updateAttendance(attendanceId, {
-      updated_by: user.id,
-      update_reason: updateData.update_reason || null,
-    });
+    return await this.attendancesRepo.updateAttendance(
+      attendanceId,
+      course.id,
+      lecture.id,
+      {
+        updated_by: user.id,
+        update_reason: updateData.update_reason || null,
+      }
+    );
   }
 
   /**
@@ -205,7 +219,55 @@ class AttendancesService {
       throw error;
     }
 
-    await this.attendancesRepo.deleteAttendance(attendanceId);
+    await this.attendancesRepo.deleteAttendance(
+      attendanceId,
+      course.id,
+      lecture.id
+    );
+  }
+
+  /**
+   * Get all attendances for a lecture with permission check.
+   *
+   * @param {Object} user - Current user object
+   * @param {Object} course - Course object (from req.course)
+   * @param {Object|null} enrollment - Enrollment object (from req.enrollment, null if not enrolled)
+   * @param {Object} lecture - Lecture object (from req.lecture)
+   * @returns {Promise<Array>} List of attendances
+   */
+  async getAttendancesByLecture(user, course, enrollment, lecture) {
+    // Check permissions - must be enrolled to view attendances
+    if (enrollment === null) {
+      const error = new Error('You are not enrolled in this course');
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+
+    return await this.attendancesRepo.getAttendancesByLectureId(lecture.id);
+  }
+
+  /**
+   * Get attendance statistics for a lecture.
+   * Returns total enrolled students, total present, and attendance percentage.
+   *
+   * @param {Object} user - Current user object
+   * @param {Object} course - Course object (from req.course)
+   * @param {Object|null} enrollment - Enrollment object (from req.enrollment, null if not enrolled)
+   * @param {Object} lecture - Lecture object (from req.lecture)
+   * @returns {Promise<Object>} Statistics object
+   */
+  async getAttendanceStats(user, course, enrollment, lecture) {
+    // Check permissions - must be enrolled to view stats
+    if (enrollment === null) {
+      const error = new Error('You are not enrolled in this course');
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+
+    return await this.attendancesRepo.getAttendanceStats(
+      lecture.id,
+      course.id
+    );
   }
 }
 

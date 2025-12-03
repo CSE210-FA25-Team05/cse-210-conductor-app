@@ -146,7 +146,11 @@ async function routes(fastify) {
   fastify.post(
     '/api/courses/:course_id/lectures/:lecture_id/activate-attendance',
     {
-      preHandler: fastify.loadCourse,
+      preHandler: [
+        fastify.loadCourse,
+        fastify.loadLecture,
+        fastify.requireTAOrProfessorInCourse,
+      ],
       schema: lecturesSchemas.ActivateAttendanceSchema,
     },
     async (req, reply) => {

@@ -39,8 +39,8 @@ class AttendancesPermissions {
 
   /**
    * Check if a user can modify (update/delete) an attendance.
-   * - Students can modify their own attendance
-   * - Professors and TAs can modify any attendance
+   * - Only professors and TAs can modify attendance
+   * - Students cannot modify attendance (updates are for course staff only)
    *
    * @param {Object} user - User object
    * @param {Object} course - Course object
@@ -54,13 +54,8 @@ class AttendancesPermissions {
       return false;
     }
 
-    // Professors and TAs can modify any attendance
-    if (enrollment.role === 'professor' || enrollment.role === 'ta') {
-      return true;
-    }
-
-    // Students can only modify their own attendance
-    return user.id === attendance.user_id; // Database field is user_id
+    // Only professors and TAs can modify attendance
+    return enrollment.role === 'professor' || enrollment.role === 'ta';
   }
 }
 

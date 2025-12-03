@@ -6,6 +6,8 @@
  * This module provides data access methods for lecture-related operations.
  */
 
+const { generateCode } = require('../../utils/code-generator');
+
 class LecturesRepo {
   constructor(db) {
     this.db = db;
@@ -55,23 +57,6 @@ class LecturesRepo {
   }
 
   /**
-   * Generate a random 6-character code.
-   * Uses the same pattern as course join codes.
-   *
-   * @returns {string} Generated code
-   */
-  generateCode() {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let generatedCode = '';
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      generatedCode += characters.charAt(randomIndex);
-    }
-    return generatedCode;
-  }
-
-  /**
    * Generate a unique code for a course.
    * Ensures the code doesn't already exist in the course.
    * Uses the same pattern as course join code generation.
@@ -83,7 +68,7 @@ class LecturesRepo {
     let uniqueCode;
     let exists;
     do {
-      uniqueCode = this.generateCode();
+      uniqueCode = generateCode();
       exists = await this.db.lectures.findFirst({
         where: {
           course_id: courseId,
@@ -129,16 +114,16 @@ class LecturesRepo {
 
   /**
    * Update an existing lecture.
+   * Note: Code management is handled by activateAttendance endpoint.
+   * This method only updates lecture_date.
    *
    * @param {number} lectureId - ID of the lecture to update
+   * @param {number} courseId - Course ID for validation
    * @param {Object} data - Update data
    * @param {Date|string} data.lecture_date - New lecture date
-   * @param {string|null} data.code - New lecture code
-   * @param {boolean} data.regenerate_code - Whether to regenerate the code
-   * @param {number} data.course_id - Course ID (required if regenerating code)
    * @returns {Promise<Object>} Updated lecture object
    */
-  async updateLecture(lectureId, data) {
+  async updateLecture(lectureId, courseId, data) {
     const updateData = {
       updated_at: new Date(),
     };
@@ -151,24 +136,11 @@ class LecturesRepo {
           : new Date(data.lecture_date);
     }
 
-    // Handle code regeneration
-    if (data.regenerate_code === true && data.course_id) {
-      const newCode = await this.generateUniqueCode(data.course_id);
-      updateData.code = newCode;
-      // Set expiration timestamps: code valid for 5 minutes
-      updateData.code_generated_at = new Date();
-      updateData.code_expires_at = new Date(
-        updateData.code_generated_at.getTime() + 5 * 60 * 1000
-      ); // 5 minutes
-    } else if (data.code !== undefined) {
-      updateData.code = data.code;
-      // If manually setting code, clear expiration timestamps
-      updateData.code_generated_at = null;
-      updateData.code_expires_at = null;
-    }
-
     return this.db.lectures.update({
-      where: { id: lectureId },
+      where: {
+        id: lectureId,
+        course_id: courseId,
+      },
       data: updateData,
     });
   }
@@ -176,18 +148,46 @@ class LecturesRepo {
   /**
    * Activate attendance for a lecture by generating a code and starting the 5-minute timer.
    * This should be called when the professor/TA clicks "Start Attendance" button.
+   * If a code already exists and is still valid, returns the existing lecture without generating a new code.
+   * Once attendance has been activated for a lecture, it cannot be reactivated (one activation per lecture).
    *
    * @param {number} lectureId - ID of the lecture
-   * @param {number} courseId - ID of the course (for generating unique code)
+   * @param {number} courseId - ID of the course (for generating unique code and validation)
    * @returns {Promise<Object>} Updated lecture object with code and expiration timestamps
    */
   async activateAttendance(lectureId, courseId) {
+    // First, check if lecture exists and belongs to the course
+    const existingLecture = await this.getLectureById(lectureId, courseId);
+    if (!existingLecture) {
+      const error = new Error('Lecture not found');
+      error.code = 'NOT_FOUND';
+      throw error;
+    }
+
+    // If code already exists and is still valid, return existing lecture
+    if (this.isCodeValid(existingLecture)) {
+      return existingLecture;
+    }
+
+    // If attendance was already activated (code_expires_at was set), prevent reactivation
+    if (existingLecture.code_expires_at !== null) {
+      const error = new Error(
+        'Attendance has already been activated for this lecture and cannot be reactivated'
+      );
+      error.code = 'BAD_REQUEST';
+      throw error;
+    }
+
+    // Generate new code (first activation only)
     const code = await this.generateUniqueCode(courseId);
     const codeGeneratedAt = new Date();
     const codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes
 
     return this.db.lectures.update({
-      where: { id: lectureId },
+      where: {
+        id: lectureId,
+        course_id: courseId,
+      },
       data: {
         code: code,
         code_generated_at: codeGeneratedAt,
@@ -213,13 +213,18 @@ class LecturesRepo {
 
   /**
    * Soft delete a lecture by setting deleted_at timestamp.
+   * Conditions on course_id to ensure proper nesting validation.
    *
    * @param {number} lectureId - ID of the lecture to delete
+   * @param {number} courseId - Course ID for validation
    * @returns {Promise<Object>} Updated lecture object
    */
-  async deleteLecture(lectureId) {
+  async deleteLecture(lectureId, courseId) {
     return this.db.lectures.update({
-      where: { id: lectureId },
+      where: {
+        id: lectureId,
+        course_id: courseId,
+      },
       data: {
         deleted_at: new Date(),
         updated_at: new Date(),
