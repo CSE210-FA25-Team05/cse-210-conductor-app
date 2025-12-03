@@ -31,8 +31,6 @@ import { deleteWrapper } from '/src/js/fetch-wrapper.js';
  * @property { string } [recordingUrl] - Optional URL to lecture recording.
  */
 
-const BACKEND_URL = 'http://localhost:3001';
-
 /**
  * @description Get all lectures for a course. Wraps `GET /api/courses/{course_id}/lectures`.
  * @param {number|string} courseId - Unique identifier of the course.
@@ -40,7 +38,7 @@ const BACKEND_URL = 'http://localhost:3001';
  */
 export async function getLectures(courseId) {
   const response = await getWrapper(
-    `${BACKEND_URL}/api/courses/${courseId}/lectures`
+    `/api/courses/${courseId}/lectures`
   );
   if (!response.ok) {
     throw new Error(response.error);
@@ -56,7 +54,7 @@ export async function getLectures(courseId) {
  */
 export async function getLecture(courseId, lectureId) {
   const response = await getWrapper(
-    `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
+    `/api/courses/${courseId}/lectures/${lectureId}`
   );
   if (!response.ok) {
     throw new Error(response.error);
@@ -72,7 +70,7 @@ export async function getLecture(courseId, lectureId) {
  */
 export async function createLecture(courseId, lectureBody) {
   const response = await postWrapper(
-    `${BACKEND_URL}/api/courses/${courseId}/lectures`,
+    `/api/courses/${courseId}/lectures`,
     lectureBody
   );
   if (!response.ok) {
@@ -90,7 +88,7 @@ export async function createLecture(courseId, lectureBody) {
  */
 export async function updateLecture(courseId, lectureId, lectureBody) {
   const response = await patchWrapper(
-    `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`,
+    `/api/courses/${courseId}/lectures/${lectureId}`,
     lectureBody
   );
   if (!response.ok) {
@@ -107,7 +105,7 @@ export async function updateLecture(courseId, lectureId, lectureBody) {
  */
 export async function deleteLecture(courseId, lectureId) {
   const response = await deleteWrapper(
-    `${BACKEND_URL}/api/courses/${courseId}/lectures/${lectureId}`
+    `/api/courses/${courseId}/lectures/${lectureId}`
   );
   if (!response.ok) {
     throw new Error(response.error);
