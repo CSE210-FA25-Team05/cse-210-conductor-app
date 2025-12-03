@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Conductor</title>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" async src="/src/js/common.js"></script>
+    </head>
+    <body>
+        <main>
+            <h1>Me</h1>
+            <div id="profile" class="profile">Loading...</div>
+            <button id="complete-profile">Complete Profile</button>
+
+            <h1>Courses</h1>
+
+            <article>
+                <h2>Your Courses</h2>
+                <ul id="courses-list"></ul>
+                <pre id="courses-response" style="color: red;"></pre>
+            </article>
+
+            <article>
+            <h2>Join Course</h2>
+                <form id="joinCourseForm">
+                    <label for="course-id">Course ID
+                        <input 
+                            type="text" 
+                            id="course-id" 
+                            name="course-id" 
+                            required 
+                        />
+                    </label>
+                    <label for="join-code">Join Code
+                        <input
+                            type="text" 
+                            id="join-code" 
+                            name="join-code" 
+                            required 
+                        />
+                    </label>
+                    <button type="submit">Join Course</button>
+                </form>
+            </article>
+
+            <article>
+            <h2>Create Course</h2>
+
+            <pre id="response"></pre>
+
+            <form id="createCourseForm">
+                <label for="course-code">Course Code
+                    <input type="text" id="course-code" name="course_code" required />
+                </label>
+                <br />
+
+                <label for="course-name">Course Name
+                    <input type="text" id="course-name" name="course_name" required />
+                </label>
+                <br />
+
+                <label for="term">Term
+                    <input type="text" id="term" name="term" required />
+                </label>
+                <br />
+
+                <label for="section">Section
+                    <input type="text" id="section" name="section" value="1" required />
+                </label>
+                <br />
+
+                <label for="create-join-code">Join Code
+                    <input type="text" id="create-join-code" name="join_code" required />
+                </label>
+                <br />
+
+                <label for="start-date">Start Date
+                    <input type="date" id="start-date" name="start_date" required />
+                </label>
+                <br />
+
+                <label for="end-date">End Date
+                    <input type="date" id="end-date" name="end_date" required />
+                </label>
+                <br />
+
+                <button type="submit">Create Course</button>
+            </form>
+            <pre id="create-response"></pre>
+
+            <pre id="get-response"></pre>
+            </article>
+
+
+            <script>
+            document
+                .getElementById("complete-profile")
+                .addEventListener('click', async () => {
+                    const data = {
+                        first_name: "string",
+                        last_name: "string",
+                        pronouns: "string",
+                    }
+                    const response = await fetch("/api/me/profile", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(data),
+                    });
+                });
+
+            document
+                .getElementById("joinCourseForm")
+                .addEventListener("submit", async (event) => {
+                    event.preventDefault();
+
+                    const courseId = document.getElementById("course-id").value;
+                    const joinCode = document.getElementById("join-code").value;
+
+                    try {
+
+                        let response = await fetch(`/api/me/profile`, {
+                            method: "GET",
+                            credentials: 'include',
+                        });
+                        const json = await response.json();
+                        const userId = json.id;
+
+                        console.log('userID', userId);
+                        response = await fetch(`/api/courses/${courseId}/join`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                user_id: parseInt(userId),
+                                join_code: joinCode,
+                            }),
+                        });
+
+                        const result = await response.json();
+                        document.getElementById("response").textContent = JSON.stringify(
+                            result,
+                            null,
+                            2
+                        );
+                    } catch (err) {
+                        document.getElementById("response").textContent =
+                            "Error: " + err.message;
+                    }
+                });
+                
+            document
+                .getElementById("createCourseForm")
+                .addEventListener("submit", async function (e) {
+                    e.preventDefault();
+
+                    // Collect form data
+                    const data = {
+                        course_code: document.getElementById("course-code").value.trim(),
+                        course_name: document.getElementById("course-name").value.trim(),
+                        term: document.getElementById("term").value.trim(),
+                        section: document.getElementById("section").value.trim(),
+                        join_code: document.getElementById("create-join-code").value.trim(),
+                        start_date: document.getElementById("start-date").value,
+                        end_date: document.getElementById("end-date").value,
+                    };
+
+                    const responseelement = document.getElementById("create-response");
+
+                    try {
+                        const response = await fetch("/api/courses", {
+                            method: "post",
+                            headers: {
+                                "content-type": "application/json",
+                            },
+                            credentials: 'include',
+                            body: JSON.stringify(data),
+                        });
+                        console.log('bogy', JSON.stringify(data));
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(result.message || `failed to create course: ${JSON.stringify(result)}`);
+                        }
+
+                        responseelement.textContent = JSON.stringify(result, null, 2);
+                        responseelement.style.color = "green";
+                    } catch (error) {
+                        responseelement.textContent = `error: ${error.message}`;
+                        responseelement.style.color = "red";
+                    }
+                });
+
+
+            async function loadProfile() {
+                const container = document.getElementById("profile");
+
+                try {
+                    const response = await fetch("/api/me/profile");
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    container.innerHTML = `
+                        <h2>${data.first_name} ${data.last_name}</h2>
+                        <div class="profile-item"><strong>Email:</strong> ${data.email}</div>
+                        <div class="profile-item"><strong>Pronouns:</strong> ${
+                            data.pronouns || "N/A"
+                            }</div>
+                        <div class="profile-item"><strong>Role:</strong> ${
+                            data.global_role
+                            }</div>
+                        <div class="profile-item"><strong>Profile Complete:</strong> ${
+                            data.is_profile_complete ? "Yes" : "No"
+                            }</div>
+                        <div class="profile-item"><small>ID: ${data.id}</small></div>
+                    `;
+                } catch (error) {
+                    console.error("Error fetching profile:", error);
+                    container.innerHTML =
+                        '<div class="error">Failed to load profile information.</div>';
+                }
+            }
+
+            loadProfile();
+
+            document
+                .addEventListener("DOMContentLoaded", async () => {
+                    const listElement = document.getElementById("courses-list");
+                    const responseElement = document.getElementById("courses-response");
+
+                    // Clear previous content
+                    listElement.innerHTML = "";
+                    responseElement.textContent = "";
+
+                    try {
+                        const response = await fetch("/api/courses", {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(result.message || "Failed to fetch courses");
+                        }
+
+                        if (!Array.isArray(result) || result.length === 0) {
+                            listElement.innerHTML =
+                                "<li>No enrolled courses found.</li>";
+                            return;
+                        }
+
+                        // Build the list dynamically
+                        for (const course of result) {
+                            const li = document.createElement("li");
+                            const a = document.createElement("a");
+
+                            // If your API uses another identifier, adjust 'course.id' accordingly
+                            a.href = `/course/${course.id}/dashboard`;
+                            a.textContent = course.course_name || course.course_code || course.id;
+
+                            li.appendChild(a);
+                            listElement.appendChild(li);
+                        }
+                    } catch (error) {
+                        responseElement.textContent = `Error: ${error.message}`;
+                    }
+                });
+
+
+            </script>
+    </body>
+
+</html>
