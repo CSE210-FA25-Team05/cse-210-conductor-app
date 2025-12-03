@@ -7,12 +7,12 @@ class ConductorNav extends HTMLElement {
 
     this.paths = {
       // Display name -> href
-      Dashboard: '/dashboard',
-      Signals: '/signals',
-      Interactions: '/interactions',
-      Atoms: '/atoms',
-      Journals: '/journals',
-      ZingGrid: '/zinggrid',
+      Dashboard: '/course/dashboard',
+      Signals: '/course/signals',
+      Interactions: '/course/interactions',
+      Atoms: '/course/atoms',
+      Journals: '/course/journals',
+      ZingGrid: '/course/zinggrid',
     };
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
     this.boundedHandleResize = this.handleResize.bind(this);
