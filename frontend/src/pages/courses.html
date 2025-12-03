@@ -172,7 +172,7 @@
                     const responseelement = document.getElementById("create-response");
 
                     try {
-                        const response = await fetch("/api/api/courses", {
+                        const response = await fetch("/api/courses", {
                             method: "post",
                             headers: {
                                 "content-type": "application/json",
@@ -240,7 +240,7 @@
                     responseElement.textContent = "";
 
                     try {
-                        const response = await fetch("/api/api/courses", {
+                        const response = await fetch("/api/courses", {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json",
