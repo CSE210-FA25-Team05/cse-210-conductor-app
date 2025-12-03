@@ -1,5 +1,4 @@
-import { getWrapper } from '/src/js/fetch-wrapper.js';
-import { postWrapper } from '/src/js/fetch-wrapper.js';
+import { getWrapper, postWrapper, patchWrapper, deleteWrapper } from '/src/js/fetch-wrapper.js';
 
 /**
  * @typedef Course
@@ -12,6 +11,17 @@ import { postWrapper } from '/src/js/fetch-wrapper.js';
  * @property { string } join_code - Code for enrolling in the course. Must be exactly 6 characters long.
  * @property { string } start_date - Date the course begins on, in YYYY-MM-DD format.
  * @property { string } end_date - Date the course ends on, in YYYY-MM-DD format.
+ */
+
+/**
+ * @typedef UserInfo
+ * @type { object }
+ * @property { number } id - ID in database.
+ * @property { string } user_id - User's ID number.
+ * @property { string } course_id - Course ID number.
+ * @property { string } team_id - Team ID number.
+ * @property { string } role - User's role in the course.
+ * @property { string } created_at - Timestamp of when the user was added to the course.
  */
 
 /**
@@ -52,9 +62,76 @@ export async function createCourse(newCourse) {
  * @returns { Course } Requested course with its information.
  */
 export async function getCourseWithID(courseID) {
-  let response = await getWrapper('/api/courses/${courseID}');
+  let response = await getWrapper(`/api/courses/${courseID}`);
   if (!response.ok) {
     throw new Error(response.error);
   }
   return response.data;
+}
+
+/**
+ * @description Enroll a user into a course.
+ * @param {*} courseID — ID of the course to add the user to.
+ * @param { object } user - An object containing user information
+ * @param { string } user.id - User ID
+ */
+export async function addUserInCourse(courseID, user) {
+  let response = await postWrapper(`/api/courses/${courseID}/users`, { user_id: user.id });
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+}
+
+/**
+ * @description Get a user's information in a specific course.
+ * @param { number } courseID - ID of the course to get the user from.
+ * @param { number } userID - ID of the user to get information for.
+ * @returns { UserInfo } Requested user's information in the course.
+ */
+export async function getUserInCourse(courseID, userID) {
+  let response = await getWrapper(`/api/courses/${courseID}/users/${userID}`);
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
+ * Update a user's enrollment role in a specific course.
+ * @param {*} courseID — ID of the course to update the user in.
+ * @param {*} userID User ID of the user to be updated.
+ * @param { object } user - An object containing user information
+ * @param { string } user.role - User role
+ */
+export async function updateUserEnrollmentInCourse(courseID, userID, user) { 
+  let response = await patchWrapper(`/api/courses/${courseID}/users/${userID}`, { role: user.role });
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+}
+
+/**
+ * Remove a user from a specific course.
+ * @param {*} courseID — ID of the course to remove the user from.
+ * @param {*} userID User ID of the user to be removed from the course.
+ */
+export async function removeUserFromCourse(courseID, userID) {
+  let response = await deleteWrapper(`/api/courses/${courseID}/users/${userID}`);
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+}
+
+/**
+ * @description Join a course using a join code.
+ * @param { number } courseID - ID of the course to join.
+ * @param { object } joinAndUser - An object containing the userID and join code.
+ * @param { string } joinAndUser.user_id - User ID of the user joining the course.
+ * @param { string } joinAndUser.join_code - Code for enrolling in the course.
+ */
+export async function joinCourseWithCode(courseID, joinAndUser) {
+  let response = await postWrapper(`/api/courses/${courseID}/join`, { join_code: joinAndUser.join_code, user_id: joinAndUser.user_id });
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
 }

@@ -122,6 +122,7 @@ export async function deleteWrapper(
 ) {
   let options = {
     method: 'DELETE',
+    body: JSON.stringify({})
   };
   let fetchResponse = await fetchWrapper(
     url,
