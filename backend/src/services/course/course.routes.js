@@ -5,23 +5,23 @@ const { mapAndReply } = require('../../utils/error-map');
 /**
  * Course Routes Plugin
  * GET
- * /api/courses - get all courses
- * /api/courses/:course_id - get specific course data
- * /api/courses/:course_id/users - get all users in class
- * /api/courses/:course_id/users/:user_id - get specific user details in context of course
+ * /courses - get all courses
+ * /courses/:course_id - get specific course data
+ * /courses/:course_id/users - get all users in class
+ * /courses/:course_id/users/:user_id - get specific user details in context of course
  *
  * POST
- * /api/courses - create a new course
+ * /courses - create a new course
  *
  * PATCH
- * /api/courses/:course_id - update course details
+ * /courses/:course_id - update course details
  *
  * DELETE
- * /api/courses/:course_id - delete a course
+ * /courses/:course_id - delete a course
  *
  * POST
- * /api/courses/:course_id/users - enroll a user into a course
- * /api/courses/:course_id/join - join a course with join code
+ * /courses/:course_id/users - enroll a user into a course
+ * /courses/:course_id/join - join a course with join code
  *
  *
  */
@@ -42,7 +42,8 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.getAllCourse();
+        // Return only courses the authenticated user is enrolled in / associated with
+        const res = await courseService.getCoursesForUser(request.user.id);
         return res;
       } catch (error) {
         console.error(error);

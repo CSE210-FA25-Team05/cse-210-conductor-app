@@ -34,6 +34,7 @@ async function main() {
       email: 'mathprof@ucsd.edu',
       pronouns: 'She/Her/Hers',
       global_role: 'professor',
+      is_profile_complete: true,
     },
   });
 
@@ -44,6 +45,7 @@ async function main() {
       email: 'genius_ta@ucsd.edu',
       pronouns: 'He/Him/His',
       global_role: 'student',
+      is_profile_complete: true,
     },
   });
 
@@ -54,6 +56,7 @@ async function main() {
       email: 'jdoe@ucsd.edu',
       pronouns: 'He/Him/His',
       global_role: 'student',
+      is_profile_complete: true,
     },
   });
 
@@ -64,6 +67,15 @@ async function main() {
       email: 'jd563@ucsd.edu',
       pronouns: 'She/Her/Hers',
       global_role: 'student',
+      is_profile_complete: true,
+    },
+  });
+
+  await prisma.users.create({
+    data: {
+      email: 'incomplete@ucsd.edu',
+      global_role: 'student',
+      is_profile_complete: false,
     },
   });
 
@@ -436,13 +448,12 @@ async function main() {
     data: {
       course_id: cse210.id,
       config: {
-        text: 'How are you feeling about the progress of your team project?',
         options: [
-          { value: 'Happy', color: 'rgb(0, 255, 0)' },
-          { value: 'Tired', color: 'rgb(255, 243, 21)' },
-          { value: 'Concerned', color: 'rgba(255, 153, 0, 1)' },
-          { value: 'Worried', color: 'rgb(255, 0, 0)' },
-          { value: 'Sad', color: 'rgb(0, 0, 255)' },
+          { value: 'Happy', color: 'green' },
+          { value: 'Tired', color: 'yellow' },
+          { value: 'Concerned', color: 'orange' },
+          { value: 'Worried', color: 'red' },
+          { value: 'Sad', color: 'blue' },
         ],
       },
       is_editable: false,
@@ -453,11 +464,10 @@ async function main() {
     data: {
       course_id: cse110.id,
       config: {
-        text: 'What do you think about the course so far?',
         options: [
-          { value: 'Good', color: 'rgb(0, 255, 0)' },
-          { value: 'Neutral', color: 'rgb(0, 0, 255)' },
-          { value: 'Bad', color: 'rgb(255, 0, 0)' },
+          { value: 'Good', color: 'green' },
+          { value: 'Neutral', color: 'blue' },
+          { value: 'Bad', color: 'red' },
         ],
       },
       is_editable: true,
@@ -469,6 +479,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: john.id,
+      team_id: team1.id,
       pulse_config_id: cse210_pulse_config.id,
       value: 'Happy',
       description: 'Feeling good about our project progress!',
@@ -480,6 +491,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: jane.id,
+      team_id: team2.id,
       pulse_config_id: cse210_pulse_config.id,
       value: 'Tired',
       description: 'A bit overwhelmed with the workload.',
@@ -491,6 +503,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: john.id,
+      team_id: team1.id,
       pulse_config_id: cse210_pulse_config.id,
       value: 'Concerned',
       created_at: new Date('2025-10-08T09:00:00Z'),
