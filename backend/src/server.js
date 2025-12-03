@@ -67,6 +67,10 @@ fastify.register(require('./services/journal/journal.routes'), {
   prefix: '/api/courses/:course_id',
 });
 
+fastify.register(require('./services/pulse'), {
+  prefix: '/api',
+});
+
 //health check
 fastify.get('/api/health', async () => {
   return { ok: true, time: new Date().toISOString() };

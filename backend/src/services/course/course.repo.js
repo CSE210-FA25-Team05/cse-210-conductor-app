@@ -1,5 +1,7 @@
 'use strict';
 
+const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
+
 /**
  * Course Repository
  *
@@ -144,6 +146,12 @@ class CourseRepo {
         start_date: start_date ? new Date(start_date) : null,
         end_date: end_date ? new Date(end_date) : null,
         join_code: finalJoinCode,
+        pulse_configs: {
+          create: {
+            config: DEFAULT_PULSE_CONFIG,
+            is_editable: true,
+          },
+        },
       },
     });
     return created;

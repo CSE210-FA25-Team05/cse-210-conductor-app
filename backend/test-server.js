@@ -540,11 +540,146 @@ async function getJournalEntriesTest(courseId, userId) {
     );
   }
 }
+
+// Pulses tests
+async function getPulseConfigTest(courseId) {
+  console.log(`→ Fetching pulse config for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/config`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched pulse config for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to fetch pulse config for course id=${courseId}`);
+  }
+}
+
+async function upsertPulseConfigTest(courseId, configObj) {
+  console.log(`→ Upserting pulse config for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/config`, {
+    method: 'PATCH',
+    headers: headers(),
+    body: JSON.stringify(configObj),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Upserted pulse config for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to upsert pulse config for course id=${courseId}`);
+  }
+}
+
+async function getPulsesTest(courseId) {
+  console.log(`→ Fetching pulses for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched ${data.length} pulses for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to fetch pulses for course id=${courseId}`);
+  }
+}
+
+async function submitPulseTest(courseId, option, description = null) {
+  console.log(`→ Submitting pulse for course id=${courseId}...`);
+  const body = { option };
+  if (description) body.description = description;
+
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Submitted pulse for course id=${courseId} successfully`);
+  } else {
+    console.error(`❌ Failed to submit pulse for course id=${courseId}`);
+  }
+}
+
+async function getPulseStatsTest(courseId) {
+  console.log(`→ Fetching pulse stats for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/stats`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched pulse stats for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to fetch pulse stats for course id=${courseId}`);
+  }
+}
+
 // Run tests
 
-const courseId = 6; // change as needed
-const userId = 7; // change as needed
-const journalId = 11; // change as needed
+let courseId = 1; // change as needed
+let userId = 1; // change as needed
+let journalId = 11; // change as needed
 
 // COURSE TESTS
 // addCourseTest();
@@ -590,3 +725,18 @@ const journalId = 11; // change as needed
 //   content: 'This is an updated test journal entry.',
 // });
 // await deleteJournalEntryTest(courseId, journalId);
+
+// PULSES TESTS
+// const pulseConfig = {
+//   options: [
+//     { value: 'happy', color: 'green' },
+//     { value: 'sad', color: 'blue' },
+//   ],
+// };
+
+// await getPulsesTest(courseId);
+// await submitPulseTest(courseId, 'Happy', 'Feeling great!');
+// await getPulseStatsTest(courseId);
+// courseId = 2; // Course without any pulses so config is editable
+// await upsertPulseConfigTest(courseId, pulseConfig);
+// await getPulseConfigTest(courseId);
