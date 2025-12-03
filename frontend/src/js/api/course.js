@@ -1,4 +1,9 @@
-import { getWrapper, postWrapper, patchWrapper, deleteWrapper } from '/src/js/fetch-wrapper.js';
+import {
+  getWrapper,
+  postWrapper,
+  patchWrapper,
+  deleteWrapper,
+} from '/src/js/fetch-wrapper.js';
 
 /**
  * @typedef Course
@@ -76,7 +81,9 @@ export async function getCourseWithID(courseID) {
  * @param { string } user.id - User ID
  */
 export async function addUserInCourse(courseID, user) {
-  let response = await postWrapper(`/api/courses/${courseID}/users`, { user_id: user.id });
+  let response = await postWrapper(`/api/courses/${courseID}/users`, {
+    user_id: user.id,
+  });
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -103,8 +110,11 @@ export async function getUserInCourse(courseID, userID) {
  * @param { object } user - An object containing user information
  * @param { string } user.role - User role
  */
-export async function updateUserEnrollmentInCourse(courseID, userID, user) { 
-  let response = await patchWrapper(`/api/courses/${courseID}/users/${userID}`, { role: user.role });
+export async function updateUserEnrollmentInCourse(courseID, userID, user) {
+  let response = await patchWrapper(
+    `/api/courses/${courseID}/users/${userID}`,
+    { role: user.role }
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -116,7 +126,9 @@ export async function updateUserEnrollmentInCourse(courseID, userID, user) {
  * @param {*} userID User ID of the user to be removed from the course.
  */
 export async function removeUserFromCourse(courseID, userID) {
-  let response = await deleteWrapper(`/api/courses/${courseID}/users/${userID}`);
+  let response = await deleteWrapper(
+    `/api/courses/${courseID}/users/${userID}`
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -130,7 +142,10 @@ export async function removeUserFromCourse(courseID, userID) {
  * @param { string } joinAndUser.join_code - Code for enrolling in the course.
  */
 export async function joinCourseWithCode(courseID, joinAndUser) {
-  let response = await postWrapper(`/api/courses/${courseID}/join`, { join_code: joinAndUser.join_code, user_id: joinAndUser.user_id });
+  let response = await postWrapper(`/api/courses/${courseID}/join`, {
+    join_code: joinAndUser.join_code,
+    user_id: joinAndUser.user_id,
+  });
   if (!response.ok) {
     throw new Error(response.error);
   }
