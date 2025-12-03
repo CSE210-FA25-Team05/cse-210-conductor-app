@@ -264,10 +264,7 @@ class AttendancesService {
       throw error;
     }
 
-    return await this.attendancesRepo.getAttendanceStats(
-      lecture.id,
-      course.id
-    );
+    return await this.attendancesRepo.getAttendanceStats(lecture.id, course.id);
   }
 }
 

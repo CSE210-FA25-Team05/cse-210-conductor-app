@@ -26,7 +26,14 @@ export const AttendanceInfo = {
     updated_by: { type: 'number', nullable: true },
     update_reason: { type: 'string', nullable: true },
   },
-  required: ['id', 'course_id', 'lecture_id', 'user_id', 'updated_by', 'update_reason'],
+  required: [
+    'id',
+    'course_id',
+    'lecture_id',
+    'user_id',
+    'updated_by',
+    'update_reason',
+  ],
 };
 
 export const CreateAttendanceSchema = {
@@ -149,11 +156,7 @@ export const GetAttendanceStatsSchema = {
         total_present: { type: 'number' },
         attendance_percentage: { type: 'number' },
       },
-      required: [
-        'total_enrolled',
-        'total_present',
-        'attendance_percentage',
-      ],
+      required: ['total_enrolled', 'total_present', 'attendance_percentage'],
     },
     400: ErrorSchema,
     401: ErrorSchema,

@@ -33,13 +33,12 @@ async function routes(fastify) {
     },
     async (req, reply) => {
       try {
-        const attendances =
-          await attendancesService.getAttendancesByLecture(
-            req.user,
-            req.course,
-            req.enrollment,
-            req.lecture
-          );
+        const attendances = await attendancesService.getAttendancesByLecture(
+          req.user,
+          req.course,
+          req.enrollment,
+          req.lecture
+        );
         return reply.send({ attendances });
       } catch (error) {
         return mapAndReply(error, reply);
