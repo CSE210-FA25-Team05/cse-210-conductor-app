@@ -37,9 +37,7 @@ import { deleteWrapper } from '/src/js/fetch-wrapper.js';
  * @returns { Lecture[] } List of lectures for the course.
  */
 export async function getLectures(courseId) {
-  const response = await getWrapper(
-    `/api/courses/${courseId}/lectures`
-  );
+  const response = await getWrapper(`/api/courses/${courseId}/lectures`);
   if (!response.ok) {
     throw new Error(response.error);
   }
