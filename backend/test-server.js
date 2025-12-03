@@ -582,6 +582,7 @@ async function getPulseConfigTest(courseId) {
     );
   } else {
     console.error(`❌ Failed to fetch pulse config for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -609,6 +610,7 @@ async function upsertPulseConfigTest(courseId, configObj) {
     );
   } else {
     console.error(`❌ Failed to upsert pulse config for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -635,6 +637,7 @@ async function getPulsesTest(courseId) {
     );
   } else {
     console.error(`❌ Failed to fetch pulses for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -663,6 +666,7 @@ async function submitPulseTest(courseId, option, description = null) {
     console.log(`✅ Submitted pulse for course id=${courseId} successfully`);
   } else {
     console.error(`❌ Failed to submit pulse for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -689,13 +693,14 @@ async function getPulseStatsTest(courseId) {
     );
   } else {
     console.error(`❌ Failed to fetch pulse stats for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
 // Run tests
 
-const courseId = 1; // change as needed
-const userId = 1; // change as needed
+let courseId = 1; // change as needed
+let userId = 1; // change as needed
 
 const professorId = 1;
 const taId = 2;
@@ -750,16 +755,16 @@ await updateJournalEntryTest(courseId, newJournalEntry.id, {
 await deleteJournalEntryTest(courseId, newJournalEntry.id);
 
 // PULSES TESTS
-// const pulseConfig = {
-//   options: [
-//     { value: 'happy', color: 'green' },
-//     { value: 'sad', color: 'blue' },
-//   ],
-// };
+const pulseConfig = {
+  options: [
+    { value: 'happy', color: 'green' },
+    { value: 'sad', color: 'blue' },
+  ],
+};
 
-// await getPulsesTest(courseId);
-// await submitPulseTest(courseId, 'Happy', 'Feeling great!');
-// await getPulseStatsTest(courseId);
-// courseId = 2; // Course without any pulses so config is editable
-// await upsertPulseConfigTest(courseId, pulseConfig);
-// await getPulseConfigTest(courseId);
+await getPulsesTest(courseId);
+await submitPulseTest(courseId, 'Happy', 'Feeling great!');
+await getPulseStatsTest(courseId);
+courseId = 2; // Course without any pulses so config is editable
+await upsertPulseConfigTest(courseId, pulseConfig);
+await getPulseConfigTest(courseId);
