@@ -1,6 +1,6 @@
 // scripts/test-create-course.js
 /* eslint-disable no-console */
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3001/api';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 const AUTH = process.env.AUTH_TOKEN || ''; // optional, if you have auth
 
 function headers() {
@@ -15,8 +15,8 @@ async function addCourseTest() {
     course_name: 'AI Agent',
     term: 'SP25',
     section: 'A00',
-    start_date: '2025-03-31T00:00:00.000Z',
-    end_date: '2025-06-15T00:00:00.000Z',
+    start_date: '2025-03-31',
+    end_date: '2025-06-15',
   };
 
   console.log('Creating new course...');
@@ -38,6 +38,7 @@ async function addCourseTest() {
 
   if (res.ok) {
     console.log(`Course created successfully (id=${data.id})`);
+    return data;
   } else {
     console.error('Course creation failed');
     process.exit(1);
@@ -67,6 +68,7 @@ async function deleteCourse(courseId) {
     console.log(`Course id=${courseId} deleted successfully`);
   } else {
     console.error(`Failed to delete course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -93,6 +95,7 @@ async function updateCourseTest(courseId, updateData) {
     console.log(`Course id=${courseId} updated successfully`);
   } else {
     console.error(`Failed to update course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -118,6 +121,7 @@ async function getAllCoursesTest() {
     console.log(`Fetched ${data.length} courses successfully`);
   } else {
     console.error('Failed to fetch courses');
+    process.exit(1);
   }
 }
 
@@ -145,6 +149,7 @@ async function getAllUsersInCourseTest(courseId) {
     );
   } else {
     console.error(`Failed to fetch users in course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -172,6 +177,7 @@ async function getUserDetailsInCourseTest(courseId, userId) {
     );
   } else {
     console.error(`Failed to fetch user id=${userId} in course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -198,6 +204,7 @@ async function addUserToCourseTest(courseId, userId) {
     console.log(`User added to course successfully`);
   } else {
     console.error(`Failed to add user to course`);
+    process.exit(1);
   }
 }
 
@@ -223,6 +230,7 @@ async function joinCourseTest(courseId, userId, joinCode) {
     console.log(`Joined course successfully`);
   } else {
     console.error(`Failed to join course`);
+    process.exit(1);
   }
 }
 
@@ -247,6 +255,7 @@ async function updateRoleTest(courseId, userId, role) {
     console.log(`Updated user role in course successfully`);
   } else {
     console.error(`Failed to update user role in course`);
+    process.exit(1);
   }
 }
 
@@ -271,6 +280,7 @@ async function removeUserFromCourseTest(courseId, userId) {
     console.log(`Removed user from course successfully`);
   } else {
     console.error(`Failed to remove user from course`);
+    process.exit(1);
   }
 }
 
@@ -302,6 +312,7 @@ async function getAllLecturesTest(courseId) {
     );
   } else {
     console.error(`Failed to fetch lectures for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -334,6 +345,7 @@ async function getLectureTest(courseId, lectureId) {
     console.error(
       `Failed to fetch lecture id=${lectureId} in course id=${courseId}`
     );
+    process.exit(1);
   }
 }
 
@@ -357,13 +369,11 @@ async function createLectureTest(courseId, lectureData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Lecture created successfully (id=${data.lecture?.id || 'unknown'})`
-    );
-    return data.lecture;
+    console.log(`Lecture created successfully (id=${data.id || 'unknown'})`);
+    return data;
   } else {
     console.error('Lecture creation failed');
-    return null;
+    process.exit(1);
   }
 }
 
@@ -393,6 +403,7 @@ async function updateLectureTest(courseId, lectureId, updateData) {
     console.log(`Lecture id=${lectureId} updated successfully`);
   } else {
     console.error(`Failed to update lecture id=${lectureId}`);
+    process.exit(1);
   }
 }
 
@@ -404,6 +415,7 @@ async function deleteLectureTest(courseId, lectureId) {
     {
       method: 'DELETE',
       headers: headers(),
+      body: JSON.stringify({}),
     }
   );
 
@@ -421,6 +433,7 @@ async function deleteLectureTest(courseId, lectureId) {
     console.log(`Lecture id=${lectureId} deleted successfully`);
   } else {
     console.error(`Failed to delete lecture id=${lectureId}`);
+    process.exit(1);
   }
 }
 
@@ -445,6 +458,7 @@ async function createJournalEntryTest(courseId, journalData) {
 
   if (res.ok) {
     console.log(`✅ Journal entry created successfully (id=${data.id})`);
+    return data;
   } else {
     console.error('❌ Journal entry creation failed');
     process.exit(1);
@@ -477,6 +491,7 @@ async function updateJournalEntryTest(courseId, journalId, updateData) {
     console.log(`✅ Journal entry id=${journalId} updated successfully`);
   } else {
     console.error(`❌ Failed to update journal entry id=${journalId}`);
+    process.exit(1);
   }
 }
 // delete journal entry test
@@ -505,6 +520,7 @@ async function deleteJournalEntryTest(courseId, journalId) {
     console.log(`✅ Journal entry id=${journalId} deleted successfully`);
   } else {
     console.error(`❌ Failed to delete journal entry id=${journalId}`);
+    process.exit(1);
   }
 }
 // get journal entries test
@@ -538,55 +554,217 @@ async function getJournalEntriesTest(courseId, userId) {
     console.error(
       `❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`
     );
+    process.exit(1);
   }
 }
+
+// Pulses tests
+async function getPulseConfigTest(courseId) {
+  console.log(`→ Fetching pulse config for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/config`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched pulse config for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to fetch pulse config for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
+async function upsertPulseConfigTest(courseId, configObj) {
+  console.log(`→ Upserting pulse config for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/config`, {
+    method: 'PATCH',
+    headers: headers(),
+    body: JSON.stringify(configObj),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Upserted pulse config for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to upsert pulse config for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
+async function getPulsesTest(courseId) {
+  console.log(`→ Fetching pulses for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched ${data.length} pulses for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to fetch pulses for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
+async function submitPulseTest(courseId, option, description = null) {
+  console.log(`→ Submitting pulse for course id=${courseId}...`);
+  const body = { option };
+  if (description) body.description = description;
+
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Submitted pulse for course id=${courseId} successfully`);
+  } else {
+    console.error(`❌ Failed to submit pulse for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
+async function getPulseStatsTest(courseId) {
+  console.log(`→ Fetching pulse stats for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/stats`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched pulse stats for course id=${courseId} successfully`
+    );
+  } else {
+    console.error(`❌ Failed to fetch pulse stats for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
 // Run tests
 
-const courseId = 6; // change as needed
-const userId = 7; // change as needed
-const journalId = 11; // change as needed
+let courseId = 1; // change as needed
+let userId = 1; // change as needed
+
+const professorId = 1;
+const taId = 2;
 
 // COURSE TESTS
-// addCourseTest();
-// updateCourseTest(16, {
-//   course_code: 'CSE291',
-//   course_name: 'AI Agent Updated',
-//   term: 'SP25',
-//   section: 'A00',
-//   start_date: '2025-03-31T00:00:00.000Z',
-//   end_date: '2025-06-15T00:00:00.000Z',
-// });
-// getAllCoursesTest();
-// deleteCourse(16);
-// getAllUsersInCourseTest(14);
-// getUserDetailsInCourseTest(14, 8);
-// addUserToCourseTest(17, 16);
-// joinCourseTest(17, 16, 'ABCDEF');
-// updateRoleTest(17, 16, 'TA');
-// removeUserFromCourseTest(17, 16);
+await getAllCoursesTest();
+await getAllUsersInCourseTest(courseId);
+const newCourse = await addCourseTest();
+await updateCourseTest(newCourse.id, {
+  course_code: 'CSE291',
+  course_name: 'AI Agent Updated',
+  term: 'SP25',
+  section: 'A00',
+  // start_date: '2025-03-31',
+  // end_date: '2025-06-15',
+});
+await addUserToCourseTest(newCourse.id, professorId);
+await getUserDetailsInCourseTest(newCourse.id, professorId);
+await joinCourseTest(newCourse.id, taId, newCourse.join_code);
+await updateRoleTest(newCourse.id, taId, 'ta');
+await removeUserFromCourseTest(newCourse.id, taId);
+await removeUserFromCourseTest(newCourse.id, professorId);
+await deleteCourse(newCourse.id);
 
 // LECTURES TESTS
 // Note: Use course_id=1 (test user is enrolled as professor in course 1)
 // Course 1 has lectures with IDs 1 and 2
-// getAllLecturesTest(1);
-// getLectureTest(1, 1);
-// createLectureTest(1, {
-//   lecture_date: '2025-11-20',
-//   code: 'TEST-L1',
-// });
-// updateLectureTest(1, 1, {
-//   lecture_date: '2025-11-21',
-//   code: 'UPDATED-L1',
-// });
-// deleteLectureTest(1, 2);
+const lectureId = 1;
+await getAllLecturesTest(courseId);
+await getLectureTest(courseId, lectureId);
+const newLecture = await createLectureTest(courseId, {
+  lecture_date: '2025-11-20',
+  code: 'TEST-L1',
+});
+await updateLectureTest(courseId, newLecture.id, {
+  lecture_date: '2025-11-21',
+  code: 'UPDATED-L1',
+});
+await deleteLectureTest(courseId, newLecture.id);
 
-// await getJournalEntriesTest(courseId, userId);
-// await createJournalEntryTest(courseId, {
-//   user_id: userId,
-//   title: 'Test Journal Entry',
-//   content: 'This is a test journal entry.',
-// });
-// await updateJournalEntryTest(courseId, journalId, {
-//   content: 'This is an updated test journal entry.',
-// });
-// await deleteJournalEntryTest(courseId, journalId);
+const journalId = 1; // change as needed
+await getJournalEntriesTest(courseId, userId);
+const newJournalEntry = await createJournalEntryTest(courseId, {
+  user_id: userId,
+  title: 'Test Journal Entry',
+  content: 'This is a test journal entry.',
+});
+await updateJournalEntryTest(courseId, newJournalEntry.id, {
+  title: 'Updated Test Journal Entry',
+  content: 'This is an updated test journal entry.',
+});
+await deleteJournalEntryTest(courseId, newJournalEntry.id);
+
+// PULSES TESTS
+const pulseConfig = {
+  options: [
+    { value: 'happy', color: 'green' },
+    { value: 'sad', color: 'blue' },
+  ],
+};
+
+await getPulsesTest(courseId);
+await submitPulseTest(courseId, 'Happy', 'Feeling great!');
+await getPulseStatsTest(courseId);
+courseId = 2; // Course without any pulses so config is editable
+await upsertPulseConfigTest(courseId, pulseConfig);
+await getPulseConfigTest(courseId);

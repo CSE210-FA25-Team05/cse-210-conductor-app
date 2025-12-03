@@ -1,5 +1,7 @@
 'use strict';
 
+const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
+
 /**
  * Course Repository
  *
@@ -12,11 +14,31 @@ class CourseRepo {
   }
 
   /**
-   * Get all courses.
+   * Get all courses. This is used for internal operations.
    * @returns {Promise<Array>} List of all courses
    */
   async getAllCourse() {
     const courses = await this.db.courses.findMany();
+    return courses;
+  }
+
+  /**
+   * Get all courses for a specific user (by enrollment).
+   * @param {number} userId - ID of the user
+   * @returns {Promise<Array>} List of courses the user is enrolled in
+   */
+  async getCoursesForUser(userId) {
+    const courses = await this.db.courses.findMany({
+      where: {
+        deleted_at: null,
+        enrollments: {
+          some: {
+            user_id: userId,
+          },
+        },
+      },
+    });
+
     return courses;
   }
 
@@ -124,6 +146,12 @@ class CourseRepo {
         start_date: start_date ? new Date(start_date) : null,
         end_date: end_date ? new Date(end_date) : null,
         join_code: finalJoinCode,
+        pulse_configs: {
+          create: {
+            config: DEFAULT_PULSE_CONFIG,
+            is_editable: true,
+          },
+        },
       },
     });
     return created;

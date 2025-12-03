@@ -137,7 +137,7 @@ Run Postgres in Docker, but run backend and frontend directly on the host.
   Postgres data persists in a Docker volume (`db_data`) but does not pollute the host system.
 
 - **Clear story for professor/TAs:**  
-  One documented way to start everything (Docker) and one way to verify health (`/api/health`).
+  One documented way to start everything (Docker) and one way to verify health (`/health`).
 
 ### Negative Outcomes / Trade-offs
 
