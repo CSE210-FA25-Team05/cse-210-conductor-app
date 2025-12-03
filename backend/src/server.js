@@ -65,9 +65,7 @@ fastify.register(require('./services/journal/journal.routes'), {
   prefix: '/courses/:course_id',
 });
 
-fastify.register(require('./services/pulse'), {
-  prefix: '/api',
-});
+fastify.register(require('./services/pulse'));
 
 //health check
 fastify.get('/health', async () => {
