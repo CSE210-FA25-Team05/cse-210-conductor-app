@@ -651,13 +651,10 @@ async function submitPulseTest(courseId, option, description = null) {
 
 async function getPulseStatsTest(courseId) {
   console.log(`→ Fetching pulse stats for course id=${courseId}...`);
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/pulses/stats`,
-    {
-      method: 'GET',
-      headers: headers(),
-    }
-  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/stats`, {
+    method: 'GET',
+    headers: headers(),
+  });
 
   console.log('Status:', res.status);
   const text = await res.text();
@@ -670,12 +667,13 @@ async function getPulseStatsTest(courseId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Fetched pulse stats for course id=${courseId} successfully`);
+    console.log(
+      `✅ Fetched pulse stats for course id=${courseId} successfully`
+    );
   } else {
     console.error(`❌ Failed to fetch pulse stats for course id=${courseId}`);
   }
 }
-
 
 // Run tests
 
