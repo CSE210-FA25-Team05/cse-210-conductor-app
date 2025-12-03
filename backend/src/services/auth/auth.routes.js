@@ -61,12 +61,12 @@ async function routes(fastify) {
 
         reply.clearCookie('oauth_state', { path: '/' });
         reply.redirect(
-          process.env.FRONTEND_URL + '/dashboard' || 'http://localhost:3000/'
+          `${process.env.FRONTEND_URL}/courses` || 'http://localhost:3000/'
         );
       } catch (e) {
         req.log.error(e);
         reply.redirect(
-          `${process.env.FRONTEND_URL || 'http://localhost:3000/index.html'}?error=${encodeURIComponent(
+          `${process.env.FRONTEND_URL + '/login' || 'http://localhost:3000/index.html'}?error=${encodeURIComponent(
             e.message
           )}`
         );
