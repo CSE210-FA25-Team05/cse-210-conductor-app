@@ -168,6 +168,46 @@ class TeamsRepo {
   }
 
   /**
+   * Delete a team from a course.
+   *
+   * - Clears team_id on related enrollments
+   * - Soft-deletes the team (sets deleted_at)
+   *
+   * @param {number} courseId
+   * @param {number} teamId
+   * @returns {Promise<void>}
+   */
+  async deleteTeam(courseId, teamId) {
+    const existing = await this.getTeamById(courseId, teamId);
+    if (!existing) {
+      const e = new Error('Team not found');
+      e.code = 'NOT_FOUND';
+      throw e;
+    }
+
+    const now = new Date();
+
+    await this.db.$transaction([
+      this.db.enrollments.updateMany({
+        where: {
+          course_id: courseId,
+          team_id: teamId,
+          deleted_at: null,
+        },
+        data: {
+          team_id: null,
+        },
+      }),
+      this.db.teams.update({
+        where: { id: teamId },
+        data: {
+          deleted_at: now,
+        },
+      }),
+    ]);
+  }
+
+  /**
    * Add members to a team.
    * Expects members: [{ id, role }]
    * Assumes users are already enrolled in the course.
@@ -252,41 +292,6 @@ class TeamsRepo {
         team_id: null,
       },
     });
-  }
-
-  /**
-   * Check if a course exists in the database.
-   *
-   * @param {number} courseId - ID of the course
-   * @returns {Promise<boolean>} True if course exists, false otherwise
-   */
-  async courseExists(courseId) {
-    const course = await this.db.courses.findFirst({
-      where: {
-        id: courseId,
-        deleted_at: null,
-      },
-    });
-    return !!course;
-  }
-
-  /**
-   * Get user's role in a specific course.
-   *
-   * @param {number} userId - ID of the user
-   * @param {number} courseId - ID of the course
-   * @returns {Promise<string|null>} Role ('professor', 'ta', 'student') or null if not enrolled
-   */
-  async getUserCourseRole(userId, courseId) {
-    const enrollment = await this.db.enrollments.findFirst({
-      where: {
-        user_id: userId,
-        course_id: courseId,
-        deleted_at: null,
-      },
-    });
-
-    return enrollment ? enrollment.role : null;
   }
 }
 

@@ -13,34 +13,17 @@ class TeamsService {
   }
 
   async assertCanView(user, course, enrollment) {
-    if (enrollment === null) {
-      const canView = await this.teamsPermissions.canViewTeams(
-        user.id,
-        course.id
-      );
-      if (!canView) {
-        const e = new Error('You are not enrolled in this course');
-        e.code = 'FORBIDDEN';
-        throw e;
-      }
+    const canView = this.teamsPermissions.canViewTeams(enrollment);
+    if (!canView) {
+      const e = new Error('You are not enrolled in this course');
+      e.code = 'FORBIDDEN';
+      throw e;
     }
   }
 
   async assertCanModify(user, course, enrollment, action) {
-    if (enrollment === null) {
-      const canModify = await this.teamsPermissions.canModifyTeams(
-        user.id,
-        course.id
-      );
-      if (!canModify) {
-        const e = new Error(
-          action ||
-            'Only professors and TAs can create or update teams / membership'
-        );
-        e.code = 'FORBIDDEN';
-        throw e;
-      }
-    } else if (enrollment.role !== 'professor' && enrollment.role !== 'ta') {
+    const canModify = this.teamsPermissions.canModifyTeams(enrollment);
+    if (!canModify) {
       const e = new Error(
         action ||
           'Only professors and TAs can create or update teams / membership'
@@ -92,12 +75,17 @@ class TeamsService {
     );
 
     const { name, description, members } = payload || {};
+
+    // We let the repo handle validation + creation.
     const team = await this.teamsRepo.createTeam(course.id, {
       name,
       description,
     });
 
     if (Array.isArray(members) && members.length > 0) {
+      // Optional: we could also validate enrollment here, but your TL
+      // specifically called it out for addMembers; create with members
+      // is likely a secondary path.
       await this.teamsRepo.addMembersToTeam(course.id, team.id, members);
     }
 
@@ -115,6 +103,20 @@ class TeamsService {
       'Only professors and TAs can update teams'
     );
     return this.teamsRepo.updateTeam(course.id, teamId, data || {});
+  }
+
+  /**
+   * Delete a team from the course.
+   * Clears team_id from enrollments and soft-deletes the team.
+   */
+  async deleteTeam(user, course, enrollment, teamId) {
+    await this.assertCanModify(
+      user,
+      course,
+      enrollment,
+      'Only professors and TAs can delete teams'
+    );
+    await this.teamsRepo.deleteTeam(course.id, teamId);
   }
 
   /**

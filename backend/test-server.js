@@ -446,9 +446,9 @@ async function getAllTeamsTest(courseId) {
   }
   console.log('Response:', data);
 
-  if (res.ok && Array.isArray(data)) {
+  if (res.ok && Array.isArray(data.teams)) {
     console.log(
-      `✅ Fetched ${data.length} teams for course id=${courseId} successfully`
+      `✅ Fetched ${data.teams.length} teams for course id=${courseId} successfully`
     );
   } else if (res.ok) {
     console.log('✅ Fetched teams successfully');
@@ -509,9 +509,9 @@ async function getTeamMembersTest(courseId, teamId) {
   }
   console.log('Response:', data);
 
-  if (res.ok && Array.isArray(data)) {
+  if (res.ok && Array.isArray(data.members)) {
     console.log(
-      `✅ Fetched ${data.length} members of team id=${teamId} in course id=${courseId} successfully`
+      `✅ Fetched ${data.members.length} members of team id=${teamId} in course id=${courseId} successfully`
     );
   } else if (res.ok) {
     console.log(
@@ -683,80 +683,72 @@ async function removeTeamMembersTest(courseId, teamId, memberIds) {
   }
 }
 
-// Run tests
+// ============================================
+// TEAMS TESTS – orchestrated flow for course 3
+// ============================================
 
-// COURSE TESTS
-// COURSE TESTS
-// addCourseTest();
-// updateCourseTest(16, {
-//   course_code: 'CSE291',
-//   course_name: 'AI Agent Updated',
-//   term: 'SP25',
-//   section: 'A00',
-//   start_date: '2025-03-31T00:00:00.000Z',
-//   end_date: '2025-06-15T00:00:00.000Z',
-// });
-// getAllCoursesTest();
-// deleteCourse(16);
-// getAllUsersInCourseTest(14);
-// getUserDetailsInCourseTest(14, 8);
-// addUserToCourseTest(17, 16);
-// joinCourseTest(17, 16, 'ABCDEF');
-// updateRoleTest(17, 16, 'TA');
-// removeUserFromCourseTest(17, 16);
+async function runTeamsFlow() {
+  // Course 3 is the seeded CSE210 course where:
+  // - user 5 is professor
+  // - user 6 is ta
+  // - users 7 and 8 are students
+  const courseId = 3;
 
-// LECTURES TESTS
-// Note: Use course_id=1 (test user is enrolled as professor in course 1)
-// Course 1 has lectures with IDs 1 and 2
-// getAllLecturesTest(1);
-// getLectureTest(1, 1);
-// createLectureTest(1, {
-//   lecture_date: '2025-11-20',
-//   code: 'TEST-L1',
-// });
-// updateLectureTest(1, 1, {
-//   lecture_date: '2025-11-21',
-//   code: 'UPDATED-L1',
-// });
-// deleteLectureTest(1, 2);
+  console.log('=== TEAMS FLOW START ===');
 
-// TEAMS TESTS (uncomment and adjust IDs as needed)
-// Example flow:
-//
-// 1. Create a team in an existing course (e.g., course_id = 1)
-createTeamTest(1, {
-  name: 'Team Alpha',
-  description: 'Test team for course 1',
-  // optional initial members if they are enrolled in course 1:
-  // members: [{ id: 8, role: 'student' }]
+  // Use a unique team name each run to avoid unique constraint conflicts
+  const teamName = `Team Alpha ${Date.now()}`;
+
+  // 1. Create a new team in course 3
+  const created = await createTeamTest(courseId, {
+    name: teamName,
+    description: `Test team '${teamName}' for course ${courseId}`,
+  });
+
+  if (!created || !created.id) {
+    console.error('❌ Could not create team, aborting flow');
+    return;
+  }
+
+  const teamId = created.id;
+  console.log(`→ Using teamId=${teamId} for the rest of the flow`);
+
+  // 2. List all teams in the course
+  await getAllTeamsTest(courseId);
+
+  // 3. Get the specific team we just created
+  await getTeamTest(courseId, teamId);
+
+  // 4. Add members to the team (must be enrolled in course 3)
+  //    From your DB: user_ids 7 and 8 are students in course 3.
+  await addMembersToTeamTest(courseId, teamId, [
+    { id: 7, role: 'student' },
+    { id: 8, role: 'student' },
+  ]);
+
+  // 5. Get team members
+  await getTeamMembersTest(courseId, teamId);
+
+  // 6. Update team info
+  await updateTeamTest(courseId, teamId, {
+    name: `${teamName} (Updated)`,
+    description: 'Updated description for Team Alpha test team',
+  });
+
+  // 7. Update member roles
+  //    Your enrollments use lowercase 'ta', so we keep that here.
+  await updateTeamMembersTest(courseId, teamId, [
+    { id: 7, role: 'ta' },
+    { id: 8, role: 'student' },
+  ]);
+
+  // 8. Remove members
+  await removeTeamMembersTest(courseId, teamId, [7, 8]);
+
+  console.log('=== TEAMS FLOW END ===');
+}
+
+// Kick off the Teams flow when this script is executed
+runTeamsFlow().catch((err) => {
+  console.error('❌ Error in runTeamsFlow:', err);
 });
-//
-// 2. List all teams
-getAllTeamsTest(1);
-//
-// 3. Get a specific team (use the ID returned from createTeamTest or a known one)
-getTeamTest(1, 1);
-//
-// 4. Add members to the team (user IDs must be enrolled in the course)
-addMembersToTeamTest(1, 1, [
-  { id: 8, role: 'student' },
-  { id: 9, role: 'student' },
-]);
-
-// 5. Get team members
-getTeamMembersTest(1, 1);
-//
-// 6. Update team info
-updateTeamTest(1, 1, {
-  name: 'Team Alpha Updated',
-  description: 'Updated description',
-});
-//
-// 7. Update member roles
-updateTeamMembersTest(1, 1, [
-  { id: 8, role: 'TA' },
-  { id: 9, role: 'student' },
-]);
-//
-// 8. Remove members
-removeTeamMembersTest(1, 1, [8, 9]);

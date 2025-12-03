@@ -1,4 +1,3 @@
-// backend/src/services/teams/teams.schemas.js
 import {
   createArrayReponseSchema,
   ErrorSchema,
@@ -190,6 +189,26 @@ export const UpdateTeamSchema = {
   },
 };
 
+export const DeleteTeamSchema = {
+  summary: 'Delete a team',
+  tags: ['Teams'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      team_id: { type: 'integer' },
+    },
+    required: ['course_id', 'team_id'],
+  },
+  response: {
+    204: { type: 'null' },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
 export const AddMembersSchema = {
   summary: 'Add members to a team',
   tags: ['Teams'],
@@ -224,16 +243,7 @@ export const UpdateMembersSchema = {
   },
   body: UpdateMembersBody,
   response: {
-    200: {
-      type: 'object',
-      properties: {
-        members: createArrayReponseSchema({
-          type: 'object',
-          additionalProperties: true, // same shape as GetTeamMembers
-        }),
-      },
-      required: ['members'],
-    },
+    204: { type: 'null' },
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
