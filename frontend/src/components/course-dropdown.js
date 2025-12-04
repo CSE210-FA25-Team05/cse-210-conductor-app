@@ -171,7 +171,7 @@ class CourseDropdown extends HTMLElement {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.href = `/course/${course.id}/dashboard`;
-      a.textContent = course.course_name;
+      a.textContent = `${course.course_code}: ${course.course_name}`;
       li.appendChild(a);
       this.ul.appendChild(li);
     });
