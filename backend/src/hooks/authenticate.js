@@ -72,12 +72,16 @@ module.exports = fp(async function authenticateHook(fastify) {
 
     const sessionId = req.cookies?.sid;
     if (!sessionId) {
-      return reply.code(401).send({ statusCode: 401, error: 'Not authenticated' });
+      return reply
+        .code(401)
+        .send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     const user = await authRepo.getUserBySessionId(sessionId);
     if (!user) {
-      return reply.code(401).send({ statusCode: 401, error: 'Session expired or invalid' });
+      return reply
+        .code(401)
+        .send({ statusCode: 401, error: 'Session expired or invalid' });
     }
 
     req.user = user;

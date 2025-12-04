@@ -49,7 +49,8 @@ module.exports = fp(async function profileCompleteHook(fastify) {
       return reply.code(403).send({
         statusCode: 403,
         error: 'PROFILE_INCOMPLETE',
-        message: 'Make sure that first name, last name are filled out, so that your profile is considered complete.',
+        message:
+          'Make sure that first name, last name are filled out, so that your profile is considered complete.',
       });
     }
   });

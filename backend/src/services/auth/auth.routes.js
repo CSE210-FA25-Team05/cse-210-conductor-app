@@ -134,7 +134,9 @@ async function routes(fastify) {
       // If allowed, fetch and return the profile
       const targetUser = await authRepo.getUserById(targetUserId);
       if (!targetUser) {
-        return reply.code(404).send({ statusCode: 404, error: 'User not found' });
+        return reply
+          .code(404)
+          .send({ statusCode: 404, error: 'User not found' });
       }
 
       return authService.buildProfileResponse(targetUser);
