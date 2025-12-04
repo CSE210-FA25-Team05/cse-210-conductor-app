@@ -44,8 +44,9 @@ module.exports = async function journalRoutes(fastify, options) {
     }
   );
   fastify.get(
-    '/journals/entry/:journal_id',
+    '/journals/:journal_id',
     {
+      preHandler: [fastify.requireJournalAccess],
       schema: journalSchemas.GetJournalByIdSchema,
     },
     async (request, reply) => {
@@ -59,26 +60,7 @@ module.exports = async function journalRoutes(fastify, options) {
       }
     }
   );
-  fastify.get(
-    '/journals/user/:user_id',
-    {
-      schema: journalSchemas.GetJournalsByUserSchema,
-    },
-    async (request, reply) => {
-      try {
-        const user_id = request.params.user_id;
-        const course_id = request.params.course_id;
-        const res = await journalService.getJournalsByUserIdAndCourseId(
-          user_id,
-          course_id
-        );
-        return res;
-      } catch (error) {
-        console.error(error);
-        return mapAndReply(error, reply);
-      }
-    }
-  );
+  
   fastify.post(
     '/journals',
     {
@@ -104,6 +86,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.patch(
     '/journals/:journal_id',
     {
+      preHandler: [fastify.requireJournalUpdate],
       schema: journalSchemas.UpdateJournalSchema,
     },
     async (request, reply) => {
@@ -125,6 +108,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.delete(
     '/journals/:journal_id',
     {
+      preHandler: [fastify.requireJournalDelete],
       schema: journalSchemas.DeleteJournalSchema,
     },
     async (request, reply) => {

@@ -3,9 +3,25 @@
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3001/api';
 const AUTH = process.env.AUTH_TOKEN || ''; // optional, if you have auth
 
+// Seeded test users (see prisma/seed.js)
+const PROFESSOR_EMAIL = 'mathprof@ucsd.edu';
+const TA_EMAIL = 'genius_ta@ucsd.edu';
+const JOHN_EMAIL = 'jdoe@ucsd.edu';
+const JANE_EMAIL = 'jd563@ucsd.edu';
+
 function headers() {
   const h = { 'Content-Type': 'application/json' };
   if (AUTH) h['Authorization'] = AUTH;
+  return h;
+}
+
+// Use Fastify test-mode headers to impersonate a specific user by email.
+// Requires NODE_ENV=development and TEST_MODE=true on the backend.
+function headersForEmail(email) {
+  const h = headers();
+  if (email) {
+    h['x-test-user-email'] = email;
+  }
   return h;
 }
 
@@ -540,6 +556,269 @@ async function getJournalEntriesTest(courseId, userId) {
     );
   }
 }
+
+// ============================================
+// JOURNAL PERMISSIONS TESTS
+// ============================================
+
+async function getCourseIdByCode(courseCode) {
+  console.log(`→ Resolving course id for course_code=${courseCode}...`);
+  const res = await fetch(`${BASE_URL}/courses`, {
+    method: 'GET',
+    headers: headersForEmail(PROFESSOR_EMAIL),
+  });
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Failed to parse /courses response: ${text}`);
+  }
+  // Depending on implementation, /courses may return an array or an object wrapper.
+  const courses = Array.isArray(data) ? data : data.courses;
+  if (!Array.isArray(courses)) {
+    throw new Error(
+      `Unexpected /courses response shape. Expected array or { courses: [...] }, got: ${JSON.stringify(
+        data
+      )}`
+    );
+  }
+
+  const course = courses.find((c) => c.course_code === courseCode);
+  if (!course) {
+    throw new Error(`Course with course_code=${courseCode} not found`);
+  }
+  console.log(`   Resolved course_code=${courseCode} → id=${course.id}`);
+  return course.id;
+}
+
+async function getUserProfileByEmail(email) {
+  console.log(`→ Resolving user profile for email=${email}...`);
+  const res = await fetch(`${BASE_URL}/me/profile`, {
+    method: 'GET',
+    headers: headersForEmail(email),
+  });
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Failed to parse /me/profile response: ${text}`);
+  }
+  if (!res.ok) {
+    throw new Error(
+      `Failed to resolve profile for ${email}. Status=${res.status}, body=${text}`
+    );
+  }
+  console.log(`   Resolved email=${email} → id=${data.id}`);
+  return data;
+}
+
+async function findJournalForUser(courseId, userId, { isPrivate }) {
+  console.log(
+    `→ Looking for ${isPrivate ? 'private' : 'public'} journal for user_id=${userId} in course_id=${courseId}...`
+  );
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals`,
+    {
+      method: 'GET',
+      headers: headersForEmail(PROFESSOR_EMAIL),
+    }
+  );
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Failed to parse journals list response: ${text}`);
+  }
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch journals list. Status=${res.status}, body=${text}`
+    );
+  }
+
+  const journal = data.find(
+    (j) => j.user_id === userId && j.is_private === !!isPrivate
+  );
+  if (!journal) {
+    throw new Error(
+      `No ${isPrivate ? 'private' : 'public'} journal found for user_id=${userId} in course_id=${courseId}`
+    );
+  }
+  console.log(`   Found journal id=${journal.id}`);
+  return journal;
+}
+
+async function assertStatus(label, promise, expectedStatus) {
+  const res = await promise;
+  const ok = res.status === expectedStatus;
+  console.log(
+    `${ok ? '✅' : '❌'} ${label} → status=${res.status}, expected=${expectedStatus}`
+  );
+  if (!ok) {
+    const bodyText = await res.text();
+    console.error('   Response body:', bodyText);
+    process.exit(1);
+  }
+}
+
+async function testJournalAccessPermissions() {
+  console.log('==============================');
+  console.log('Journal Access Permission Tests');
+  console.log('==============================');
+
+  const courseId = await getCourseIdByCode('CSE210');
+  const johnProfile = await getUserProfileByEmail(JOHN_EMAIL);
+  const janeProfile = await getUserProfileByEmail(JANE_EMAIL);
+
+  // Use seeded fixtures:
+  // - John has public journals in CSE210
+  // - Jane has private journals in CSE210
+  const johnPublicJournal = await findJournalForUser(courseId, johnProfile.id, {
+    isPrivate: false,
+  });
+  const janePrivateJournal = await findJournalForUser(
+    courseId,
+    janeProfile.id,
+    { isPrivate: true }
+  );
+
+  // Private journal: only owner (Jane) can access
+  await assertStatus(
+    'Owner (Jane) can view her private journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JANE_EMAIL),
+      }
+    ),
+    200
+  );
+
+  await assertStatus(
+    'Other student (John) cannot view Jane\'s private journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JOHN_EMAIL),
+      }
+    ),
+    403
+  );
+
+  await assertStatus(
+    'TA cannot view Jane\'s private journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(TA_EMAIL),
+      }
+    ),
+    403
+  );
+
+  // Public journal: owner and TA managing the team can access, other-student (different team) cannot
+  await assertStatus(
+    'Owner (John) can view his public journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JOHN_EMAIL),
+      }
+    ),
+    200
+  );
+
+  await assertStatus(
+    'Other student (Jane, different team) cannot view John\'s public journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JANE_EMAIL),
+      }
+    ),
+    403
+  );
+
+  await assertStatus(
+    'TA managing John\'s team can view John\'s public journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(TA_EMAIL),
+      }
+    ),
+    200
+  );
+}
+
+async function testJournalUpdateDeletePermissions() {
+  console.log('====================================');
+  console.log('Journal Update/Delete Permission Tests');
+  console.log('====================================');
+
+  const courseId = await getCourseIdByCode('CSE210');
+  const johnProfile = await getUserProfileByEmail(JOHN_EMAIL);
+
+  const johnPublicJournal = await findJournalForUser(courseId, johnProfile.id, {
+    isPrivate: false,
+  });
+
+  // Update: only owner (John) can update
+  await assertStatus(
+    'Owner (John) can update his journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'PATCH',
+        headers: headersForEmail(JOHN_EMAIL),
+        body: JSON.stringify({
+          title: johnPublicJournal.title,
+          content: `${johnPublicJournal.content}\n[Updated in test]`,
+        }),
+      }
+    ),
+    200
+  );
+
+  await assertStatus(
+    'TA cannot update John\'s journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'PATCH',
+        headers: headersForEmail(TA_EMAIL),
+        body: JSON.stringify({
+          title: johnPublicJournal.title,
+          content: `${johnPublicJournal.content}\n[TA illegal update]`,
+        }),
+      }
+    ),
+    403
+  );
+
+  // Delete: owner, TA, or professor can delete
+  await assertStatus(
+    'TA can delete John\'s journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'DELETE',
+        headers: headersForEmail(TA_EMAIL),
+        body: JSON.stringify({}),
+      }
+    ),
+    200
+  );
+}
+
 // Run tests
 
 const courseId = 6; // change as needed
@@ -590,3 +869,10 @@ const journalId = 11; // change as needed
 //   content: 'This is an updated test journal entry.',
 // });
 // await deleteJournalEntryTest(courseId, journalId);
+// In backend/test-server.js, near the bottom:
+// (inside an async IIFE, or run from node REPL)
+
+(async () => {
+  await testJournalAccessPermissions();
+  await testJournalUpdateDeletePermissions();
+})();
