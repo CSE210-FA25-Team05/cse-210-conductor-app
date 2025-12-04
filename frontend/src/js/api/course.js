@@ -33,7 +33,7 @@ import {
  * @description Get a list of all the courses with their information.
  * @returns { Course[] } List of all the courses with their information.
  */
-export async function getCourses() {
+export async function getAllCourses() {
   let response = await getWrapper('/api/courses');
   if (!response.ok) {
     throw new Error(response.error);
@@ -66,8 +66,56 @@ export async function createCourse(newCourse) {
  * @param { number } courseID - ID of the course you want to view.
  * @returns { Course } Requested course with its information.
  */
-export async function getCourseWithID(courseID) {
+export async function getCourse(courseID) {
   let response = await getWrapper(`/api/courses/${courseID}`);
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
+ * @description Update a specific course.
+ * @param { number } courseID - ID of the course you want to update.
+ * @param { object } updatedCourse - An object containing the information you want to change for the course.
+ * @param { string } [updatedCourse.course_code] - Course code.
+ * @param { string } [updatedCourse.course_name] - Course name.
+ * @param { string } [updatedCourse.term] - School term the course takes course in.
+ * @param { string } [updatedCourse.section] - Course section.
+ * @param { string } [updatedCourse.join_code] - Code for enrolling in the course.
+ * @param { string } [updatedCourse.start_date] - Date the course begins on, in YYYY-MM-DD
+ * @param { string } [updatedCourse.end_date] - Date the course ends on, in YYYY-MM-DD format.
+ * @returns { Course } Updated course with its information.
+ */
+export async function updateCourse(courseID, updatedCourseInfo) {
+  let response = await patchWrapper(
+    `/api/courses/${courseID}`,
+    updatedCourseInfo
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
+ * @description Delete a specific course.
+ * @param { number } courseID - ID of the course you want to delete.
+ */
+export async function deleteCourse(courseID) {
+  let response = await deleteWrapper(`/api/courses/${courseID}`);
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+}
+
+/**
+ * @description Get a list of all the users currently enrolled in a course, along with their information.
+ * @param { number } courseID - ID of the course whose users you want to view.
+ * @return { UserInfo[] } List of all the users in the course, with their information.
+ */
+export async function getAllUsersInCourse(courseID) {
+  let response = await getWrapper(`/api/courses/${courseID}/users`);
   if (!response.ok) {
     throw new Error(response.error);
   }
