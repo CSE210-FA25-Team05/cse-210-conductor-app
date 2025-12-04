@@ -176,6 +176,13 @@ class CourseDropdown extends HTMLElement {
       this.ul.appendChild(li);
     });
 
+    // Add visual separator
+    const li = document.createElement('li');
+    li.setAttribute('data-state', 'off');
+    const hr = document.createElement('hr');
+    li.appendChild(hr);
+    this.ul.appendChild(li);
+
     // Add action buttons at the end
     const createLi = document.createElement('li');
     createLi.appendChild(this.newCourseButton);
