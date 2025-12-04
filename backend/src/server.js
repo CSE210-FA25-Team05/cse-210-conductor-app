@@ -38,6 +38,7 @@ const sensible = require('@fastify/sensible');
 fastify.register(cors, {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 });
 fastify.register(cookie);
 fastify.register(sensible);
