@@ -4,11 +4,11 @@
 */
 
 /* Set this attribute to turn off the state layer. */
-[data-state="off"] {
+[data-state='off'] {
   cursor: default !important;
 }
-[data-state="off"]::after,
-[data-state="off"]:before {
+[data-state='off']::after,
+[data-state='off']:before {
   content: none !important;
 }
 
