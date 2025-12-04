@@ -29,9 +29,8 @@ class CourseDropdown extends HTMLElement {
     const modalHeader = document.createElement('h2');
     modalHeader.setAttribute('slot', 'header');
     modalHeader.innerText = 'Create Course';
-    const modalContent = document.createElement('p');
+    const modalContent = document.createElement('create-course-form');
     modalContent.setAttribute('slot', 'content');
-    modalContent.innerText = 'Add Form to create a course here.';
     const submitNewCourseButton = document.createElement('button');
     submitNewCourseButton.setAttribute('slot', 'buttons');
     submitNewCourseButton.innerText = 'Create';

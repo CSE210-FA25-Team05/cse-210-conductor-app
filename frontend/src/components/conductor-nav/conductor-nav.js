@@ -2,6 +2,7 @@ import '/src/components/logout-button/logout-button.js';
 import '/src/components/modal/modal.js';
 import '/src/components/dropdown.js';
 import '/src/components/course-dropdown.js';
+import '/src/components/forms/create-course.js';
 
 class ConductorNav extends HTMLElement {
   constructor() {
