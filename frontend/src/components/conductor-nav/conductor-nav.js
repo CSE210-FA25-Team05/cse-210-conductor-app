@@ -1,5 +1,6 @@
-import '/src/components/logout-button/logout-button.js'; // IMP
-import '/src/components/modal/modal.js'; // IMP
+import '/src/components/logout-button/logout-button.js';
+import '/src/components/modal/modal.js';
+import '/src/components/dropdown.js';
 
 class ConductorNav extends HTMLElement {
   constructor() {
@@ -74,7 +75,25 @@ class ConductorNav extends HTMLElement {
     modalButton.addEventListener('click', this.boundedHandleOpenModal);
     this.modal = modal;
 
+    // Course Dropdown
+    const courseDropdown = document.createElement('conductor-dropdown');
+    courseDropdown.classList = 'lg';
+    courseDropdown.innerHTML = `
+       <details class="dropdown" name="course-dropdown">
+           <summary>Course</summary>
+           <ul>
+               <li><a href="#cards">Cards</a></li>
+               <li><a href="#typography">Typography</a></li>
+               <li><a href="#components">Components</a></li>
+               <li><a href="#buttons">Buttons</a></li>
+               <li><button>Create Course</button></li>
+               <li><button>Join Course</button></li>
+           </ul>
+       </details>
+    `
+
     header.appendChild(menuToggle);
+    header.appendChild(courseDropdown);
     header.appendChild(modalButton);
     nav.appendChild(ul);
     footer.appendChild(logoutButtonInstance);

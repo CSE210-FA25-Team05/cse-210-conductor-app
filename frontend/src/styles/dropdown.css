@@ -66,6 +66,8 @@ details[open] > ol > li {
   white-space: nowrap;
 }
 
+details > ul > li > button,
+details > ol > li > button,
 details > ul > li > a,
 details > ol > li > a {
   width: 100%;

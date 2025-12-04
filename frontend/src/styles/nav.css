@@ -39,6 +39,7 @@ conductor-nav {
   height: calc(100dvh - var(--sidebar-padding) * 2);
   width: var(--sidebar-width);
 }
+conductor-nav details,
 conductor-nav button {
   width: 100%;
   height: fit-content;
