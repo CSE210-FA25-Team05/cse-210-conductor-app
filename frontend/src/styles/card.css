@@ -18,6 +18,7 @@ article > header {
   align-items: center;
   justify-content: space-between;
 
+  gap: var(--spacing-medium);
   margin: var(--card-padding-negative);
   background-color: var(--card-header-footer-color);
 }
