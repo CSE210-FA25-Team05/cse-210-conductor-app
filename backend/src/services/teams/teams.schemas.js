@@ -1,9 +1,12 @@
-import {
+// backend/src/services/teams/teams.schemas.js
+'use strict';
+
+const {
   createArrayReponseSchema,
   ErrorSchema,
-} from '../shared/shared.schemas.js';
+} = require('../shared/shared.schemas.js');
 
-export const TeamMemberRef = {
+const TeamMemberRef = {
   type: 'object',
   properties: {
     id: { type: 'integer' }, // user id
@@ -12,7 +15,7 @@ export const TeamMemberRef = {
   required: ['id'],
 };
 
-export const TeamInfo = {
+const TeamInfo = {
   type: 'object',
   properties: {
     id: { type: 'number' },
@@ -23,7 +26,7 @@ export const TeamInfo = {
   required: ['id', 'course_id', 'name', 'description'],
 };
 
-export const CreateTeamBody = {
+const CreateTeamBody = {
   type: 'object',
   properties: {
     name: { type: 'string' },
@@ -37,7 +40,7 @@ export const CreateTeamBody = {
   required: ['name'],
 };
 
-export const UpdateTeamBody = {
+const UpdateTeamBody = {
   type: 'object',
   properties: {
     name: { type: 'string' },
@@ -45,13 +48,13 @@ export const UpdateTeamBody = {
   },
 };
 
-export const AddMembersBody = {
+const AddMembersBody = {
   // Accept an array of {id, role}
   type: 'array',
   items: TeamMemberRef,
 };
 
-export const UpdateMembersBody = {
+const UpdateMembersBody = {
   type: 'array',
   items: {
     type: 'object',
@@ -63,7 +66,7 @@ export const UpdateMembersBody = {
   },
 };
 
-export const RemoveMembersBody = {
+const RemoveMembersBody = {
   type: 'object',
   properties: {
     ids: {
@@ -74,7 +77,7 @@ export const RemoveMembersBody = {
   required: ['ids'],
 };
 
-export const ListTeamsSchema = {
+const ListTeamsSchema = {
   summary: 'Get all teams for a course',
   tags: ['Teams'],
   params: {
@@ -99,7 +102,7 @@ export const ListTeamsSchema = {
   },
 };
 
-export const GetTeamSchema = {
+const GetTeamSchema = {
   summary: 'Get a team by ID',
   tags: ['Teams'],
   params: {
@@ -119,7 +122,7 @@ export const GetTeamSchema = {
   },
 };
 
-export const GetTeamMembersSchema = {
+const GetTeamMembersSchema = {
   summary: 'Get members of a team',
   tags: ['Teams'],
   params: {
@@ -148,7 +151,7 @@ export const GetTeamMembersSchema = {
   },
 };
 
-export const CreateTeamSchema = {
+const CreateTeamSchema = {
   summary: 'Create a new team',
   tags: ['Teams'],
   params: {
@@ -168,7 +171,7 @@ export const CreateTeamSchema = {
   },
 };
 
-export const UpdateTeamSchema = {
+const UpdateTeamSchema = {
   summary: 'Update a team',
   tags: ['Teams'],
   params: {
@@ -189,7 +192,7 @@ export const UpdateTeamSchema = {
   },
 };
 
-export const DeleteTeamSchema = {
+const DeleteTeamSchema = {
   summary: 'Delete a team',
   tags: ['Teams'],
   params: {
@@ -209,7 +212,7 @@ export const DeleteTeamSchema = {
   },
 };
 
-export const AddMembersSchema = {
+const AddMembersSchema = {
   summary: 'Add members to a team',
   tags: ['Teams'],
   params: {
@@ -230,7 +233,7 @@ export const AddMembersSchema = {
   },
 };
 
-export const UpdateMembersSchema = {
+const UpdateMembersSchema = {
   summary: 'Update roles of team members',
   tags: ['Teams'],
   params: {
@@ -251,7 +254,7 @@ export const UpdateMembersSchema = {
   },
 };
 
-export const RemoveMembersSchema = {
+const RemoveMembersSchema = {
   summary: 'Remove members from a team',
   tags: ['Teams'],
   params: {
@@ -270,4 +273,23 @@ export const RemoveMembersSchema = {
     403: ErrorSchema,
     404: ErrorSchema,
   },
+};
+
+module.exports = {
+  TeamMemberRef,
+  TeamInfo,
+  CreateTeamBody,
+  UpdateTeamBody,
+  AddMembersBody,
+  UpdateMembersBody,
+  RemoveMembersBody,
+  ListTeamsSchema,
+  GetTeamSchema,
+  GetTeamMembersSchema,
+  CreateTeamSchema,
+  UpdateTeamSchema,
+  DeleteTeamSchema,
+  AddMembersSchema,
+  UpdateMembersSchema,
+  RemoveMembersSchema,
 };

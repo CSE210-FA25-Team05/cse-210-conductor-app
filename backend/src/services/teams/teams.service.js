@@ -1,3 +1,4 @@
+// backend/src/services/teams/teams.service.js
 'use strict';
 
 /**
@@ -76,16 +77,14 @@ class TeamsService {
 
     const { name, description, members } = payload || {};
 
-    // We let the repo handle validation + creation.
+    // Repo handles validation + creation.
     const team = await this.teamsRepo.createTeam(course.id, {
       name,
       description,
     });
 
     if (Array.isArray(members) && members.length > 0) {
-      // Optional: we could also validate enrollment here, but your TL
-      // specifically called it out for addMembers; create with members
-      // is likely a secondary path.
+      // Secondary path; main enrollment validation is in addMembers().
       await this.teamsRepo.addMembersToTeam(course.id, team.id, members);
     }
 

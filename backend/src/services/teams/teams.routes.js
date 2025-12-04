@@ -9,7 +9,6 @@ const teamsSchemas = require('./teams.schemas');
 /**
  * Teams Routes Plugin
  */
-
 module.exports = async function teamsRoutes(fastify /*, options */) {
   const teamsRepo = new TeamsRepo(fastify.db);
   const teamsPermissions = new TeamsPermissions(teamsRepo);
