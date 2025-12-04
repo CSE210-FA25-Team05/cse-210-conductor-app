@@ -90,7 +90,7 @@ class ConductorNav extends HTMLElement {
                <li><button>Join Course</button></li>
            </ul>
        </details>
-    `
+    `;
 
     header.appendChild(menuToggle);
     header.appendChild(courseDropdown);
