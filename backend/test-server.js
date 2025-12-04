@@ -1,6 +1,6 @@
 // scripts/test-create-course.js
 /* eslint-disable no-console */
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3001/api';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 const AUTH = process.env.AUTH_TOKEN || ''; // optional, if you have auth
 
 function headers() {
@@ -15,8 +15,8 @@ async function addCourseTest() {
     course_name: 'AI Agent',
     term: 'SP25',
     section: 'A00',
-    start_date: '2025-03-31T00:00:00.000Z',
-    end_date: '2025-06-15T00:00:00.000Z',
+    start_date: '2025-03-31',
+    end_date: '2025-06-15',
   };
 
   console.log('Creating new course...');
@@ -38,6 +38,7 @@ async function addCourseTest() {
 
   if (res.ok) {
     console.log(`Course created successfully (id=${data.id})`);
+    return data;
   } else {
     console.error('Course creation failed');
     process.exit(1);
@@ -67,6 +68,7 @@ async function deleteCourse(courseId) {
     console.log(`Course id=${courseId} deleted successfully`);
   } else {
     console.error(`Failed to delete course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -93,6 +95,7 @@ async function updateCourseTest(courseId, updateData) {
     console.log(`Course id=${courseId} updated successfully`);
   } else {
     console.error(`Failed to update course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -118,6 +121,7 @@ async function getAllCoursesTest() {
     console.log(`Fetched ${data.length} courses successfully`);
   } else {
     console.error('Failed to fetch courses');
+    process.exit(1);
   }
 }
 
@@ -145,6 +149,7 @@ async function getAllUsersInCourseTest(courseId) {
     );
   } else {
     console.error(`Failed to fetch users in course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -172,6 +177,7 @@ async function getUserDetailsInCourseTest(courseId, userId) {
     );
   } else {
     console.error(`Failed to fetch user id=${userId} in course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -198,6 +204,7 @@ async function addUserToCourseTest(courseId, userId) {
     console.log(`User added to course successfully`);
   } else {
     console.error(`Failed to add user to course`);
+    process.exit(1);
   }
 }
 
@@ -223,6 +230,7 @@ async function joinCourseTest(courseId, userId, joinCode) {
     console.log(`Joined course successfully`);
   } else {
     console.error(`Failed to join course`);
+    process.exit(1);
   }
 }
 
@@ -247,6 +255,7 @@ async function updateRoleTest(courseId, userId, role) {
     console.log(`Updated user role in course successfully`);
   } else {
     console.error(`Failed to update user role in course`);
+    process.exit(1);
   }
 }
 
@@ -271,6 +280,7 @@ async function removeUserFromCourseTest(courseId, userId) {
     console.log(`Removed user from course successfully`);
   } else {
     console.error(`Failed to remove user from course`);
+    process.exit(1);
   }
 }
 
@@ -302,6 +312,7 @@ async function getAllLecturesTest(courseId) {
     );
   } else {
     console.error(`Failed to fetch lectures for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
@@ -334,6 +345,7 @@ async function getLectureTest(courseId, lectureId) {
     console.error(
       `Failed to fetch lecture id=${lectureId} in course id=${courseId}`
     );
+    process.exit(1);
   }
 }
 
@@ -357,13 +369,11 @@ async function createLectureTest(courseId, lectureData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Lecture created successfully (id=${data.lecture?.id || 'unknown'})`
-    );
-    return data.lecture;
+    console.log(`Lecture created successfully (id=${data.id || 'unknown'})`);
+    return data;
   } else {
     console.error('Lecture creation failed');
-    return null;
+    process.exit(1);
   }
 }
 
@@ -393,6 +403,7 @@ async function updateLectureTest(courseId, lectureId, updateData) {
     console.log(`Lecture id=${lectureId} updated successfully`);
   } else {
     console.error(`Failed to update lecture id=${lectureId}`);
+    process.exit(1);
   }
 }
 
@@ -404,6 +415,7 @@ async function deleteLectureTest(courseId, lectureId) {
     {
       method: 'DELETE',
       headers: headers(),
+      body: JSON.stringify({}),
     }
   );
 
@@ -421,48 +433,17 @@ async function deleteLectureTest(courseId, lectureId) {
     console.log(`Lecture id=${lectureId} deleted successfully`);
   } else {
     console.error(`Failed to delete lecture id=${lectureId}`);
+    process.exit(1);
   }
 }
 
-// ============================================
-// TEAMS TESTS
-// ============================================
-
-// Get all teams for a course
-async function getAllTeamsTest(courseId) {
-  console.log(`→ Fetching all teams for course id=${courseId}...`);
-  const res = await fetch(`${BASE_URL}/courses/${courseId}/teams`, {
-    method: 'GET',
+// test creation of journal entries
+async function createJournalEntryTest(courseId, journalData) {
+  console.log('→ Creating journal entry...');
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/journals`, {
+    method: 'POST',
     headers: headers(),
-  });
-
-  console.log('Status:', res.status);
-  const text = await res.text();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    data = text;
-  }
-  console.log('Response:', data);
-
-  if (res.ok && Array.isArray(data.teams)) {
-    console.log(
-      `✅ Fetched ${data.teams.length} teams for course id=${courseId} successfully`
-    );
-  } else if (res.ok) {
-    console.log('✅ Fetched teams successfully');
-  } else {
-    console.error(`❌ Failed to fetch teams for course id=${courseId}`);
-  }
-}
-
-// Get a single team
-async function getTeamTest(courseId, teamId) {
-  console.log(`→ Fetching team id=${teamId} in course id=${courseId}...`);
-  const res = await fetch(`${BASE_URL}/courses/${courseId}/teams/${teamId}`, {
-    method: 'GET',
-    headers: headers(),
+    body: JSON.stringify(journalData),
   });
 
   console.log('Status:', res.status);
@@ -476,23 +457,79 @@ async function getTeamTest(courseId, teamId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `✅ Fetched team id=${teamId} in course id=${courseId} successfully`
-    );
+    console.log(`✅ Journal entry created successfully (id=${data.id})`);
+    return data;
   } else {
-    console.error(
-      `❌ Failed to fetch team id=${teamId} in course id=${courseId}`
-    );
+    console.error('❌ Journal entry creation failed');
+    process.exit(1);
   }
 }
 
-// Get members of a team
-async function getTeamMembersTest(courseId, teamId) {
+// update journal entry test
+async function updateJournalEntryTest(courseId, journalId, updateData) {
+  console.log(`→ Updating journal entry id=${journalId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/${journalId}`,
+    {
+      method: 'PATCH',
+      headers: headers(),
+      body: JSON.stringify(updateData),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry id=${journalId} updated successfully`);
+  } else {
+    console.error(`❌ Failed to update journal entry id=${journalId}`);
+    process.exit(1);
+  }
+}
+// delete journal entry test
+async function deleteJournalEntryTest(courseId, journalId) {
+  console.log(`→ Deleting journal entry id=${journalId}...`);
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals/${journalId}`,
+    {
+      method: 'DELETE',
+      headers: headers(),
+      body: JSON.stringify({}),
+    }
+  );
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Journal entry id=${journalId} deleted successfully`);
+  } else {
+    console.error(`❌ Failed to delete journal entry id=${journalId}`);
+    process.exit(1);
+  }
+}
+// get journal entries test
+async function getJournalEntriesTest(courseId, userId) {
   console.log(
-    `→ Fetching members of team id=${teamId} in course id=${courseId}...`
+    `→ Fetching journal entries for user id=${userId} in course id=${courseId}...`
   );
   const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/teams/${teamId}/members`,
+    `${BASE_URL}/courses/${courseId}/journals/user/${userId}`,
     {
       method: 'GET',
       headers: headers(),
@@ -509,28 +546,24 @@ async function getTeamMembersTest(courseId, teamId) {
   }
   console.log('Response:', data);
 
-  if (res.ok && Array.isArray(data.members)) {
+  if (res.ok) {
     console.log(
-      `✅ Fetched ${data.members.length} members of team id=${teamId} in course id=${courseId} successfully`
-    );
-  } else if (res.ok) {
-    console.log(
-      `✅ Fetched members of team id=${teamId} in course id=${courseId} successfully`
+      `✅ Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`
     );
   } else {
     console.error(
-      `❌ Failed to fetch members of team id=${teamId} in course id=${courseId}`
+      `❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`
     );
+    process.exit(1);
   }
 }
 
-// Create a new team
-async function createTeamTest(courseId, teamData) {
-  console.log(`→ Creating new team for course id=${courseId}...`);
-  const res = await fetch(`${BASE_URL}/courses/${courseId}/teams`, {
-    method: 'POST',
+// Pulses tests
+async function getPulseConfigTest(courseId) {
+  console.log(`→ Fetching pulse config for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/config`, {
+    method: 'GET',
     headers: headers(),
-    body: JSON.stringify(teamData),
   });
 
   console.log('Status:', res.status);
@@ -544,88 +577,22 @@ async function createTeamTest(courseId, teamData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Team created successfully (id=${data.id || 'unknown'})`);
-    return data;
-  } else {
-    console.error('❌ Team creation failed');
-    return null;
-  }
-}
-
-// Add members to a team
-async function addMembersToTeamTest(courseId, teamId, members) {
-  console.log(
-    `→ Adding members to team id=${teamId} in course id=${courseId}...`
-  );
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/teams/${teamId}/add_members`,
-    {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify(members),
-    }
-  );
-
-  console.log('Status:', res.status);
-  const text = await res.text();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    data = text;
-  }
-  console.log('Response:', data);
-
-  if (res.ok) {
     console.log(
-      `✅ Members added to team id=${teamId} in course id=${courseId} successfully`
+      `✅ Fetched pulse config for course id=${courseId} successfully`
     );
   } else {
-    console.error(
-      `❌ Failed to add members to team id=${teamId} in course id=${courseId}`
-    );
+    console.error(`❌ Failed to fetch pulse config for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
-// Update team info
-async function updateTeamTest(courseId, teamId, updateData) {
-  console.log(`→ Updating team id=${teamId} in course id=${courseId}...`);
-  const res = await fetch(`${BASE_URL}/courses/${courseId}/teams/${teamId}`, {
+async function upsertPulseConfigTest(courseId, configObj) {
+  console.log(`→ Upserting pulse config for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/config`, {
     method: 'PATCH',
     headers: headers(),
-    body: JSON.stringify(updateData),
+    body: JSON.stringify(configObj),
   });
-
-  console.log('Status:', res.status);
-  const text = await res.text();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    data = text;
-  }
-  console.log('Response:', data);
-
-  if (res.ok) {
-    console.log(`✅ Team id=${teamId} updated successfully`);
-  } else {
-    console.error(`❌ Failed to update team id=${teamId}`);
-  }
-}
-
-// Update member roles in a team
-async function updateTeamMembersTest(courseId, teamId, members) {
-  console.log(
-    `→ Updating member roles in team id=${teamId} in course id=${courseId}...`
-  );
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/teams/${teamId}/update_members`,
-    {
-      method: 'PATCH',
-      headers: headers(),
-      body: JSON.stringify(members),
-    }
-  );
 
   console.log('Status:', res.status);
   const text = await res.text();
@@ -639,28 +606,20 @@ async function updateTeamMembersTest(courseId, teamId, members) {
 
   if (res.ok) {
     console.log(
-      `✅ Member roles updated in team id=${teamId} in course id=${courseId} successfully`
+      `✅ Upserted pulse config for course id=${courseId} successfully`
     );
   } else {
-    console.error(
-      `❌ Failed to update member roles in team id=${teamId} in course id=${courseId}`
-    );
+    console.error(`❌ Failed to upsert pulse config for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
-// Remove members from a team
-async function removeTeamMembersTest(courseId, teamId, memberIds) {
-  console.log(
-    `→ Removing members from team id=${teamId} in course id=${courseId}...`
-  );
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/teams/${teamId}/remove_members`,
-    {
-      method: 'DELETE',
-      headers: headers(),
-      body: JSON.stringify({ ids: memberIds }),
-    }
-  );
+async function getPulsesTest(courseId) {
+  console.log(`→ Fetching pulses for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses`, {
+    method: 'GET',
+    headers: headers(),
+  });
 
   console.log('Status:', res.status);
   const text = await res.text();
@@ -674,81 +633,138 @@ async function removeTeamMembersTest(courseId, teamId, memberIds) {
 
   if (res.ok) {
     console.log(
-      `✅ Removed members from team id=${teamId} in course id=${courseId} successfully`
+      `✅ Fetched ${data.length} pulses for course id=${courseId} successfully`
     );
   } else {
-    console.error(
-      `❌ Failed to remove members from team id=${teamId} in course id=${courseId}`
+    console.error(`❌ Failed to fetch pulses for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
+async function submitPulseTest(courseId, option, description = null) {
+  console.log(`→ Submitting pulse for course id=${courseId}...`);
+  const body = { option };
+  if (description) body.description = description;
+
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(body),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(`✅ Submitted pulse for course id=${courseId} successfully`);
+  } else {
+    console.error(`❌ Failed to submit pulse for course id=${courseId}`);
+    process.exit(1);
+  }
+}
+
+async function getPulseStatsTest(courseId) {
+  console.log(`→ Fetching pulse stats for course id=${courseId}...`);
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/pulses/stats`, {
+    method: 'GET',
+    headers: headers(),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `✅ Fetched pulse stats for course id=${courseId} successfully`
     );
+  } else {
+    console.error(`❌ Failed to fetch pulse stats for course id=${courseId}`);
+    process.exit(1);
   }
 }
 
-// ============================================
-// TEAMS TESTS – orchestrated flow for course 3
-// ============================================
+// Run tests
 
-async function runTeamsFlow() {
-  // Course 3 is the seeded CSE210 course where:
-  // - user 5 is professor
-  // - user 6 is ta
-  // - users 7 and 8 are students
-  const courseId = 3;
+let courseId = 1; // change as needed
+let userId = 1; // change as needed
 
-  console.log('=== TEAMS FLOW START ===');
+const professorId = 1;
+const taId = 2;
 
-  // Use a unique team name each run to avoid unique constraint conflicts
-  const teamName = `Team Alpha ${Date.now()}`;
-
-  // 1. Create a new team in course 3
-  const created = await createTeamTest(courseId, {
-    name: teamName,
-    description: `Test team '${teamName}' for course ${courseId}`,
-  });
-
-  if (!created || !created.id) {
-    console.error('❌ Could not create team, aborting flow');
-    return;
-  }
-
-  const teamId = created.id;
-  console.log(`→ Using teamId=${teamId} for the rest of the flow`);
-
-  // 2. List all teams in the course
-  await getAllTeamsTest(courseId);
-
-  // 3. Get the specific team we just created
-  await getTeamTest(courseId, teamId);
-
-  // 4. Add members to the team (must be enrolled in course 3)
-  //    From your DB: user_ids 7 and 8 are students in course 3.
-  await addMembersToTeamTest(courseId, teamId, [
-    { id: 7, role: 'student' },
-    { id: 8, role: 'student' },
-  ]);
-
-  // 5. Get team members
-  await getTeamMembersTest(courseId, teamId);
-
-  // 6. Update team info
-  await updateTeamTest(courseId, teamId, {
-    name: `${teamName} (Updated)`,
-    description: 'Updated description for Team Alpha test team',
-  });
-
-  // 7. Update member roles
-  //    Your enrollments use lowercase 'ta', so we keep that here.
-  await updateTeamMembersTest(courseId, teamId, [
-    { id: 7, role: 'ta' },
-    { id: 8, role: 'student' },
-  ]);
-
-  // 8. Remove members
-  await removeTeamMembersTest(courseId, teamId, [7, 8]);
-
-  console.log('=== TEAMS FLOW END ===');
-}
-
-// Kick off the Teams flow when this script is executed
-runTeamsFlow().catch((err) => {
-  console.error('❌ Error in runTeamsFlow:', err);
+// COURSE TESTS
+await getAllCoursesTest();
+await getAllUsersInCourseTest(courseId);
+const newCourse = await addCourseTest();
+await updateCourseTest(newCourse.id, {
+  course_code: 'CSE291',
+  course_name: 'AI Agent Updated',
+  term: 'SP25',
+  section: 'A00',
+  // start_date: '2025-03-31',
+  // end_date: '2025-06-15',
 });
+await addUserToCourseTest(newCourse.id, professorId);
+await getUserDetailsInCourseTest(newCourse.id, professorId);
+await joinCourseTest(newCourse.id, taId, newCourse.join_code);
+await updateRoleTest(newCourse.id, taId, 'ta');
+await removeUserFromCourseTest(newCourse.id, taId);
+await removeUserFromCourseTest(newCourse.id, professorId);
+await deleteCourse(newCourse.id);
+
+// LECTURES TESTS
+// Note: Use course_id=1 (test user is enrolled as professor in course 1)
+// Course 1 has lectures with IDs 1 and 2
+const lectureId = 1;
+await getAllLecturesTest(courseId);
+await getLectureTest(courseId, lectureId);
+const newLecture = await createLectureTest(courseId, {
+  lecture_date: '2025-11-20',
+  code: 'TEST-L1',
+});
+await updateLectureTest(courseId, newLecture.id, {
+  lecture_date: '2025-11-21',
+  code: 'UPDATED-L1',
+});
+await deleteLectureTest(courseId, newLecture.id);
+
+const journalId = 1; // change as needed
+await getJournalEntriesTest(courseId, userId);
+const newJournalEntry = await createJournalEntryTest(courseId, {
+  user_id: userId,
+  title: 'Test Journal Entry',
+  content: 'This is a test journal entry.',
+});
+await updateJournalEntryTest(courseId, newJournalEntry.id, {
+  title: 'Updated Test Journal Entry',
+  content: 'This is an updated test journal entry.',
+});
+await deleteJournalEntryTest(courseId, newJournalEntry.id);
+
+// PULSES TESTS
+const pulseConfig = {
+  options: [
+    { value: 'happy', color: 'green' },
+    { value: 'sad', color: 'blue' },
+  ],
+};
+
+await getPulsesTest(courseId);
+await submitPulseTest(courseId, 'Happy', 'Feeling great!');
+await getPulseStatsTest(courseId);
+courseId = 2; // Course without any pulses so config is editable
+await upsertPulseConfigTest(courseId, pulseConfig);
+await getPulseConfigTest(courseId);
