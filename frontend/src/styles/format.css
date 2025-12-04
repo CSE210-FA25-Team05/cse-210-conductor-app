@@ -23,9 +23,9 @@ main {
 /* Sidebar Format */
 body:has(> aside) {
   display: grid;
-  grid-template-columns: calc(
-      var(--sidebar-width) + var(--sidebar-padding) * 2
-    ) 1fr;
+  grid-template-columns:
+    calc(var(--sidebar-width) + var(--sidebar-padding) * 2)
+    1fr;
   grid-template-rows: 1fr;
   height: 100dvh;
   width: 100dvw;
