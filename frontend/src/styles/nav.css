@@ -58,7 +58,6 @@ conductor-nav > footer {
 /* Menu Toggle Button in Navbar */
 #menu-toggle {
   margin-bottom: var(--spacing-large);
-  width: fit-content;
 }
 #new-button {
   margin-top: var(--spacing-small);
