@@ -24,7 +24,9 @@ module.exports = fp(async function errorHandlerPlugin(fastify) {
     if (error.validation) {
       statusCode = 400;
       errorName = 'Bad Request';
-      message = error.validation[0]?.message || 'Request validation failed';
+      // Use error.message first as it includes the property path (e.g., "params/course_id must be number")
+      // Fallback to validation[0].message if error.message is not available
+      message = error.message || error.validation[0]?.message || 'Request validation failed';
       //Uncomment the following code to hide the error message to the user when in release mode
       //if (process.env.NODE_ENV === 'development') {
       //  message = error.validation[0]?.message || 'Request validation failed';
