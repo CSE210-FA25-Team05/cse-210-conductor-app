@@ -45,7 +45,7 @@ body.menu-closed > aside:has(conductor-nav) {
   overflow: hidden;
 }
 body.menu-closed conductor-nav > header {
-  display: flex;
+  flex-direction: row;
   gap: var(--spacing-small);
 
   position: fixed;

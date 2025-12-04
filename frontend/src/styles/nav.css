@@ -47,6 +47,11 @@ conductor-nav button {
 conductor-nav > header {
   grid-row: 1;
   margin: 0 !important;
+
+  display: flex; 
+  flex-direction: column;
+  gap: var(--spacing-small);
+
 }
 conductor-nav > nav {
   grid-row: 2;
@@ -58,9 +63,6 @@ conductor-nav > footer {
 /* Menu Toggle Button in Navbar */
 #menu-toggle {
   margin-bottom: var(--spacing-large);
-}
-#new-button {
-  margin-top: var(--spacing-small);
 }
 
 /* Fill screen on mobile */
