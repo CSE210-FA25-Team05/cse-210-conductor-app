@@ -159,17 +159,19 @@ class ConductorNav extends HTMLElement {
   updateCourseDropdownLabel() {
     const currentCourseId = this.getCurrentCourseId();
     const labelElement = this.querySelector('#course-dropdown-label');
-    
+
     if (!labelElement) return;
 
     if (currentCourseId) {
-      const currentCourse = this.courses.find(course => course.id === currentCourseId);
+      const currentCourse = this.courses.find(
+        (course) => course.id === currentCourseId
+      );
       if (currentCourse) {
         labelElement.textContent = currentCourse.course_code;
         return;
       }
     }
-    
+
     labelElement.textContent = 'Course';
   }
 
