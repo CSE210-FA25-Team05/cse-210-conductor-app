@@ -81,7 +81,7 @@ class ConductorNav extends HTMLElement {
     this.courseDropdown = document.createElement('conductor-dropdown');
     this.courseDropdown.innerHTML = `
        <details class="dropdown" name="course-dropdown">
-           <summary>Course</summary>
+           <summary id="course-dropdown-label">Course</summary>
            <ul id="course-list">
                <li><a href="#loading">Loading...</a></li>
            </ul>
@@ -146,6 +146,33 @@ class ConductorNav extends HTMLElement {
     }
   }
 
+  getCurrentCourseId() {
+    // Extract course ID from URL pattern /course/{course_id}/page
+    const pathParts = window.location.pathname.split('/');
+    const courseIndex = pathParts.indexOf('course');
+    if (courseIndex !== -1 && pathParts[courseIndex + 1]) {
+      return parseInt(pathParts[courseIndex + 1], 10);
+    }
+    return null;
+  }
+
+  updateCourseDropdownLabel() {
+    const currentCourseId = this.getCurrentCourseId();
+    const labelElement = this.querySelector('#course-dropdown-label');
+    
+    if (!labelElement) return;
+
+    if (currentCourseId) {
+      const currentCourse = this.courses.find(course => course.id === currentCourseId);
+      if (currentCourse) {
+        labelElement.textContent = currentCourse.course_code;
+        return;
+      }
+    }
+    
+    labelElement.textContent = 'Course';
+  }
+
   renderCourseDropdown() {
     const courseList = this.querySelector('#course-list');
     if (!courseList) return;
@@ -161,11 +188,11 @@ class ConductorNav extends HTMLElement {
       return;
     }
 
-    this.courses.forEach(course => {
+    this.courses.forEach((course) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.href = `/course/${course.id}/dashboard`;
-      a.textContent = course.course_name || course.course_code || `Course ${course.id}`;
+      a.textContent = course.course_name;
       li.appendChild(a);
       courseList.appendChild(li);
     });
@@ -190,6 +217,8 @@ class ConductorNav extends HTMLElement {
     });
     joinLi.appendChild(joinButton);
     courseList.appendChild(joinLi);
+
+    this.updateCourseDropdownLabel();
   }
 
   renderCourseError() {
@@ -200,6 +229,12 @@ class ConductorNav extends HTMLElement {
       <li><span style="color: var(--color-error);">Error loading courses</span></li>
       <li><button onclick="this.closest('conductor-nav').fetchCourses()">Retry</button></li>
     `;
+  }
+
+  disconnectedCallback() {
+    if (this.boundedHandleResize) {
+      window.removeEventListener('resize', this.boundedHandleResize);
+    }
   }
 }
 
