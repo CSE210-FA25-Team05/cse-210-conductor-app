@@ -203,6 +203,5 @@ class JournalRepo {
 
     return taTeam !== null;
   }
-
 }
 module.exports = JournalRepo;

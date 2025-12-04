@@ -32,23 +32,34 @@ class JournalPermissions {
     }
 
     // Journal is not private, check if user is in same team or is a TA managing that team
-    const journalOwnerTeam = await this.journalRepo.getJournalOwnerTeam(journalId);
-    
+    const journalOwnerTeam =
+      await this.journalRepo.getJournalOwnerTeam(journalId);
+
     // If journal owner is not in a team, only owner can access (already checked above)
     if (!journalOwnerTeam) {
       return false;
     }
 
     // Check if user is in the same team
-    const userTeam = await this.journalRepo.getTeamIdByUserId(userId, journal.course_id);
+    const userTeam = await this.journalRepo.getTeamIdByUserId(
+      userId,
+      journal.course_id
+    );
     if (userTeam === journalOwnerTeam) {
       return true;
     }
 
     // Check if user is a TA managing the journal owner's team
-    const isTA = await this.coursePermissions.isTAInCourse(userId, journal.course_id);
+    const isTA = await this.coursePermissions.isTAInCourse(
+      userId,
+      journal.course_id
+    );
     if (isTA) {
-      const isTAManagingTeam = await this.journalRepo.isJournalCreatorInTAManagedTeam(userId, journalId);
+      const isTAManagingTeam =
+        await this.journalRepo.isJournalCreatorInTAManagedTeam(
+          userId,
+          journalId
+        );
       if (isTAManagingTeam) {
         return true;
       }
@@ -112,7 +123,6 @@ class JournalPermissions {
 
     return false;
   }
-
 }
 
 module.exports = JournalPermissions;

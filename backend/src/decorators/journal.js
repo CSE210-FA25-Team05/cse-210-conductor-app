@@ -71,7 +71,8 @@ module.exports = fp(async function journalPermissionDecorators(fastify) {
     if (!canDelete) {
       return reply.code(403).send({
         error: 'Forbidden',
-        message: 'Only the journal owner, TA, or professor can delete this entry',
+        message:
+          'Only the journal owner, TA, or professor can delete this entry',
       });
     }
   });

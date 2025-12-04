@@ -60,7 +60,7 @@ module.exports = async function journalRoutes(fastify, options) {
       }
     }
   );
-  
+
   fastify.post(
     '/journals',
     {

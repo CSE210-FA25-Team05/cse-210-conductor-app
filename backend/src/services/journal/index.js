@@ -12,6 +12,4 @@ const journalRoutes = require('./journal.routes');
 module.exports = async function journalServicePlugin(fastify, opts) {
   // Journal routes are nested under a course context
   fastify.register(journalRoutes, { prefix: '/api/courses/:course_id' });
-}
-
-
+};
