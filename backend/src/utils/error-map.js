@@ -8,12 +8,8 @@ function mapAndReply(e, reply) {
   if (e.code === 'FORBIDDEN') return reply.forbidden(e.message || 'Forbidden');
   if (e.code === 'UNAUTHORIZED')
     return reply.unauthorized(e.message || 'Unauthorized');
-  if (e.code === 'CONFLICT') return reply.conflict(e.message || 'Conflict');
-  if (e.code === 'EXPIRED') {
-    return reply.code(410).send({
-      error: e.message || 'Resource expired',
-    });
-  }
+  if (e.code === 'UNPROCESSABLE_ENTITY')
+    return reply.unprocessableEntity(e.message || 'Unprocessable entity');
 
   // Prisma unique constraint violation
   if (e.code === 'P2002') return reply.conflict('Unique constraint violation');

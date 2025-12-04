@@ -14,7 +14,7 @@ module.exports = fp(async function authenticateHook(fastify) {
 
   const publicPaths = new Set([
     '/',
-    '/api/health',
+    '/health',
     '/auth/logout',
     '/auth/oauth/google',
     '/auth/oauth/google/add_token',

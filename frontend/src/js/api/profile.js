@@ -34,7 +34,7 @@ export async function getProfile() {
  * @returns { ProfileInfo } Current user's updated profile information.
  */
 export async function updateProfile(newValues) {
-  let response = await postWrapper(`/api/me/profile${newValues}`);
+  let response = await postWrapper('/api/me/profile', newValues);
   if (!response.ok) {
     throw new Error(response.error);
   }
