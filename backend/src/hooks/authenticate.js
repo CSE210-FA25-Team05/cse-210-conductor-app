@@ -14,7 +14,7 @@ module.exports = fp(async function authenticateHook(fastify) {
 
   const publicPaths = new Set([
     '/',
-    '/api/health',
+    '/health',
     '/auth/logout',
     '/auth/oauth/google',
     '/auth/oauth/google/add_token',
@@ -40,13 +40,9 @@ module.exports = fp(async function authenticateHook(fastify) {
 
         let testUser;
         if (testUserId) {
-          testUser = await fastify.db.users.findUnique({
-            where: { id: parseInt(testUserId, 10) },
-          });
+          testUser = await authRepo.getUserById(parseInt(testUserId, 10));
         } else if (testUserEmail) {
-          testUser = await fastify.db.users.findUnique({
-            where: { email: testUserEmail.toLowerCase() },
-          });
+          testUser = await authRepo.getUserByEmail(testUserEmail);
         } else {
           testUser = await fastify.db.users.findFirst({
             where: { deleted_at: null },

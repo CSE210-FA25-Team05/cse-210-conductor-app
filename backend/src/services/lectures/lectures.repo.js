@@ -6,6 +6,8 @@
  * This module provides data access methods for lecture-related operations.
  */
 
+const { generateCode } = require('../../utils/code-generator');
+
 class LecturesRepo {
   constructor(db) {
     this.db = db;
@@ -55,12 +57,40 @@ class LecturesRepo {
   }
 
   /**
+   * Generate a unique code for a course.
+   * Ensures the code doesn't already exist in the course.
+   * Uses the same pattern as course join code generation.
+   *
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<string>} Unique 6-character code
+   */
+  async generateUniqueCode(courseId) {
+    let uniqueCode;
+    let exists;
+    do {
+      uniqueCode = generateCode();
+      exists = await this.db.lectures.findFirst({
+        where: {
+          course_id: courseId,
+          code: uniqueCode,
+          deleted_at: null,
+          // Only check codes that are currently active (not expired)
+          code_expires_at: {
+            gte: new Date(),
+          },
+        },
+      });
+    } while (exists);
+    return uniqueCode;
+  }
+
+  /**
    * Create a new lecture in the database.
+   * Note: Attendance code is NOT auto-generated. Use activateAttendance() to generate code.
    *
    * @param {Object} data - Lecture data
    * @param {number} data.course_id - ID of the course
    * @param {Date|string} data.lecture_date - Date of the lecture
-   * @param {string|null} data.code - Optional lecture code
    * @returns {Promise<Object>} Created lecture object
    */
   async createLecture(data) {
@@ -70,25 +100,30 @@ class LecturesRepo {
         ? data.lecture_date
         : new Date(data.lecture_date);
 
+    // Do NOT auto-generate code - code will be generated when attendance is activated
     return this.db.lectures.create({
       data: {
         course_id: data.course_id,
         lecture_date: lectureDate,
-        code: data.code || null,
+        code: null,
+        code_generated_at: null,
+        code_expires_at: null,
       },
     });
   }
 
   /**
    * Update an existing lecture.
+   * Note: Code management is handled by activateAttendance endpoint.
+   * This method only updates lecture_date.
    *
    * @param {number} lectureId - ID of the lecture to update
+   * @param {number} courseId - Course ID for validation
    * @param {Object} data - Update data
    * @param {Date|string} data.lecture_date - New lecture date
-   * @param {string|null} data.code - New lecture code
    * @returns {Promise<Object>} Updated lecture object
    */
-  async updateLecture(lectureId, data) {
+  async updateLecture(lectureId, courseId, data) {
     const updateData = {
       updated_at: new Date(),
     };
@@ -101,26 +136,95 @@ class LecturesRepo {
           : new Date(data.lecture_date);
     }
 
-    // Add code if provided
-    if (data.code !== undefined) {
-      updateData.code = data.code;
-    }
-
     return this.db.lectures.update({
-      where: { id: lectureId },
+      where: {
+        id: lectureId,
+        course_id: courseId,
+      },
       data: updateData,
     });
   }
 
   /**
+   * Activate attendance for a lecture by generating a code and starting the 5-minute timer.
+   * This should be called when the professor/TA clicks "Start Attendance" button.
+   * If a code already exists and is still valid, returns the existing lecture without generating a new code.
+   * Once attendance has been activated for a lecture, it cannot be reactivated (one activation per lecture).
+   *
+   * @param {number} lectureId - ID of the lecture
+   * @param {number} courseId - ID of the course (for generating unique code and validation)
+   * @returns {Promise<Object>} Updated lecture object with code and expiration timestamps
+   */
+  async activateAttendance(lectureId, courseId) {
+    // First, check if lecture exists and belongs to the course
+    const existingLecture = await this.getLectureById(lectureId, courseId);
+    if (!existingLecture) {
+      const error = new Error('Lecture not found');
+      error.code = 'NOT_FOUND';
+      throw error;
+    }
+
+    // If code already exists and is still valid, return existing lecture
+    if (this.isCodeValid(existingLecture)) {
+      return existingLecture;
+    }
+
+    // If attendance was already activated (code_expires_at was set), prevent reactivation
+    if (existingLecture.code_expires_at !== null) {
+      const error = new Error(
+        'Attendance has already been activated for this lecture and cannot be reactivated'
+      );
+      error.code = 'BAD_REQUEST';
+      throw error;
+    }
+
+    // Generate new code (first activation only)
+    const code = await this.generateUniqueCode(courseId);
+    const codeGeneratedAt = new Date();
+    const codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes
+
+    return this.db.lectures.update({
+      where: {
+        id: lectureId,
+        course_id: courseId,
+      },
+      data: {
+        code: code,
+        code_generated_at: codeGeneratedAt,
+        code_expires_at: codeExpiresAt,
+        updated_at: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Check if a lecture code is still valid (not expired).
+   *
+   * @param {Object} lecture - Lecture object
+   * @returns {boolean} True if code is valid, false if expired or no code
+   */
+  isCodeValid(lecture) {
+    if (!lecture.code || !lecture.code_expires_at) {
+      return false;
+    }
+    const now = new Date();
+    return now <= new Date(lecture.code_expires_at);
+  }
+
+  /**
    * Soft delete a lecture by setting deleted_at timestamp.
+   * Conditions on course_id to ensure proper nesting validation.
    *
    * @param {number} lectureId - ID of the lecture to delete
+   * @param {number} courseId - Course ID for validation
    * @returns {Promise<Object>} Updated lecture object
    */
-  async deleteLecture(lectureId) {
+  async deleteLecture(lectureId, courseId) {
     return this.db.lectures.update({
-      where: { id: lectureId },
+      where: {
+        id: lectureId,
+        course_id: courseId,
+      },
       data: {
         deleted_at: new Date(),
         updated_at: new Date(),
