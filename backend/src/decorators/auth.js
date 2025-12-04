@@ -18,12 +18,13 @@ module.exports = fp(async function authDecorators(fastify, _opts) {
   const authPermissions = new AuthPermissions(authRepo);
   fastify.decorate('requireGlobalProfessor', async function (req, reply) {
     if (!req.user) {
-      return reply.code(401).send({ error: 'Not authenticated' });
+      return reply.code(401).send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     const isProfessor = await authPermissions.isProfessor(req.user.id);
     if (!isProfessor) {
       return reply.code(403).send({
+        statusCode: 403,
         error: 'Forbidden',
         message: 'Only professors can perform this action',
       });

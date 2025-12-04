@@ -40,7 +40,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
    */
   fastify.decorate('loadCourse', async function (req, reply) {
     if (!req.user) {
-      return reply.code(401).send({ error: 'Not authenticated' });
+      return reply.code(401).send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     // Parse course_id (schema validation ensures it's a valid integer, but params are still strings)
@@ -49,7 +49,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
     // Load course
     const course = await courseRepo.getCourseById(courseId);
     if (!course || course.deleted_at !== null) {
-      return reply.code(404).send({ error: 'Course not found' });
+      return reply.code(404).send({ statusCode: 404, error: 'Course not found' });
     }
 
     // Load user's enrollment in this course
@@ -70,7 +70,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
    */
   fastify.decorate('requireProfessorInCourse', async function (req, reply) {
     if (!req.user) {
-      return reply.code(401).send({ error: 'Not authenticated' });
+      return reply.code(401).send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     const courseId = parseInt(req.params.course_id, 10);
@@ -81,6 +81,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
 
     if (!isProfessor) {
       return reply.code(403).send({
+        statusCode: 403,
         error: 'Forbidden',
         message: 'Only professors can perform this action',
       });
@@ -92,7 +93,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
    */
   fastify.decorate('requireTAOrProfessorInCourse', async function (req, reply) {
     if (!req.user) {
-      return reply.code(401).send({ error: 'Not authenticated' });
+      return reply.code(401).send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     const courseId = parseInt(req.params.course_id, 10);
@@ -104,8 +105,9 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
 
     if (!isProfessor && !isTA) {
       return reply.code(403).send({
+        statusCode: 403,
         error: 'Forbidden',
-        message: 'Only professors or TAs can perform this action',
+        message: 'Only professors and TAs can perform this action',
       });
     }
   });
@@ -115,7 +117,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
    */
   fastify.decorate('requireEnrolledInCourse', async function (req, reply) {
     if (!req.user) {
-      return reply.code(401).send({ error: 'Not authenticated' });
+      return reply.code(401).send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     const courseId = parseInt(req.params.course_id, 10);
@@ -126,6 +128,7 @@ module.exports = fp(async function coursePermissionDecorators(fastify, _opts) {
 
     if (!isEnrolled) {
       return reply.code(403).send({
+        statusCode: 403,
         error: 'Forbidden',
         message: 'You must be enrolled in this course to perform this action',
       });

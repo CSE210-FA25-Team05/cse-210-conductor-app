@@ -47,6 +47,7 @@ module.exports = fp(async function profileCompleteHook(fastify) {
         `profileCompleteHook: blocked due to incomplete profile: ${user.email}`
       );
       return reply.code(403).send({
+        statusCode: 403,
         error: 'PROFILE_INCOMPLETE',
         message: 'Make sure that first name, last name are filled out, so that your profile is considered complete.',
       });
