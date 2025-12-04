@@ -10,5 +10,5 @@ const courseRoutes = require('./course.routes');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = async function courseServicePlugin(fastify, opts) {
-  fastify.register(courseRoutes, { prefix: '/api' });
+  fastify.register(courseRoutes);
 };

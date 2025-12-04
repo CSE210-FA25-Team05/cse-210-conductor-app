@@ -11,5 +11,5 @@ const journalRoutes = require('./journal.routes');
 // eslint-disable-next-line no-unused-vars
 module.exports = async function journalServicePlugin(fastify, opts) {
   // Journal routes are nested under a course context
-  fastify.register(journalRoutes, { prefix: '/api/courses/:course_id' });
+  fastify.register(journalRoutes, { prefix: '/courses/:course_id' });
 };
