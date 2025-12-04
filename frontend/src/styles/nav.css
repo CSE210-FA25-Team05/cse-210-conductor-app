@@ -41,7 +41,7 @@ conductor-nav {
 }
 conductor-nav details,
 conductor-nav button {
-  width: 100%;
+  width: stretch;
   height: fit-content;
 }
 conductor-nav > header {
