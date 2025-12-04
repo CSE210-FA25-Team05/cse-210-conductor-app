@@ -15,6 +15,7 @@ class ConductorNav extends HTMLElement {
       Journals: '/course/journals',
       ZingGrid: '/course/zinggrid',
     };
+    this.courses = [];
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
     this.boundedHandleResize = this.handleResize.bind(this);
     this.boundedHandleCloseModal = this.handleCloseModal.bind(this);
@@ -77,24 +78,18 @@ class ConductorNav extends HTMLElement {
     this.modal = modal;
 
     // Course Dropdown
-    const courseDropdown = document.createElement('conductor-dropdown');
-    courseDropdown.classList = 'lg';
-    courseDropdown.innerHTML = `
+    this.courseDropdown = document.createElement('conductor-dropdown');
+    this.courseDropdown.innerHTML = `
        <details class="dropdown" name="course-dropdown">
            <summary>Course</summary>
-           <ul>
-               <li><a href="#cards">Cards</a></li>
-               <li><a href="#typography">Typography</a></li>
-               <li><a href="#components">Components</a></li>
-               <li><a href="#buttons">Buttons</a></li>
-               <li><button>Create Course</button></li>
-               <li><button>Join Course</button></li>
+           <ul id="course-list">
+               <li><a href="#loading">Loading...</a></li>
            </ul>
        </details>
     `;
 
     header.appendChild(menuToggle);
-    header.appendChild(courseDropdown);
+    header.appendChild(this.courseDropdown);
     header.appendChild(modalButton);
     nav.appendChild(ul);
     footer.appendChild(logoutButtonInstance);
@@ -103,6 +98,9 @@ class ConductorNav extends HTMLElement {
     this.appendChild(nav);
     this.appendChild(footer);
     this.appendChild(modal);
+
+    // Fetch courses after component is mounted
+    this.fetchCourses();
   }
 
   handleMenuToggleClick() {
@@ -123,6 +121,85 @@ class ConductorNav extends HTMLElement {
 
   handleCloseModal() {
     this.modal.close();
+  }
+
+  async fetchCourses() {
+    try {
+      const response = await fetch('/api/courses', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const courses = await response.json();
+      this.courses = courses;
+      this.renderCourseDropdown();
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+      this.renderCourseError();
+    }
+  }
+
+  renderCourseDropdown() {
+    const courseList = this.querySelector('#course-list');
+    if (!courseList) return;
+
+    courseList.innerHTML = '';
+
+    if (this.courses.length === 0) {
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.innerText = 'No courses found';
+      li.appendChild(span);
+      courseList.appendChild(li);
+      return;
+    }
+
+    this.courses.forEach(course => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `/course/${course.id}/dashboard`;
+      a.textContent = course.course_name || course.course_code || `Course ${course.id}`;
+      li.appendChild(a);
+      courseList.appendChild(li);
+    });
+
+    // Add action buttons at the end
+    const createLi = document.createElement('li');
+    const createButton = document.createElement('button');
+    createButton.textContent = 'Create Course';
+    createButton.addEventListener('click', () => {
+      // Handle create course action
+      console.log('Create course clicked');
+    });
+    createLi.appendChild(createButton);
+    courseList.appendChild(createLi);
+
+    const joinLi = document.createElement('li');
+    const joinButton = document.createElement('button');
+    joinButton.textContent = 'Join Course';
+    joinButton.addEventListener('click', () => {
+      // Handle join course action
+      console.log('Join course clicked');
+    });
+    joinLi.appendChild(joinButton);
+    courseList.appendChild(joinLi);
+  }
+
+  renderCourseError() {
+    const courseList = this.querySelector('#course-list');
+    if (!courseList) return;
+
+    courseList.innerHTML = `
+      <li><span style="color: var(--color-error);">Error loading courses</span></li>
+      <li><button onclick="this.closest('conductor-nav').fetchCourses()">Retry</button></li>
+    `;
   }
 }
 
