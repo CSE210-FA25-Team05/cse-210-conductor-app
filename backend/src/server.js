@@ -38,6 +38,7 @@ const sensible = require('@fastify/sensible');
 fastify.register(cors, {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 });
 fastify.register(cookie);
 fastify.register(sensible);
@@ -58,17 +59,17 @@ fastify.register(require('./services/auth'));
 fastify.register(require('./services/lectures'));
 
 //course routes
-fastify.register(require('./services/course/course.routes'), {
-  prefix: '/api',
-});
+fastify.register(require('./services/course/course.routes'));
 
 //journal routes
 fastify.register(require('./services/journal/journal.routes'), {
-  prefix: '/api/courses/:course_id',
+  prefix: '/courses/:course_id',
 });
 
+fastify.register(require('./services/pulse'));
+
 //health check
-fastify.get('/api/health', async () => {
+fastify.get('/health', async () => {
   return { ok: true, time: new Date().toISOString() };
 });
 

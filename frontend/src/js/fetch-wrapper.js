@@ -18,13 +18,16 @@ export async function fetchWrapper(
 ) {
   while (numRetries >= 0) {
     try {
+      // Only set Content-Type for requests with a body
+      const headers = { ...options.headers };
+      if (options.body !== undefined && options.body !== null) {
+        headers['Content-Type'] = 'application/json';
+      }
+
       let response = await fetch(url, {
         ...options,
         credentials: 'include', // Tells the server who we are for authorization purposes
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        }, // Tells the server we're giving them a json object in the body
+        headers: headers,
         signal: AbortSignal.timeout(timeoutDuration), // Interupts the fetch request if it exceeds timeoutDuration number of milliseconds
       });
 
