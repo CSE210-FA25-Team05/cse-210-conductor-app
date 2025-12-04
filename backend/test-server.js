@@ -574,17 +574,8 @@ async function getCourseIdByCode(courseCode) {
   } catch {
     throw new Error(`Failed to parse /courses response: ${text}`);
   }
-  // Depending on implementation, /courses may return an array or an object wrapper.
-  const courses = Array.isArray(data) ? data : data.courses;
-  if (!Array.isArray(courses)) {
-    throw new Error(
-      `Unexpected /courses response shape. Expected array or { courses: [...] }, got: ${JSON.stringify(
-        data
-      )}`
-    );
-  }
 
-  const course = courses.find((c) => c.course_code === courseCode);
+  const course = data.find((c) => c.course_code === courseCode);
   if (!course) {
     throw new Error(`Course with course_code=${courseCode} not found`);
   }
@@ -618,10 +609,13 @@ async function findJournalForUser(courseId, userId, { isPrivate }) {
   console.log(
     `→ Looking for ${isPrivate ? 'private' : 'public'} journal for user_id=${userId} in course_id=${courseId}...`
   );
-  const res = await fetch(`${BASE_URL}/courses/${courseId}/journals`, {
-    method: 'GET',
-    headers: headersForEmail(PROFESSOR_EMAIL),
-  });
+  const res = await fetch(
+    `${BASE_URL}/courses/${courseId}/journals`,
+    {
+      method: 'GET',
+      headers: headersForEmail(PROFESSOR_EMAIL),
+    }
+  );
   const text = await res.text();
   let data;
   try {
@@ -684,56 +678,74 @@ async function testJournalAccessPermissions() {
   // Private journal: only owner (Jane) can access
   await assertStatus(
     'Owner (Jane) can view her private journal',
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`, {
-      method: 'GET',
-      headers: headersForEmail(JANE_EMAIL),
-    }),
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JANE_EMAIL),
+      }
+    ),
     200
   );
 
   await assertStatus(
-    "Other student (John) cannot view Jane's private journal",
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`, {
-      method: 'GET',
-      headers: headersForEmail(JOHN_EMAIL),
-    }),
+    'Other student (John) cannot view Jane\'s private journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JOHN_EMAIL),
+      }
+    ),
     403
   );
 
   await assertStatus(
-    "TA cannot view Jane's private journal",
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`, {
-      method: 'GET',
-      headers: headersForEmail(TA_EMAIL),
-    }),
+    'TA cannot view Jane\'s private journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${janePrivateJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(TA_EMAIL),
+      }
+    ),
     403
   );
 
   // Public journal: owner and TA managing the team can access, other-student (different team) cannot
   await assertStatus(
     'Owner (John) can view his public journal',
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`, {
-      method: 'GET',
-      headers: headersForEmail(JOHN_EMAIL),
-    }),
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JOHN_EMAIL),
+      }
+    ),
     200
   );
 
   await assertStatus(
-    "Other student (Jane, different team) cannot view John's public journal",
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`, {
-      method: 'GET',
-      headers: headersForEmail(JANE_EMAIL),
-    }),
+    'Other student (Jane, different team) cannot view John\'s public journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(JANE_EMAIL),
+      }
+    ),
     403
   );
 
   await assertStatus(
-    "TA managing John's team can view John's public journal",
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`, {
-      method: 'GET',
-      headers: headersForEmail(TA_EMAIL),
-    }),
+    'TA managing John\'s team can view John\'s public journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'GET',
+        headers: headersForEmail(TA_EMAIL),
+      }
+    ),
     200
   );
 }
@@ -753,38 +765,47 @@ async function testJournalUpdateDeletePermissions() {
   // Update: only owner (John) can update
   await assertStatus(
     'Owner (John) can update his journal',
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`, {
-      method: 'PATCH',
-      headers: headersForEmail(JOHN_EMAIL),
-      body: JSON.stringify({
-        title: johnPublicJournal.title,
-        content: `${johnPublicJournal.content}\n[Updated in test]`,
-      }),
-    }),
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'PATCH',
+        headers: headersForEmail(JOHN_EMAIL),
+        body: JSON.stringify({
+          title: johnPublicJournal.title,
+          content: `${johnPublicJournal.content}\n[Updated in test]`,
+        }),
+      }
+    ),
     200
   );
 
   await assertStatus(
-    "TA cannot update John's journal",
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`, {
-      method: 'PATCH',
-      headers: headersForEmail(TA_EMAIL),
-      body: JSON.stringify({
-        title: johnPublicJournal.title,
-        content: `${johnPublicJournal.content}\n[TA illegal update]`,
-      }),
-    }),
+    'TA cannot update John\'s journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'PATCH',
+        headers: headersForEmail(TA_EMAIL),
+        body: JSON.stringify({
+          title: johnPublicJournal.title,
+          content: `${johnPublicJournal.content}\n[TA illegal update]`,
+        }),
+      }
+    ),
     403
   );
 
   // Delete: owner, TA, or professor can delete
   await assertStatus(
-    "TA can delete John's journal",
-    fetch(`${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`, {
-      method: 'DELETE',
-      headers: headersForEmail(TA_EMAIL),
-      body: JSON.stringify({}),
-    }),
+    'TA can delete John\'s journal',
+    fetch(
+      `${BASE_URL}/courses/${courseId}/journals/${johnPublicJournal.id}`,
+      {
+        method: 'DELETE',
+        headers: headersForEmail(TA_EMAIL),
+        body: JSON.stringify({}),
+      }
+    ),
     200
   );
 }
@@ -841,8 +862,3 @@ const journalId = 11; // change as needed
 // await deleteJournalEntryTest(courseId, journalId);
 // In backend/test-server.js, near the bottom:
 // (inside an async IIFE, or run from node REPL)
-
-(async () => {
-  await testJournalAccessPermissions();
-  await testJournalUpdateDeletePermissions();
-})();
