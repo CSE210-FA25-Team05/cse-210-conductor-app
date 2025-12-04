@@ -3,6 +3,15 @@
  * elements using state layer should not use ::after.
 */
 
+/* Set this attribute to turn off the state layer. */
+[data-state="off"] {
+  cursor: default !important;
+}
+[data-state="off"]::after,
+[data-state="off"]:before {
+  content: none !important;
+}
+
 [role='group'] > label,
 [role='button']:not([disabled]),
 [type='submit']:not([disabled]),
