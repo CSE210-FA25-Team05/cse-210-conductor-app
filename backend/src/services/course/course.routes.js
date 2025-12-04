@@ -182,7 +182,9 @@ module.exports = async function courseRoutes(fastify, options) {
           request.body.join_code
         );
         if (!isValid) {
-          return reply.code(400).send({ error: 'Invalid join code' });
+          return reply
+            .code(400)
+            .send({ statusCode: 400, error: 'Invalid join code' });
         }
         await courseRepo.addEnrollment(
           parseInt(request.params.course_id, 10),

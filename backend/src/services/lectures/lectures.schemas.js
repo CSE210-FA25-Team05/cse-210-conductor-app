@@ -1,6 +1,7 @@
 import {
   createArrayReponseSchema,
   DateType,
+  DateTimeType,
   ErrorSchema,
 } from '../shared/shared.schemas.js';
 
@@ -8,7 +9,6 @@ export const CreateLectureParams = {
   type: 'object',
   properties: {
     lecture_date: DateType,
-    code: { type: 'string', nullable: true },
   },
   required: ['lecture_date'],
 };
@@ -17,7 +17,6 @@ export const UpdateLectureParams = {
   type: 'object',
   properties: {
     lecture_date: DateType,
-    code: { type: 'string', nullable: true },
   },
 };
 
@@ -28,8 +27,10 @@ export const LectureInfo = {
     course_id: { type: 'number' },
     lecture_date: DateType,
     code: { type: 'string', nullable: true },
+    code_generated_at: DateTimeType,
+    code_expires_at: DateTimeType,
   },
-  required: ['id', 'course_id', 'lecture_date', 'code'],
+  required: ['id', 'course_id', 'lecture_date', 'code'], // code is required but nullable (can be null before activation)
 };
 
 export const GetAllLecturesSchema = {
@@ -142,5 +143,28 @@ export const DeleteLectureSchema = {
     401: ErrorSchema,
     403: ErrorSchema,
     404: ErrorSchema,
+  },
+};
+
+export const ActivateAttendanceSchema = {
+  summary:
+    'Activate attendance for a lecture (generate code and start 5-minute timer)',
+  tags: ['Lectures'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      lecture_id: { type: 'integer' },
+    },
+    required: ['course_id', 'lecture_id'],
+  },
+  body: false,
+  response: {
+    200: LectureInfo,
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+    409: ErrorSchema,
   },
 };

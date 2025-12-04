@@ -42,6 +42,7 @@ fastify.register(cors, {
 });
 fastify.register(cookie);
 fastify.register(sensible);
+fastify.register(require('./plugins/error-handler'));
 
 //db connection
 fastify.register(require('./prisma'));
@@ -57,6 +58,7 @@ fastify.register(require('./hooks/profile-complete'));
 //services
 fastify.register(require('./services/auth'));
 fastify.register(require('./services/lectures'));
+fastify.register(require('./services/attendances'));
 
 //course routes
 fastify.register(require('./services/course/course.routes'));

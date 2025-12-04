@@ -40,13 +40,9 @@ module.exports = fp(async function authenticateHook(fastify) {
 
         let testUser;
         if (testUserId) {
-          testUser = await fastify.db.users.findUnique({
-            where: { id: parseInt(testUserId, 10) },
-          });
+          testUser = await authRepo.getUserById(parseInt(testUserId, 10));
         } else if (testUserEmail) {
-          testUser = await fastify.db.users.findUnique({
-            where: { email: testUserEmail.toLowerCase() },
-          });
+          testUser = await authRepo.getUserByEmail(testUserEmail);
         } else {
           testUser = await fastify.db.users.findFirst({
             where: { deleted_at: null },
@@ -72,12 +68,16 @@ module.exports = fp(async function authenticateHook(fastify) {
 
     const sessionId = req.cookies?.sid;
     if (!sessionId) {
-      return reply.code(401).send({ error: 'Not authenticated' });
+      return reply
+        .code(401)
+        .send({ statusCode: 401, error: 'Not authenticated' });
     }
 
     const user = await authRepo.getUserBySessionId(sessionId);
     if (!user) {
-      return reply.code(401).send({ error: 'Session expired or invalid' });
+      return reply
+        .code(401)
+        .send({ statusCode: 401, error: 'Session expired or invalid' });
     }
 
     req.user = user;
