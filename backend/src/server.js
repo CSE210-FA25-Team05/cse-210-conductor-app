@@ -42,6 +42,7 @@ fastify.register(cors, {
 });
 fastify.register(cookie);
 fastify.register(sensible);
+fastify.register(require('./plugins/error-handler'));
 
 //db connection
 fastify.register(require('./prisma'));
