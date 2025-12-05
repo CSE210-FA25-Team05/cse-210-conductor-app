@@ -18,6 +18,8 @@ class JoinCourseForm extends HTMLElement {
         label: 'Course Code',
         id: 'course-code',
         name: 'course_code',
+        min_length: '6',
+        max_length: '6',
       },
     ];
 
@@ -31,6 +33,8 @@ class JoinCourseForm extends HTMLElement {
       input.type = field.type || 'text';
       input.name = field.name;
       if (field.value) input.value = field.value;
+      if (field.min_length) input.setAttribute('minlength', field.min_length);
+      if (field.max_length) input.setAttribute('maxlength', field.max_length);
       input.setAttribute('required', '');
 
       label.appendChild(input);
