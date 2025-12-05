@@ -53,7 +53,7 @@ class CreateCourseForm extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.submit.removeEventListener('cancel', this.boundedHandleSubmit);
+    this.form.removeEventListener('submit', this.boundedHandleSubmit);
   }
 }
 
