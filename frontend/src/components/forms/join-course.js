@@ -22,10 +22,10 @@ import { ConductorForm } from '/src/components/forms/conductor-form.js';
 class JoinCourseForm extends ConductorForm {
   get fields() {
     return [
-      { label: 'Course ID', id: 'course-id', name: 'course_id' },
+      { label: 'Course ID', id: 'join-course-id', name: 'course_id' },
       {
         label: 'Join Code',
-        id: 'course-code',
+        id: 'join-course-code',
         name: 'course_code',
         min_length: 6,
         max_length: 6,
