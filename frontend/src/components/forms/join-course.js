@@ -58,10 +58,35 @@ class JoinCourseForm extends HTMLElement {
     return values;
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
-    const formValues = this.getFormValues();
-    console.log(formValues);
+
+    try {
+      const formValues = this.getFormValues();
+
+      let response = await fetch(`/api/me/profile`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const json = await response.json();
+      const userId = json.id;
+
+      response = await fetch(`/api/courses/${formValues.course_id}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: parseInt(userId),
+          join_code: formValues.course_code,
+        }),
+      });
+
+      const result = await response.json();
+      console.log('resutl: ', result);
+    } catch (err) {
+      document.getElementById('response').textContent = 'Error: ' + err.message;
+    }
   }
 
   disconnectedCallback() {

@@ -82,10 +82,25 @@ class CreateCourseForm extends HTMLElement {
     return values;
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
-    const formValues = this.getFormValues();
-    console.log(formValues);
+
+    try {
+      const formValues = this.getFormValues();
+
+      const response = await fetch(`/api/courses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formValues),
+      });
+
+      const result = await response.json();
+      console.log('resutl: ', result);
+    } catch (err) {
+      console.log('Error: ' + err.message);
+    }
   }
 
   disconnectedCallback() {
