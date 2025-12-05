@@ -85,7 +85,7 @@ class JoinCourseForm extends HTMLElement {
       const result = await response.json();
       console.log('resutl: ', result);
     } catch (err) {
-      document.getElementById('response').textContent = 'Error: ' + err.message;
+      console.log('Error: ' + err.message);
     }
   }
 
