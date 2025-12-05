@@ -11,14 +11,33 @@
     </head>
     <body>
         <main>
-            <article>
-                <join-course-form></join-course-form>
-            </article>
-            <article>
-                <create-course-form></create-course-form>
-            </article>
+            <header>
+                <h1>Welcome to Conductor!</h1>
+            </header>
+            <section> 
+                <article>
+                    <header>
+                        <h2>Join Course</h2>
+                    </header>
+                    <join-course-form></join-course-form>
+                </article>
+                <article>
+                    <header>
+                        <h2>Create Course</h2>
+                    </header>
+                    <create-course-form></create-course-form>
+                </article>
+                <article>
+                    <header>
+                        <h2>Your Courses</h2>
+                    </header>
+                    <ul id="courses-list"></ul>
+                    <pre id="courses-response" style="color: red;"></pre>
+                </article>
+            </section> 
 
             <h1>BELOW IS FOR CONVENIENCE</h1>
+            <p>Note: We need to make this page look better</p>
 
             <h1>Me</h1>
             <div id="profile" class="profile">Loading...</div>
@@ -26,11 +45,6 @@
 
             <h1>Courses</h1>
 
-            <article>
-                <h2>Your Courses</h2>
-                <ul id="courses-list"></ul>
-                <pre id="courses-response" style="color: red;"></pre>
-            </article>
 
             <script>
             document
