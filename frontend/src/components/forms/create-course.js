@@ -65,11 +65,17 @@ class CreateCourseForm extends HTMLElement {
       form.appendChild(label);
     });
 
+    const errorCard = document.createElement('article');
+    errorCard.style = 'display: none';
+    errorCard.classList = 'error';
+    this.errorCard = errorCard;
+
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.slot = 'buttons';
     submitButton.innerText = 'Create Course';
 
+    form.appendChild(errorCard);
     form.appendChild(submitButton);
     this.appendChild(form);
 
@@ -86,6 +92,13 @@ class CreateCourseForm extends HTMLElement {
     return values;
   }
 
+  displayError(message) {
+    if (!this.errorCard) return;
+
+    this.errorCard.innerHTML = `<p>Error: ${message}</p>`;
+    this.errorCard.style = ''; // Remove display: none;
+  }
+
   async handleSubmit(event) {
     event.preventDefault();
 
@@ -100,14 +113,15 @@ class CreateCourseForm extends HTMLElement {
         body: JSON.stringify(formValues),
       });
 
+      const result = await response.json();
+
       if (!response.ok || response.status != 201) {
-        return;
+        throw new Error(result.message);
       }
 
-      const result = await response.json();
       window.location.href = `/course/${result.id}/dashboard`;
     } catch (err) {
-      console.log('Error: ' + err.message);
+      this.displayError(err.message);
     }
   }
 

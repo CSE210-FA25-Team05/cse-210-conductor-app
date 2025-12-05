@@ -41,12 +41,19 @@ class JoinCourseForm extends HTMLElement {
       form.appendChild(label);
     });
 
+    const errorCard = document.createElement('article');
+    errorCard.style = 'display: none';
+    errorCard.classList = 'error';
+    this.errorCard = errorCard;
+
     const submitButton = document.createElement('button');
     submitButton.type = 'submit';
     submitButton.slot = 'buttons';
     submitButton.innerText = 'Join Course';
 
+    form.appendChild(errorCard);
     form.appendChild(submitButton);
+
     this.appendChild(form);
 
     this.form = form;
@@ -60,6 +67,13 @@ class JoinCourseForm extends HTMLElement {
       values[input.name] = input.value;
     });
     return values;
+  }
+
+  displayError(message) {
+    if (!this.errorCard) return;
+
+    this.errorCard.innerHTML = `<p>Error: ${message}</p>`;
+    this.errorCard.style = ''; // Remove display: none;
   }
 
   async handleSubmit(event) {
@@ -87,12 +101,13 @@ class JoinCourseForm extends HTMLElement {
       });
 
       if (!response.ok || response.status != 201) {
-        return;
+        const result = await response.json();
+        throw new Error(result.message);
       }
 
       window.location.href = `/course/${formValues.course_id}/dashboard`;
     } catch (err) {
-      console.log('Error: ' + err.message);
+      this.displayError(err.message);
     }
   }
 
