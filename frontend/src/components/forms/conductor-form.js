@@ -1,3 +1,33 @@
+/**
+ * ConductorForm Web Component
+ * ----------------------
+ * A reusable Web Component for building form-based UI elements.
+ *
+ * This component handles:
+ *  - Rendering form fields from the `fields` getter
+ *  - Automatic label + input creation
+ *  - Submit handling and value extraction
+ *  - Centralized error display
+ *  - Lifecycle event binding/unbinding
+ *
+ * Child classes should override:
+ *  - `get fields()` to define form structure
+ *  - `get submitLabel()` to define button label
+ *  - `async onSubmit(values)` to define submit behavior
+ *
+ * @extends HTMLElement
+ *
+ * @example
+ * class MyForm extends BaseForm {
+ *   get fields() { 
+ *     return [{ label: "Username", id: "user", name: "username" }]; 
+ *   }
+ *   async onSubmit(values) { console.log(values); }
+ * }
+ *
+ * @property {HTMLFormElement} form - Internal form element
+ * @property {HTMLElement} errorCard - Error message container
+ */
 export class ConductorForm extends HTMLElement {
   constructor() {
     super();
