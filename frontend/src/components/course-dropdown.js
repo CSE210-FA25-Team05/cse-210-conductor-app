@@ -1,13 +1,13 @@
 import '/src/components/modal/modal.js';
 import '/src/components/dropdown.js';
+import '/src/components/forms/create-course.js';
+import '/src/components/forms/join-course.js';
 
 class CourseDropdown extends HTMLElement {
   constructor() {
     super();
 
-    this.boundedHandleNewCourseClose = this.handleNewCourseClose.bind(this);
     this.boundedHandleNewCourseOpen = this.handleNewCourseOpen.bind(this);
-    this.boundedHandleJoinCourseClose = this.handleJoinCourseClose.bind(this);
     this.boundedHandleJoinCourseOpen = this.handleJoinCourseOpen.bind(this);
 
     this.courses = [];
@@ -31,16 +31,8 @@ class CourseDropdown extends HTMLElement {
     modalHeader.innerText = 'Create Course';
     const modalContent = document.createElement('create-course-form');
     modalContent.setAttribute('slot', 'content');
-    const submitNewCourseButton = document.createElement('button');
-    submitNewCourseButton.setAttribute('slot', 'buttons');
-    submitNewCourseButton.innerText = 'Create';
     newCourseModal.appendChild(modalHeader);
     newCourseModal.appendChild(modalContent);
-    newCourseModal.appendChild(submitNewCourseButton);
-    submitNewCourseButton.addEventListener(
-      'click',
-      this.boundedHandleNewCourseClose
-    );
     this.newCourseButton.addEventListener(
       'click',
       this.boundedHandleNewCourseOpen
@@ -56,19 +48,10 @@ class CourseDropdown extends HTMLElement {
     const joinCourseHeader = document.createElement('h2');
     joinCourseHeader.setAttribute('slot', 'header');
     joinCourseHeader.innerText = 'Join Course';
-    const joinCourseContent = document.createElement('p');
+    const joinCourseContent = document.createElement('join-course-form');
     joinCourseContent.setAttribute('slot', 'content');
-    joinCourseContent.innerText = 'Add Form to join a course here.';
-    const submitJoinCourseButton = document.createElement('button');
-    submitJoinCourseButton.setAttribute('slot', 'buttons');
-    submitJoinCourseButton.innerText = 'Join';
     joinCourseModal.appendChild(joinCourseHeader);
     joinCourseModal.appendChild(joinCourseContent);
-    joinCourseModal.appendChild(submitJoinCourseButton);
-    submitJoinCourseButton.addEventListener(
-      'click',
-      this.boundedHandleJoinCourseClose
-    );
     this.joinCourseButton.addEventListener(
       'click',
       this.boundedHandleJoinCourseOpen
@@ -85,16 +68,8 @@ class CourseDropdown extends HTMLElement {
     this.fetchCourses();
   }
 
-  handleJoinCourseClose() {
-    this.joinCourseModal.close();
-  }
-
   handleJoinCourseOpen() {
     this.joinCourseModal.open();
-  }
-
-  handleNewCourseClose() {
-    this.newCourseModal.close();
   }
 
   handleNewCourseOpen() {
