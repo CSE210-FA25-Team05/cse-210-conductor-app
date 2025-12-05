@@ -9,7 +9,6 @@ class Modal extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
     const footerAttr = this.getAttribute('footer');
-    console.log('footer', footerAttr);
 
     const dialog = document.createElement('dialog');
     const article = document.createElement('article');
