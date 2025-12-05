@@ -20,10 +20,10 @@ class CourseDropdown extends HTMLElement {
     this.label = document.createElement('summary');
     this.ul = document.createElement('ul');
 
-    // modal trigger button
+    // Create course modal trigger button
     this.newCourseButton = document.createElement('button');
     this.newCourseButton.innerHTML = 'Create Course<i>add</i>';
-    // modal
+    // Create course modal
     const newCourseModal = document.createElement('modal-component');
     newCourseModal.setAttribute('button-align', 'end');
     const modalHeader = document.createElement('h2');
