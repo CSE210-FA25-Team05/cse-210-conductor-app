@@ -106,7 +106,6 @@ class CreateCourseForm extends HTMLElement {
 
       const result = await response.json();
       window.location.href = `/course/${result.id}/dashboard`;
-
     } catch (err) {
       console.log('Error: ' + err.message);
     }
