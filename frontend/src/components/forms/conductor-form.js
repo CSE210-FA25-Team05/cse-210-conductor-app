@@ -19,8 +19,8 @@
  *
  * @example
  * class MyForm extends BaseForm {
- *   get fields() { 
- *     return [{ label: "Username", id: "user", name: "username" }]; 
+ *   get fields() {
+ *     return [{ label: "Username", id: "user", name: "username" }];
  *   }
  *   async onSubmit(values) { console.log(values); }
  * }
