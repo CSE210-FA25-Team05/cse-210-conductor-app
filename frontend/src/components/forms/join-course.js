@@ -82,8 +82,11 @@ class JoinCourseForm extends HTMLElement {
         }),
       });
 
-      const result = await response.json();
-      console.log('resutl: ', result);
+      if (!response.ok || response.status != 201) {
+        return;
+      }
+
+      window.location.href = `/course/${formValues.course_id}/dashboard`;
     } catch (err) {
       console.log('Error: ' + err.message);
     }

@@ -100,8 +100,13 @@ class CreateCourseForm extends HTMLElement {
         body: JSON.stringify(formValues),
       });
 
+      if (!response.ok || response.status != 201) {
+        return;
+      }
+
       const result = await response.json();
-      console.log('resutl: ', result);
+      window.location.href = `/course/${result.id}/dashboard`;
+
     } catch (err) {
       console.log('Error: ' + err.message);
     }
