@@ -6,6 +6,7 @@ class CreateCourseForm extends HTMLElement {
 
   connectedCallback() {
     const form = document.createElement('form');
+    form.id = 'createCourseForm';
     form.innerHTML = `
             <label for="course-code">Course Code
                 <input type="text" id="course-code" name="course_code" required />
@@ -41,15 +42,23 @@ class CreateCourseForm extends HTMLElement {
                 <input type="date" id="end-date" name="end_date" required />
             </label>
             <br />
-
-            <button type="submit">Create Course</button>
     `;
 
+    this.form = form;
+    form.addEventListener('submit', this.boundedHandleSubmit);
+
+    const submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.slot = 'buttons';
+    submit.setAttribute = ('form', 'createCourseForm');
+    submit.innerText = 'Create Course';
+
+    form.appendChild(submit);
     this.appendChild(form);
   }
 
-  handleSubmit() {
-    console.log('HERE: ');
+  handleSubmit(event) {
+    event.preventDefault();
   }
 
   disconnectedCallback() {
