@@ -27,7 +27,7 @@ class CourseDropdown extends HTMLElement {
     const newCourseModal = document.createElement('modal-component');
     newCourseModal.setAttribute('footer', 'none');
     newCourseModal.setAttribute('button-align', 'end');
-    const modalHeader = document.createElement('h2');
+    const modalHeader = document.createElement('h4');
     modalHeader.setAttribute('slot', 'header');
     modalHeader.innerText = 'Create Course';
     const modalContent = document.createElement('create-course-form');
@@ -47,7 +47,7 @@ class CourseDropdown extends HTMLElement {
     const joinCourseModal = document.createElement('modal-component');
     joinCourseModal.setAttribute('footer', 'none');
     joinCourseModal.setAttribute('button-align', 'end');
-    const joinCourseHeader = document.createElement('h2');
+    const joinCourseHeader = document.createElement('h4');
     joinCourseHeader.setAttribute('slot', 'header');
     joinCourseHeader.innerText = 'Join Course';
     const joinCourseContent = document.createElement('join-course-form');
