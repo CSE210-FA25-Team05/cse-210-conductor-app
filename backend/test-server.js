@@ -1116,8 +1116,8 @@ console.log('          TEAMS CRUD TESTS BEGIN');
 console.log('============================================\n');
 
 const teamsCourseId = 5;
-const memberUserId1 = 9;   // professor in course 5
-const memberUserId2 = 10;  // ta in course 5
+const memberUserId1 = 9; // professor in course 5
+const memberUserId2 = 10; // ta in course 5
 
 // --- Get all teams ---
 console.log(`→ Fetching all teams for course id=${teamsCourseId}...`);
@@ -1218,9 +1218,7 @@ try {
 console.log('Status:', res.status, 'Response:', updatedTeam);
 
 // --- Update member roles ---
-console.log(
-  `→ Updating member roles for team id=${createdTeam.id}...`
-);
+console.log(`→ Updating member roles for team id=${createdTeam.id}...`);
 res = await fetch(
   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/update_members`,
   {
@@ -1241,9 +1239,7 @@ try {
 console.log('Status:', res.status, 'Response:', roleUpdateResponse);
 
 // --- Remove a member ---
-console.log(
-  `→ Removing 1 member from team id=${createdTeam.id}...`
-);
+console.log(`→ Removing 1 member from team id=${createdTeam.id}...`);
 res = await fetch(
   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/remove_members`,
   {
