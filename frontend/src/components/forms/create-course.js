@@ -73,8 +73,19 @@ class CreateCourseForm extends HTMLElement {
     this.form.addEventListener('submit', this.boundedHandleSubmit);
   }
 
+  getFormValues() {
+    const inputs = this.form.querySelectorAll('input');
+    const values = {};
+    inputs.forEach((input) => {
+      values[input.name] = input.value;
+    });
+    return values;
+  }
+
   handleSubmit(event) {
     event.preventDefault();
+    const formValues = this.getFormValues();
+    console.log(formValues);
   }
 
   disconnectedCallback() {
