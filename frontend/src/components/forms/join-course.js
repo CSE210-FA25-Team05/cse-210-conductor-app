@@ -6,25 +6,43 @@ class JoinCourseForm extends HTMLElement {
 
   connectedCallback() {
     const form = document.createElement('form');
-    form.innerHTML = `
-        <label for="course-id" slot="content">Course ID
-             <input 
-                type="text" 
-                id="course-id" 
-                name="course-id" 
-                required 
-            />
-        </label>
-        <label for="join-code">Join Code
-            <input
-                type="text" 
-                id="join-code" 
-                name="join-code" 
-                required 
-            />
-        </label>
-        <button type="submit" slot="buttons">Join Course</button>
-    `;
+    form.id = 'createCourseForm';
+
+    const fields = [
+      {
+        label: 'Course ID',
+        id: 'course-id',
+        name: 'course_id',
+      },
+      {
+        label: 'Course Code',
+        id: 'course-code',
+        name: 'course_code',
+      },
+    ];
+
+    fields.forEach((field) => {
+      const label = document.createElement('label');
+      label.setAttribute('for', field.id);
+      label.innerText = field.label;
+
+      const input = document.createElement('input');
+      input.id = field.id;
+      input.type = field.type || 'text';
+      input.name = field.name;
+      if (field.value) input.value = field.value;
+      input.setAttribute('required', '');
+
+      label.appendChild(input);
+      form.appendChild(label);
+    });
+
+    const submitButton = document.createElement('button');
+    submitButton.type = 'submit';
+    submitButton.slot = 'buttons';
+    submitButton.innerText = 'Join Course';
+
+    form.appendChild(submitButton);
     this.appendChild(form);
 
     this.form = form;
