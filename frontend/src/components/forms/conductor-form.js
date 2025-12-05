@@ -88,7 +88,7 @@ export class ConductorForm extends HTMLElement {
 
   displayError(msg) {
     this.errorCard.innerHTML = `<p>Error: ${msg}</p>`;
-    this.errorCard.style.display = '';
+    this.errorCard.style.removeProperty('display');
   }
 
   renderSubmit() {
