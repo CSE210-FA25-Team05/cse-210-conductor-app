@@ -26,6 +26,7 @@ body:has(> aside) {
   grid-template-columns: auto 1fr;
   grid-template-rows: 1fr;
   height: 100dvh;
+  width: 100dvw;
 }
 body > main {
   grid-column: 2;
@@ -42,7 +43,7 @@ body.menu-closed > aside:has(conductor-nav) {
   overflow: hidden;
 }
 body.menu-closed conductor-nav > header {
-  display: flex;
+  flex-direction: row;
   gap: var(--spacing-small);
 
   position: fixed;
