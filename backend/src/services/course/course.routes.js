@@ -108,7 +108,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.post(
     '/courses',
     {
-      preHandler: [fastify.requireProfessorInCourse],
+      preHandler: [fastify.requireGlobalProfessor],
       schema: courseSchemas.CreateCourseSchema,
     },
     async (request, reply) => {
