@@ -8,7 +8,7 @@ label {
   flex-direction: column;
 }
 
-form > [role="group"] {
+form > [role='group'] {
   padding: var(--button-padding);
   font-size: var(--button-fs);
   margin-bottom: var(--spacing-medium);
@@ -42,6 +42,6 @@ input:focus {
 }
 
 textarea {
-    resize: none;
-    height: 100%;
+  resize: none;
+  height: 100%;
 }
