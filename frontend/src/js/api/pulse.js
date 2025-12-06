@@ -1,4 +1,8 @@
-import { getWrapper, postWrapper, patchWrapper } from '/src/js/fetch-wrapper.js';
+import {
+  getWrapper,
+  postWrapper,
+  patchWrapper,
+} from '/src/js/fetch-wrapper.js';
 
 /**
  * @typedef PulseConfigInfo
@@ -55,7 +59,10 @@ export async function getPulseConfigs(courseID) {
  * @returns { PulseConfigInfo } Pulse configs of given course
  */
 export async function updatePulseConfigs(courseID, pulseConfigs) {
-  let response = await patchWrapper(`/api/courses/${courseID}/pulses/config`, pulseConfigs);
+  let response = await patchWrapper(
+    `/api/courses/${courseID}/pulses/config`,
+    pulseConfigs
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -71,10 +78,10 @@ export async function updatePulseConfigs(courseID, pulseConfigs) {
  * @returns { PulseInfo } Pulse info of the given pulse
  */
 export async function createPulseInCourse(courseID, pulse) {
-    let response = await postWrapper(`/api/courses/${courseID}/pulses`, pulse);
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
+  let response = await postWrapper(`/api/courses/${courseID}/pulses`, pulse);
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
 }
 
 /**
@@ -89,13 +96,15 @@ export async function createPulseInCourse(courseID, pulse) {
  * @param { string } [params.bucket] - Bucket size for aggregating pulse records (e.g., 'day', 'week', 'month')
  * @returns { [PulseInfo] } Array of pulse records
  */
-export async function getPulseRecords( courseID, params = {} ) {
-    let queryString = new URLSearchParams(params).toString();
-    let response = await getWrapper(`/api/courses/${courseID}/pulses?${queryString}`);
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
-    return response.data;
+export async function getPulseRecords(courseID, params = {}) {
+  let queryString = new URLSearchParams(params).toString();
+  let response = await getWrapper(
+    `/api/courses/${courseID}/pulses?${queryString}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
 }
 
 /**
@@ -110,11 +119,13 @@ export async function getPulseRecords( courseID, params = {} ) {
  * @param { string } [params.bucket] - Bucket size for aggregating pulse records (e.g., 'day', 'week', 'month')
  * @returns { [StatInfo] } Array of pulse statistics
  */
-export async function getPulseStats( courseID, params = {} ) {
-    let queryString = new URLSearchParams(params).toString();
-    let response = await getWrapper(`/api/courses/${courseID}/pulses/stats?${queryString}`);
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
-    return response.data;
+export async function getPulseStats(courseID, params = {}) {
+  let queryString = new URLSearchParams(params).toString();
+  let response = await getWrapper(
+    `/api/courses/${courseID}/pulses/stats?${queryString}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
 }
