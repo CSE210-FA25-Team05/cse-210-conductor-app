@@ -108,7 +108,7 @@ class CourseRepo {
    * @param {Object} courseData - Data for the new course
    * @returns {Promise<Object>} Created course object
    */
-  async addCourse(courseData) {
+  async addCourse(user, courseData) {
     const {
       course_code,
       course_name,
@@ -150,6 +150,12 @@ class CourseRepo {
         start_date: start_date ? new Date(start_date) : null,
         end_date: end_date ? new Date(end_date) : null,
         join_code: finalJoinCode,
+        enrollments: {
+          create: {
+            user_id: user.id,
+            role: 'professor',
+          },
+        },
         pulse_configs: {
           create: {
             config: DEFAULT_PULSE_CONFIG,

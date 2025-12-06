@@ -119,7 +119,7 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const course = await courseRepo.addCourse(request.body);
+        const course = await courseRepo.addCourse(request.user, request.body);
         reply.code(201).send(course);
       } catch (error) {
         return mapAndReply(error, reply);
