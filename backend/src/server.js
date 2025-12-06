@@ -38,9 +38,11 @@ const sensible = require('@fastify/sensible');
 fastify.register(cors, {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 });
 fastify.register(cookie);
 fastify.register(sensible);
+fastify.register(require('./plugins/error-handler'));
 
 //db connection
 fastify.register(require('./prisma'));
@@ -59,9 +61,12 @@ fastify.register(require('./services/auth'));
 fastify.register(require('./services/lectures'));
 fastify.register(require('./services/course'));
 fastify.register(require('./services/journal'));
+fastify.register(require('./services/attendances'));
+fastify.register(require('./services/teams'));
+fastify.register(require('./services/pulse'));
 
 //health check
-fastify.get('/api/health', async () => {
+fastify.get('/health', async () => {
   return { ok: true, time: new Date().toISOString() };
 });
 

@@ -4,7 +4,9 @@ export const DateTimeType = { type: 'string', format: 'date-time' };
 export const ErrorSchema = {
   type: 'object',
   properties: {
+    statusCode: { type: 'integer' },
     error: { type: 'string' },
+    message: { type: 'string' },
   },
   required: ['error'],
 };

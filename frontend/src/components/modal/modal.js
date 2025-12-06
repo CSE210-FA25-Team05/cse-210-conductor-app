@@ -8,6 +8,7 @@ class Modal extends HTMLElement {
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
+    const footerAttr = this.getAttribute('footer');
 
     const dialog = document.createElement('dialog');
     const article = document.createElement('article');
@@ -41,7 +42,9 @@ class Modal extends HTMLElement {
     // Article: header + content slot + footer
     article.appendChild(header);
     article.appendChild(contentSlot);
-    article.appendChild(footer);
+    if (footerAttr !== 'none') {
+      article.appendChild(footer);
+    }
 
     dialog.appendChild(article);
 

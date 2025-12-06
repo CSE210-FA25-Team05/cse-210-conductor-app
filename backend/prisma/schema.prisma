@@ -97,6 +97,7 @@ model teams {
   courses     courses   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   enrollments enrollments[]
   ta_teams    ta_teams[]
+  pulses      pulses[]
 
   @@unique([course_id, name])
 }
@@ -133,15 +134,17 @@ model ta_teams {
 }
 
 model lectures {
-  id          Int       @id @default(autoincrement())
-  course_id   Int       @map("course_id")
-  lecture_date DateTime @map("lecture_date") @db.Date
-  code        String?   @db.VarChar
-  created_at  DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
-  updated_at DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
-  deleted_at DateTime? @map("deleted_at") @db.Timestamp(6)
-  courses     courses   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  attendances attendances[]
+  id              Int       @id @default(autoincrement())
+  course_id       Int       @map("course_id")
+  lecture_date    DateTime  @map("lecture_date") @db.Date
+  code            String?   @db.VarChar
+  code_generated_at DateTime? @map("code_generated_at") @db.Timestamp(6)
+  code_expires_at   DateTime? @map("code_expires_at") @db.Timestamp(6)
+  created_at      DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updated_at      DateTime? @default(now()) @map("updated_at") @db.Timestamp(6)
+  deleted_at      DateTime? @map("deleted_at") @db.Timestamp(6)
+  courses         courses   @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  attendances     attendances[]
 
   @@map("lectures")
 }
@@ -254,6 +257,7 @@ model pulses {
   id              Int           @id @default(autoincrement())
   course_id       Int           @map("course_id")
   user_id         Int           @map("user_id")
+  team_id         Int?          @map("team_id")
   pulse_config_id Int           @map("pulse_config_id")
   value           String        @map("value") @db.VarChar(255)
   description     String?       @map("description")
@@ -261,5 +265,11 @@ model pulses {
 
   courses         courses       @relation(fields: [course_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users           users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  teams           teams?        @relation(fields: [team_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
   pulse_configs   pulse_configs @relation(fields: [pulse_config_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([course_id, created_at])
+  @@index([course_id, user_id, created_at])
+  @@index([course_id, team_id, created_at])
+  @@index([course_id, value, created_at])
 }

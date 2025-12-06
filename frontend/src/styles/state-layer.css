@@ -3,12 +3,21 @@
  * elements using state layer should not use ::after.
 */
 
+/* Set this attribute to turn off the state layer. */
+[data-state='off'] {
+  cursor: default !important;
+}
+[data-state='off']::after,
+[data-state='off']:before {
+  content: none !important;
+}
+
 [role='group'] > label,
 [role='button']:not([disabled]),
 [type='submit']:not([disabled]),
 details > summary,
-details[open] > ul > li,
-details[open] > ol > li,
+details[open] > ul > li:not(:has(button)),
+details[open] > ol > li:not(:has(button)),
 button:not([disabled]),
 .state-layer {
   position: relative;
@@ -19,8 +28,8 @@ details > summary:before,
 [role='group'] > label:after,
 [role='button']:not([disabled]):after,
 [type='submit']:not([disabled]):after,
-details[open] > ul > li:after,
-details[open] > ol > li:after,
+details[open] > ul > li:not(:has(button)):after,
+details[open] > ol > li:not(:has(button)):after,
 button:not([disabled]):after,
 .state-layer::after {
   content: '';
@@ -41,8 +50,8 @@ details > summary:hover:before,
 [role='group'] > label:hover:after,
 [type='submit']:not([disabled]):hover:after,
 [role='button']:not([disabled]):hover:after,
-details[open] > ul > li:hover:after,
-details[open] > ol > li:hover:after,
+details[open] > ul > li:not(:has(button)):hover:after,
+details[open] > ol > li:not(:has(button)):hover:after,
 button:not([disabled]):hover:after,
 .state-layer:hover:after {
   transform: scale(1);
@@ -53,8 +62,8 @@ details > summary:active:before,
 [type='submit']:not([disabled]):active:after,
 [role='button']:not([disabled]):active:after,
 [role='group'] > label:active:after,
-details[open] > ul > li:active:after,
-details[open] > ol > li:active:after,
+details[open] > ul > li:not(:has(button)):active:after,
+details[open] > ol > li:not(:has(button)):active:after,
 button:not([disabled]):active:after,
 .state-layer:active:after {
   transform: scale(1);
