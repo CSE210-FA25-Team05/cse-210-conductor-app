@@ -37,6 +37,7 @@ class JournalForm extends ConductorForm {
 
   async onSubmit(values) {
     console.log('Submit journal', values);
+    this.form.reset();
   }
 }
 

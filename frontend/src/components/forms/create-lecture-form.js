@@ -31,6 +31,7 @@ class CreateLectureForm extends ConductorForm {
 
   async onSubmit(values) {
     console.log('HERE', values);
+    this.form.reset();
   }
 }
 

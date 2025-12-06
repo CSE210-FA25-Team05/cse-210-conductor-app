@@ -36,6 +36,7 @@ class InteractionForm extends ConductorForm {
 
   async onSubmit(values) {
     console.log('Submit interaction', values);
+    this.form.reset();
   }
 }
 
