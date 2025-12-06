@@ -178,7 +178,7 @@ export async function cacheProfile() {
  */
 export function getUserRole() {
   const profile = getCache(CACHE_KEYS.PROFILE);
-  return profile?.role ?? null;
+  return profile?.global_role ?? null;
 }
 
 /**
