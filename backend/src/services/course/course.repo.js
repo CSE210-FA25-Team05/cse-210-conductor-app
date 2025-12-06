@@ -286,7 +286,6 @@ class CourseRepo {
     });
     return deletedEnrollment;
   }
-
 }
 
 module.exports = CourseRepo;

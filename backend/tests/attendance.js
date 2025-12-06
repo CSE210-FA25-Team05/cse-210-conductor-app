@@ -28,14 +28,11 @@ async function createLectureTest(courseId, lectureData) {
     `Creating lecture for course id=${courseId} with data:`,
     lectureData
   );
-  const res = await fetch(
-    `${BASE_URL}/courses/${courseId}/lectures`,
-    {
-      method: 'POST',
-      headers: headers(),
-      body: JSON.stringify(lectureData),
-    }
-  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/lectures`, {
+    method: 'POST',
+    headers: headers(),
+    body: JSON.stringify(lectureData),
+  });
 
   console.log('Status:', res.status);
   const text = await res.text();
@@ -755,10 +752,14 @@ async function getStudentAttendanceStatsTest(courseId, userEmail) {
 
   if (res.ok) {
     console.log('Student attendance stats retrieved successfully');
-    console.log(`Summary: ${data.summary.total_lectures} lectures, ${data.summary.present} present, ${data.summary.absent} absent`);
+    console.log(
+      `Summary: ${data.summary.total_lectures} lectures, ${data.summary.present} present, ${data.summary.absent} absent`
+    );
     return data;
   } else {
-    console.error(`Failed to get student attendance stats: ${data.error || data.message || 'Unknown error'}`);
+    console.error(
+      `Failed to get student attendance stats: ${data.error || data.message || 'Unknown error'}`
+    );
     return null;
   }
 }
@@ -785,11 +786,15 @@ async function getClassAttendanceStatsTest(courseId, userEmail) {
 
   if (res.ok) {
     console.log('Class attendance stats retrieved successfully');
-    console.log(`Summary: ${data.summary.total_lectures} lectures, ${data.summary.total_enrolled} enrolled, ${data.summary.total_attendances} attendances`);
+    console.log(
+      `Summary: ${data.summary.total_lectures} lectures, ${data.summary.total_enrolled} enrolled, ${data.summary.total_attendances} attendances`
+    );
     console.log(`Trend: ${data.trend.length} lecture entries`);
     return data;
   } else {
-    console.error(`Failed to get class attendance stats: ${data.error || data.message || 'Unknown error'}`);
+    console.error(
+      `Failed to get class attendance stats: ${data.error || data.message || 'Unknown error'}`
+    );
     return null;
   }
 }
@@ -805,9 +810,7 @@ async function getAttendanceStatsWithDateRangeTest(
   console.log(
     `Getting attendance stats with date range for course id=${courseId}...`
   );
-  const url = new URL(
-    `${BASE_URL}/courses/${courseId}/attendances/stats`
-  );
+  const url = new URL(`${BASE_URL}/courses/${courseId}/attendances/stats`);
   if (startTime) url.searchParams.append('start_time', startTime);
   if (endTime) url.searchParams.append('end_time', endTime);
 
@@ -828,13 +831,19 @@ async function getAttendanceStatsWithDateRangeTest(
 
   if (res.ok) {
     if (isProfessor) {
-      console.log('Class attendance stats with date range retrieved successfully');
+      console.log(
+        'Class attendance stats with date range retrieved successfully'
+      );
     } else {
-      console.log('Student attendance stats with date range retrieved successfully');
+      console.log(
+        'Student attendance stats with date range retrieved successfully'
+      );
     }
     return data;
   } else {
-    console.error(`Failed to get attendance stats with date range: ${data.error || data.message || 'Unknown error'}`);
+    console.error(
+      `Failed to get attendance stats with date range: ${data.error || data.message || 'Unknown error'}`
+    );
     return null;
   }
 }
@@ -905,7 +914,9 @@ async function runAttendanceStatsTests() {
   // Find a student and professor/TA
   const studentEnrollment = users.find((u) => u.role === 'student') || users[0];
   const studentEmail = studentEnrollment.email || JOHN_EMAIL;
-  const professorEnrollment = users.find((u) => u.role === 'professor' || u.role === 'ta');
+  const professorEnrollment = users.find(
+    (u) => u.role === 'professor' || u.role === 'ta'
+  );
   const professorEmail = professorEnrollment
     ? professorEnrollment.email
     : 'mathprof@ucsd.edu'; // Fallback to seeded professor
@@ -922,9 +933,7 @@ async function runAttendanceStatsTests() {
 
   if (studentStats) {
     console.log('✓ Student stats test passed');
-    console.log(
-      `  - Total lectures: ${studentStats.summary.total_lectures}`
-    );
+    console.log(`  - Total lectures: ${studentStats.summary.total_lectures}`);
     console.log(`  - Present: ${studentStats.summary.present}`);
     console.log(`  - Absent: ${studentStats.summary.absent}`);
     console.log(
@@ -944,12 +953,8 @@ async function runAttendanceStatsTests() {
 
   if (classStats) {
     console.log('✓ Class stats test passed');
-    console.log(
-      `  - Total lectures: ${classStats.summary.total_lectures}`
-    );
-    console.log(
-      `  - Total enrolled: ${classStats.summary.total_enrolled}`
-    );
+    console.log(`  - Total lectures: ${classStats.summary.total_lectures}`);
+    console.log(`  - Total enrolled: ${classStats.summary.total_enrolled}`);
     console.log(
       `  - Total attendances: ${classStats.summary.total_attendances}`
     );
@@ -1000,13 +1005,19 @@ async function runAttendanceStatsTests() {
   }
 
   // 5. Test: Student trying to access class stats (should get their own stats, not class stats)
-  console.log('\nStep 5: Testing student accessing stats (should get own stats, not class stats)...');
+  console.log(
+    '\nStep 5: Testing student accessing stats (should get own stats, not class stats)...'
+  );
   const studentStatsCheck = await getStudentAttendanceStatsTest(
     courseId,
     studentEmail
   );
 
-  if (studentStatsCheck && studentStatsCheck.summary && 'present' in studentStatsCheck.summary) {
+  if (
+    studentStatsCheck &&
+    studentStatsCheck.summary &&
+    'present' in studentStatsCheck.summary
+  ) {
     console.log('✓ Student correctly gets their own stats (not class stats)');
   } else {
     console.error('✗ Student stats format incorrect');
@@ -1060,4 +1071,3 @@ if (require.main === module) {
     }
   })();
 }
-

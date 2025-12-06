@@ -463,8 +463,9 @@ class AttendancesService {
     }
 
     // Get total enrolled students
-    const totalEnrolled =
-      await this.attendancesRepo.getTotalEnrolledStudents(course.id);
+    const totalEnrolled = await this.attendancesRepo.getTotalEnrolledStudents(
+      course.id
+    );
 
     // Get only completed lectures (where attendance was activated and window has closed)
     const lectures = await this.attendancesRepo.getCompletedLectures(
@@ -489,11 +490,10 @@ class AttendancesService {
 
     // Get all attendances for those lectures
     const lectureIds = lectures.map((l) => l.id);
-    const allAttendances =
-      await this.attendancesRepo.getAttendancesForLectures(
-        lectureIds,
-        course.id
-      );
+    const allAttendances = await this.attendancesRepo.getAttendancesForLectures(
+      lectureIds,
+      course.id
+    );
 
     // Create a map of lecture_id -> attendance count
     const attendanceCountMap = new Map();
@@ -530,8 +530,9 @@ class AttendancesService {
     const totalPossibleAttendances = totalLectures * totalEnrolled;
     const overallAttendancePercentage =
       totalPossibleAttendances > 0
-        ? Math.round((totalAttendances / totalPossibleAttendances) * 100 * 100) /
-          100
+        ? Math.round(
+            (totalAttendances / totalPossibleAttendances) * 100 * 100
+          ) / 100
         : 0;
     const averageLectureAttendance =
       totalLectures > 0
