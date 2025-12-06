@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Profile - Conductor</title>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" async src="/src/js/common.js"></script>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Profile</h1>
+                <theme-toggle></theme-toggle>
+            </header>
+            
+            <section id="profile-section">
+                <p id="profile-loading" role="status">Loading profile...</p>
+                <article id="profile-content">
+                    <form id="profile-form">
+                        <fieldset>
+                            <h2>Account Information</h2>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" readonly disabled aria-label="Email address">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="global-role">Role</label>
+                                <input type="text" id="global-role" name="global_role" readonly disabled aria-label="User role">
+                            </div>
+                        </fieldset>
+                        
+                        <fieldset>
+                            <h2>Personal Information</h2>
+                            <div class="form-group">
+                                <label for="first-name">First Name</label>
+                                <input 
+                                    type="text" 
+                                    id="first-name" 
+                                    name="first_name" 
+                                    required 
+                                    maxlength="60"
+                                    aria-label="First name"
+                                    aria-describedby="first-name-error">
+                                <p id="first-name-error" class="error-message" role="alert" style="display: none;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="last-name">Last Name</label>
+                                <input 
+                                    type="text" 
+                                    id="last-name" 
+                                    name="last_name" 
+                                    required 
+                                    maxlength="60"
+                                    aria-label="Last name"
+                                    aria-describedby="last-name-error">
+                                <p id="last-name-error" class="error-message" role="alert" style="display: none;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="pronouns">Pronouns</label>
+                                <input 
+                                    type="text" 
+                                    id="pronouns" 
+                                    name="pronouns" 
+                                    placeholder="e.g., She/Her, He/Him, They/Them" 
+                                    maxlength="20"
+                                    aria-label="Preferred pronouns"
+                                    aria-describedby="pronouns-error">
+                                <p id="pronouns-error" class="error-message" role="alert" style="display: none;"></p>
+                            </div>
+                        </fieldset>
+                        
+                        <button type="submit" id="save-button">Save Changes</button>
+                    </form>
+                    
+                    <output id="profile-message" role="status" style="display: none;" aria-live="polite"></output>
+                </article>
+            </section>
+        </main>
+        <aside>
+            <conductor-nav></conductor-nav>
+        </aside>
+    </body>
+</html>
+
