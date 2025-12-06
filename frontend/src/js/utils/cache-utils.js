@@ -272,12 +272,11 @@ export async function cacheAllPulseConfigs() {
 
     if (!getCachedPulseConfig(courseId)) {
       try {
-          configs[courseId] = await cachePulseConfig(courseId);
+        configs[courseId] = await cachePulseConfig(courseId);
       } catch (err) {
-          console.warn(`Skipping course ${courseId} due to pulse config error.`);
+        console.warn(`Skipping course ${courseId} due to pulse config error.`);
       }
     }
-
   }
 
   return configs;
