@@ -218,9 +218,10 @@ export const AddUserInCourseSchema = {
   body: {
     type: 'object',
     properties: {
-      user_id: { type: 'number' },
+      email: { type: 'string', format: 'email' },
+      role: { type: 'string', enum: ['student', 'ta', 'professor'], default: 'student' },
     },
-    required: ['user_id'],
+    required: ['email'],
   },
   response: {
     201: CourseUserSchema,

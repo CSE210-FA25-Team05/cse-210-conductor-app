@@ -30,13 +30,15 @@ const {
  */
 
 const CourseRepo = require('./course.repo');
-const courseSchemas = require('./course.schemas');
 const CourseService = require('./course.service');
+const AuthRepo = require('../auth/auth.repo');
+const courseSchemas = require('./course.schemas');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = async function courseRoutes(fastify, options) {
   const courseRepo = new CourseRepo(fastify.db);
-  const courseService = new CourseService(courseRepo);
+  const authRepo = new AuthRepo(fastify.db);
+  const courseService = new CourseService(courseRepo, authRepo);
 
   fastify.get(
     '/courses',
@@ -170,9 +172,12 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.addEnrollment(
-          parseInt(request.params.course_id, 10),
-          request.body.user_id
+        const courseId = parseInt(request.params.course_id, 10);
+        const { email, role = 'student' } = request.body;
+        const res = await courseService.addUserToCourseByEmail(
+          courseId,
+          email,
+          role
         );
         reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {

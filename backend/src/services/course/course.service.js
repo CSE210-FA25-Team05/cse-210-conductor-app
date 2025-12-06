@@ -7,8 +7,9 @@
  */
 
 class CourseService {
-  constructor(courseRepo) {
+  constructor(courseRepo, authRepo) {
     this.courseRepo = courseRepo;
+    this.authRepo = authRepo;
   }
 
   /**
@@ -30,6 +31,67 @@ class CourseService {
   async checkCourseJoinCode(courseId, joinCode) {
     const storedJoinCode = await this.courseRepo.getCourseJoinCode(courseId);
     return storedJoinCode === joinCode;
+  }
+
+  /**
+   * Validate role value.
+   * @param {string} role - Role to validate
+   * @returns {boolean} True if role is valid
+   */
+  isValidRole(role) {
+    const validRoles = ['student', 'ta', 'professor'];
+    return validRoles.includes(role);
+  }
+
+  /**
+   * Add a user to a course by email.
+   * If user exists, add enrollment. If user doesn't exist, create user stub and add enrollment.
+   * @param {number} courseId - ID of the course
+   * @param {string} email - Email of the user
+   * @param {string} role - Role for the enrollment (default: 'student')
+   * @returns {Promise<Object>} Created enrollment object
+   */
+  async addUserToCourseByEmail(courseId, email, role = 'student') {
+    // Validate role if provided
+    if (role && !this.isValidRole(role)) {
+      const e = new Error(
+        `Invalid role: ${role}. Valid roles are: student, ta, professor`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    // Normalize email to lowercase
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if user exists
+    let user = await this.authRepo.getUserByEmail(normalizedEmail);
+
+    // If user doesn't exist, create a user stub
+    if (!user) {
+      user = await this.authRepo.upsertUser({
+        email: normalizedEmail,
+        first_name: null,
+        last_name: null,
+        last_login: null,
+      });
+      if (!user) {
+        const e = new Error(
+          `Failed to create user: ${normalizedEmail}`
+        );
+        e.code = 'INTERNAL_SERVER_ERROR';
+        throw e;
+      }
+    }
+
+    // Add enrollment
+    const enrollment = await this.courseRepo.addEnrollment(
+      courseId,
+      user.id,
+      role
+    );
+
+    return enrollment;
   }
 }
 
