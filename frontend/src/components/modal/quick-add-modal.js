@@ -2,6 +2,7 @@ import { FormModal } from '/src/components/modal/form-modal.js';
 import '/src/components/forms/pulse-form.js';
 import '/src/components/forms/interaction-form.js';
 import '/src/components/forms/create-lecture-form.js';
+import '/src/components/forms/journal-form.js';
 
 /**
  * QuickAddModal Web Component
@@ -46,9 +47,16 @@ class QuickAddModal extends FormModal {
     interactionSection.setAttribute('tag', 'New Interaction');
     interactionSection.appendChild(interactionForm);
 
+    // Journal
+    const journalSection = document.createElement('form-section');
+    const journalForm = document.createElement('journal-form');
+    journalSection.setAttribute('tag', 'New Journal');
+    journalSection.appendChild(journalForm);
+
     this.appendChild(lectureSection);
     this.appendChild(pulseSection);
     this.appendChild(interactionSection);
+    this.appendChild(journalSection);
 
     super.connectedCallback();
   }
