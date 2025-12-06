@@ -854,6 +854,280 @@ async function runAttendanceTests() {
 
   console.log('\n=== ATTENDANCE TESTS COMPLETE ===\n');
 }
+
+// ============================================
+// CODE-BASED ATTENDANCE TESTS (NEW ENDPOINT)
+// ============================================
+// Tests for POST /courses/:course_id/attendances endpoint
+// Usage: Call runCodeBasedAttendanceTests() to run all tests
+// Example: await runCodeBasedAttendanceTests();
+
+// Create attendance by code (simplified flow - POST /courses/:course_id/attendances)
+async function createAttendanceByCodeTest(courseId, code, userEmail) {
+  console.log(
+    `Creating attendance by code for course id=${courseId} with code="${code}"...`
+  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/attendances`, {
+    method: 'POST',
+    headers: headersForEmail(userEmail),
+    body: JSON.stringify({ code }),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.log(
+      `Attendance created successfully by code (id=${data.id}) for user ${userEmail}`
+    );
+    return data;
+  } else {
+    console.error(
+      `Failed to create attendance by code for user ${userEmail}`
+    );
+    return null;
+  }
+}
+
+// Test: Create attendance with expired code (should fail with 410)
+async function createAttendanceExpiredCodeTest(courseId, expiredCode, userEmail) {
+  console.log(
+    `Testing attendance with expired code for course id=${courseId}...`
+  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/attendances`, {
+    method: 'POST',
+    headers: headersForEmail(userEmail),
+    body: JSON.stringify({ code: expiredCode }),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.status === 410) {
+    console.log('Correctly rejected expired code (expected 410)');
+    return true;
+  } else {
+    console.error(`Expected 410 for expired code, got ${res.status}`);
+    return false;
+  }
+}
+
+// Test: Create attendance with invalid code (should fail with 404)
+async function createAttendanceInvalidCodeTest(courseId, invalidCode, userEmail) {
+  console.log(
+    `Testing attendance with invalid code for course id=${courseId}...`
+  );
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/attendances`, {
+    method: 'POST',
+    headers: headersForEmail(userEmail),
+    body: JSON.stringify({ code: invalidCode }),
+  });
+
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.status === 404) {
+    console.log('Correctly rejected invalid code (expected 404)');
+    return true;
+  } else {
+    console.error(`Expected 404 for invalid code, got ${res.status}`);
+    return false;
+  }
+}
+
+// Run code-based attendance tests
+async function runCodeBasedAttendanceTests() {
+  console.log('\n=== CODE-BASED ATTENDANCE TESTS ===\n');
+
+  // 0. Get or create a course
+  console.log('Step 0: Getting existing courses...');
+  const coursesRes = await fetch(`${BASE_URL}/courses`, {
+    method: 'GET',
+    headers: headers(),
+  });
+  let courseId;
+  if (coursesRes.ok) {
+    const courses = await coursesRes.json();
+    if (courses && courses.length > 0) {
+      courseId = courses[0].id;
+      console.log(
+        `Using existing course id=${courseId} (${courses[0].course_code})`
+      );
+    } else {
+      console.log('No courses found. Creating a new course...');
+      const newCourse = {
+        course_code: 'TEST102',
+        course_name: 'Test Course for Code-Based Attendance',
+        term: 'FA25',
+        section: 'A00',
+        start_date: '2025-09-01',
+        end_date: '2025-12-15',
+      };
+      const createRes = await fetch(`${BASE_URL}/courses`, {
+        method: 'POST',
+        headers: headers(),
+        body: JSON.stringify(newCourse),
+      });
+      if (createRes.ok) {
+        const course = await createRes.json();
+        courseId = course.id;
+        console.log(`Created new course id=${courseId}`);
+      } else {
+        console.error('Failed to create course. Aborting tests.');
+        return;
+      }
+    }
+  } else {
+    console.error('Failed to fetch courses. Aborting tests.');
+    return;
+  }
+
+  // Get a student user email
+  console.log('\nStep 0.5: Fetching users in course to find a student...');
+  const usersRes = await fetch(`${BASE_URL}/courses/${courseId}/users`, {
+    method: 'GET',
+    headers: headers(),
+  });
+  if (!usersRes.ok) {
+    console.error('Failed to fetch users for course. Aborting tests.');
+    return;
+  }
+  const users = await usersRes.json();
+  if (!Array.isArray(users) || users.length === 0) {
+    console.error('No users found in course. Aborting tests.');
+    return;
+  }
+  // Find a student user
+  const studentEnrollment = users.find((u) => u.role === 'student') || users[0];
+  const studentEmail = studentEnrollment.email || JOHN_EMAIL; // Fallback to seeded user
+  console.log(`Using student email ${studentEmail} for code-based attendance tests.`);
+
+  // 1. Create a lecture
+  console.log('\nStep 1: Creating lecture...');
+  const today = new Date().toISOString().split('T')[0];
+  const lecture = await createLectureTest(courseId, {
+    lecture_date: today,
+  });
+  if (!lecture) {
+    console.error('Failed to create lecture. Aborting tests.');
+    return;
+  }
+  const newLectureId = lecture.id;
+
+  // 2. Activate attendance (generate code)
+  console.log('\nStep 2: Activating attendance...');
+  const activatedLecture = await activateAttendanceTest(courseId, newLectureId);
+  if (!activatedLecture) {
+    console.error('Failed to activate attendance. Aborting tests.');
+    return;
+  }
+  const attendanceCode = activatedLecture.code;
+  console.log(`Generated code: ${attendanceCode}`);
+
+  // 3. Test: Student marks attendance with code (success case)
+  console.log('\nStep 3: Student marking attendance by code (success case)...');
+  const attendance = await createAttendanceByCodeTest(
+    courseId,
+    attendanceCode,
+    studentEmail
+  );
+
+  if (attendance) {
+    // 4. Test: Try to mark attendance again with same code (should fail - duplicate)
+    console.log(
+      '\nStep 4: Testing duplicate attendance by code (should fail)...'
+    );
+    await createAttendanceByCodeTest(
+      courseId,
+      attendanceCode,
+      studentEmail
+    );
+
+    // 5. Test: Invalid code (should fail with 404)
+    console.log('\nStep 5: Testing invalid code (should fail with 404)...');
+    await createAttendanceInvalidCodeTest(
+      courseId,
+      'INVALID',
+      studentEmail
+    );
+
+    // 6. Test: Expired code
+    // To test expired code, we need to wait 5+ minutes or create a new lecture
+    // and manually set an expired code. For now, we'll test with a non-existent code
+    // that looks like it might be expired
+    console.log(
+      '\nStep 6: Testing expired code scenario (using non-existent code)...'
+    );
+    console.log(
+      'Note: To fully test expired codes, wait 5+ minutes after activation or manually set expired code in DB'
+    );
+    // This will return 404 (not found) since we can't easily simulate expired codes
+    await createAttendanceInvalidCodeTest(
+      courseId,
+      'EXPIRED',
+      studentEmail
+    );
+
+    // 7. Test: Code from different course (should fail with 404)
+    console.log('\nStep 7: Testing code from different course...');
+    // Get a different course or create one
+    const otherCoursesRes = await fetch(`${BASE_URL}/courses`, {
+      method: 'GET',
+      headers: headers(),
+    });
+    if (otherCoursesRes.ok) {
+      const allCourses = await otherCoursesRes.json();
+      const otherCourse = allCourses.find((c) => c.id !== courseId);
+      if (otherCourse) {
+        // Create lecture in other course and activate
+        const otherLecture = await createLectureTest(otherCourse.id, {
+          lecture_date: today,
+        });
+        if (otherLecture) {
+          const otherActivated = await activateAttendanceTest(
+            otherCourse.id,
+            otherLecture.id
+          );
+          if (otherActivated) {
+            // Try to use code from other course in current course
+            console.log(
+              `Testing with code from course ${otherCourse.id} in course ${courseId}...`
+            );
+            await createAttendanceInvalidCodeTest(
+              courseId,
+              otherActivated.code,
+              studentEmail
+            );
+          }
+        }
+      }
+    }
+  }
+
+  console.log('\n=== CODE-BASED ATTENDANCE TESTS COMPLETE ===\n');
+}
+
 // ============================================
 // JOURNAL ENTRIES TESTS
 // ============================================
