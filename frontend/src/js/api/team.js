@@ -71,7 +71,9 @@ export async function getTeam(courseID, teamID) {
  * @param { number } teamID - ID of the team.
  */
 export async function deleteTeam(courseID, teamID) {
-  let response = await deleteWrapper(`/api/courses/${courseID}/teams/${teamID}`);
+  let response = await deleteWrapper(
+    `/api/courses/${courseID}/teams/${teamID}`
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -87,7 +89,10 @@ export async function deleteTeam(courseID, teamID) {
  * @returns { Team } Updated team with its information.
  */
 export async function updateTeam(courseID, teamID, updatedTeam) {
-  let response = await patchWrapper(`/api/courses/${courseID}/teams/${teamID}`, updatedTeam);
+  let response = await patchWrapper(
+    `/api/courses/${courseID}/teams/${teamID}`,
+    updatedTeam
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -101,7 +106,9 @@ export async function updateTeam(courseID, teamID, updatedTeam) {
  * @returns { TeamMember[] } List of all the team members with their information.
  */
 export async function getTeamMembers(courseID, teamID) {
-  let response = await getWrapper(`/api/courses/${courseID}/teams/${teamID}/members`);
+  let response = await getWrapper(
+    `/api/courses/${courseID}/teams/${teamID}/members`
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -115,7 +122,10 @@ export async function getTeamMembers(courseID, teamID) {
  * @param { TeamMember[] } newMembers - List of the new members getting added to the team.
  */
 export async function addTeamMembers(courseID, teamID, newMembers) {
-  let response = await postWrapper(`/api/courses/${courseID}/teams/${teamID}/add_members`, newMembers);
+  let response = await postWrapper(
+    `/api/courses/${courseID}/teams/${teamID}/add_members`,
+    newMembers
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -128,7 +138,10 @@ export async function addTeamMembers(courseID, teamID, newMembers) {
  * @param { TeamMember[] } updatedMembers - List of members with new roles.
  */
 export async function updateTeamMembers(courseID, teamID, updatedMembers) {
-  let response = await patchWrapper(`/api/courses/${courseID}/teams/${teamID}/update_members`, updatedMembers);
+  let response = await patchWrapper(
+    `/api/courses/${courseID}/teams/${teamID}/update_members`,
+    updatedMembers
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -141,7 +154,10 @@ export async function updateTeamMembers(courseID, teamID, updatedMembers) {
  * @param { number[] } memberIDs - List of IDs of the team members to remove.
  */
 export async function removeTeamMembers(courseID, teamID, memberIDs) {
-  let response = await deleteWrapper(`/api/courses/${courseID}/teams/${teamID}/remove`, {"ids": memberIDs});
+  let response = await deleteWrapper(
+    `/api/courses/${courseID}/teams/${teamID}/remove`,
+    { ids: memberIDs }
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
