@@ -35,19 +35,21 @@ export class ConductorForm extends HTMLElement {
   }
 
   connectedCallback() {
-    if (this.querySelector('form')) return;
-
-    this.form = document.createElement('form');
-    this.renderFields();
-    this.renderErrorCard();
-    this.renderSubmit();
-    this.appendChild(this.form);
-
-    this.form.addEventListener('submit', this.handleSubmit);
+    queueMicrotask(() => {
+       if (this.form) return;
+       this.form = document.createElement('form');
+       this.renderFields();
+       this.renderErrorCard();
+       this.renderSubmit();
+       this.appendChild(this.form);
+       this.form.addEventListener('submit', this.handleSubmit);
+    });
   }
 
   disconnectedCallback() {
-    this.form.removeEventListener('submit', this.handleSubmit);
+    if (this.form) {
+        this.form.removeEventListener('submit', this.handleSubmit);
+    }
   }
 
   // OVERRIDE BELOW
