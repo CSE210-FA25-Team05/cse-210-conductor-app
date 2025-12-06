@@ -4,20 +4,12 @@
 const fp = require('fastify-plugin');
 const JournalRepo = require('../services/journal/journal.repo');
 const JournalPermissions = require('../services/journal/journal.permissions');
-const CourseRepo = require('../services/course/course.repo');
-const CoursePermissions = require('../services/course/course.permissions');
 const AuthRepo = require('../services/auth/auth.repo');
 
 module.exports = fp(async function journalPermissionDecorators(fastify) {
   const journalRepo = new JournalRepo(fastify.db);
   const authRepo = new AuthRepo(fastify.db);
-  const courseRepo = new CourseRepo(fastify.db);
-  const coursePermissions = new CoursePermissions(courseRepo, authRepo);
-  const journalPermissions = new JournalPermissions(
-    journalRepo,
-    authRepo,
-    coursePermissions
-  );
+  const journalPermissions = new JournalPermissions(journalRepo, authRepo);
 
   fastify.decorate('requireJournalAccess', async function (req, reply) {
     if (!req.user) {

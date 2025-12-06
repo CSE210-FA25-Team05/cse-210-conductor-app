@@ -154,6 +154,23 @@ class JournalRepo {
   }
 
   /**
+   * Get the enrollment role for a user in a specific course.
+   * @param {number} userId - ID of the user
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<string|null>} role ('professor', 'ta', 'student') or null if not enrolled
+   */
+  async getEnrollmentRole(userId, courseId) {
+    const enrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: userId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+    return enrollment ? enrollment.role : null;
+  }
+
+  /**
    * Check if the journal creator is in a team managed by the given TA user.
    * @param {number} taUserId - ID of the TA user
    * @param {number} journalId - ID of the journal entry

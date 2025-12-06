@@ -1,10 +1,9 @@
 'use strict';
 
 class JournalPermissions {
-  constructor(journalRepo, authRepo, coursePermissions) {
+  constructor(journalRepo, authRepo) {
     this.journalRepo = journalRepo;
     this.authRepo = authRepo;
-    this.coursePermissions = coursePermissions;
   }
 
   /**
@@ -21,16 +20,12 @@ class JournalPermissions {
       return false;
     }
 
-    // if the user is professor or ta in the course, they can access the journal
-    const isProfessor = await this.coursePermissions.isProfessorInCourse(
+    // If the user is professor or TA in the course, they can access the journal
+    const role = await this.journalRepo.getEnrollmentRole(
       userId,
       journal.course_id
     );
-    const isTA = await this.coursePermissions.isTAInCourse(
-      userId,
-      journal.course_id
-    );
-    if (isProfessor || isTA) {
+    if (role === 'professor' || role === 'ta') {
       return true;
     }
 
@@ -100,18 +95,15 @@ class JournalPermissions {
       return true;
     }
 
-    // Check if user is a professor in the course
-    const isProfessor = await this.coursePermissions.isProfessorInCourse(
+    // Check if user is a professor or TA in the course
+    const role = await this.journalRepo.getEnrollmentRole(
       userId,
       journal.course_id
     );
-    const isTA = await this.coursePermissions.isTAInCourse(
-      userId,
-      journal.course_id
-    );
-    if (isProfessor || isTA) {
+    if (role === 'professor' || role === 'ta') {
       return true;
     }
+
     return false;
   }
 }
