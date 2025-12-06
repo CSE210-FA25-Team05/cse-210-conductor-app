@@ -57,11 +57,7 @@
                         return;
                     }
 
-                    console.log('enrollments', enrollments);
-
-                    // enrollment: {id: 2, user_id: 2, course_id: 1, user_email: 'cat@ucsd.edu', user_first_name: 'Cat', …}
                     const gridData = enrollments.map(e => ({
-                        user_id: e.user_id,
                         first_name: e.user_first_name ?? 'N/A',
                         last_name: e.user_last_name ?? 'N/A',
                         email: e.user_email ?? 'N/A',
