@@ -3,14 +3,10 @@ import { ConductorForm } from '/src/components/forms/conductor-form.js';
 /**
  * NewInteractionForm Web Component
  * --------------------------------
- * A form for logging a new interaction, including:
- *  - emotion_marker (radio buttons: Positive, Neutral, Negative)
- *  - participants (search bar)
- *  - description (textarea)
+ * A form for logging a new interaction
  *
  * On submission:
- *  1. Sends POST /api/interactions with form data
- *  2. Optionally resets form or handles navigation
+ *  1. Sends POST /api/{TODO: NotImplemented}
  *
  * @extends ConductorForm
  *
