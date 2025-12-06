@@ -62,24 +62,18 @@ class CourseRepo {
   async getUsersInCourse(courseId) {
     const users = await this.db.enrollments.findMany({
       where: { course_id: courseId },
-    });
-    return users;
-  }
-
-  /**
-   * Get user details in a course.
-   * @param {number} courseId
-   * @param {number} userId
-   * @returns {Promise<Object|null>} Enrollment object or null if not found
-   */
-  async getUserDetailsInCourse(courseId, userId) {
-    const user = await this.db.enrollments.findFirst({
-      where: {
-        user_id: userId,
-        course_id: courseId,
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
-    return user;
+    return users;
   }
 
   /**
@@ -94,6 +88,16 @@ class CourseRepo {
       where: {
         user_id: userId,
         course_id: courseId,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
     return enrollment;
@@ -208,6 +212,16 @@ class CourseRepo {
         course_id: courseId,
         user_id: userId,
       },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
+      },
     });
     return enrollment;
   }
@@ -220,13 +234,23 @@ class CourseRepo {
    * @returns {Promise<Object>} Updated enrollment object
    */
   async updateEnrollmentRole(courseId, userId, role) {
-    const updatedEnrollment = await this.db.enrollments.updateMany({
+    const updatedEnrollment = await this.db.enrollments.update({
       where: {
         course_id: courseId,
         user_id: userId,
       },
       data: {
         role: role,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
     return updatedEnrollment;
@@ -239,7 +263,7 @@ class CourseRepo {
    * @returns {Promise<Object>} Deleted enrollment object
    */
   async deleteEnrollment(courseId, userId) {
-    const deletedEnrollment = await this.db.enrollments.deleteMany({
+    const deletedEnrollment = await this.db.enrollments.delete({
       where: {
         course_id: courseId,
         user_id: userId,

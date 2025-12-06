@@ -59,7 +59,14 @@ class TeamsRepo {
         deleted_at: null,
       },
       include: {
-        users: true,
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
     return members;
