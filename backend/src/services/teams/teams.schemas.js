@@ -4,6 +4,7 @@
 const {
   createArrayReponseSchema,
   ErrorSchema,
+  CourseUserSchema,
 } = require('../shared/shared.schemas.js');
 
 const TeamMemberRef = {
@@ -137,10 +138,7 @@ const GetTeamMembersSchema = {
     200: {
       type: 'object',
       properties: {
-        members: createArrayReponseSchema({
-          type: 'object',
-          additionalProperties: true, // enrollment + nested user
-        }),
+        members: createArrayReponseSchema(CourseUserSchema),
       },
       required: ['members'],
     },
