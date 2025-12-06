@@ -76,19 +76,15 @@ class CourseService {
         last_login: null,
       });
       if (!user) {
-        const e = new Error(
-          `Failed to create user: ${normalizedEmail}`
-        );
+        const e = new Error(`Failed to create user: ${normalizedEmail}`);
         e.code = 'INTERNAL_SERVER_ERROR';
         throw e;
       }
     }
 
     // Check if user is already enrolled in this course
-    const existingEnrollment = await this.courseRepo.getEnrollmentByUserAndCourse(
-      user.id,
-      courseId
-    );
+    const existingEnrollment =
+      await this.courseRepo.getEnrollmentByUserAndCourse(user.id, courseId);
 
     if (existingEnrollment) {
       const e = new Error(

@@ -219,7 +219,11 @@ export const AddUserInCourseSchema = {
     type: 'object',
     properties: {
       email: { type: 'string', format: 'email' },
-      role: { type: 'string', enum: ['student', 'ta', 'professor'], default: 'student' },
+      role: {
+        type: 'string',
+        enum: ['student', 'ta', 'professor'],
+        default: 'student',
+      },
     },
     required: ['email'],
   },
