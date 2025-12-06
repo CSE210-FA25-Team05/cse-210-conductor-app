@@ -54,7 +54,10 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const user_id = request.params.user_id;
         const course_id = request.params.course_id;
-        const res = await journalService.getJournalsByUserIdAndCourseId(user_id, course_id);
+        const res = await journalService.getJournalsByUserIdAndCourseId(
+          user_id,
+          course_id
+        );
         return res;
       } catch (error) {
         console.error(error);

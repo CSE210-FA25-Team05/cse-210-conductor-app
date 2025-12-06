@@ -116,8 +116,6 @@ class JournalRepo {
     return entry;
   }
 
-
-
   /**
    * Get the team_id of the journal owner (creator) in the journal's course.
    * @param {number} journalId - ID of the journal entry
