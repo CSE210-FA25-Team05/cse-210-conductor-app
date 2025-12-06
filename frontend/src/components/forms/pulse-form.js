@@ -48,12 +48,11 @@ class PulseForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-
     const body = {
       option: values.pulse,
       description: values.pulse_description,
     };
-    console.log("BODY: ", body);
+    console.log('BODY: ', body);
 
     const response = await fetch(`/api/courses/${getCachedCourseId()}/pulses`, {
       method: 'POST',
