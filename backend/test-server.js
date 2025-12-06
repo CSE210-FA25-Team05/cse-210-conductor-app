@@ -1155,6 +1155,403 @@ async function getPulseStatsTest(courseId) {
 // TEAMS CRUD TESTS
 // ============================================
 
+async function runTeamsCrudTests() {
+  console.log('\n============================================');
+  console.log('          TEAMS CRUD TESTS BEGIN');
+  console.log('============================================\n');
+
+  const teamsCourseId = 13; // CSE210
+
+  const professorUserId = 14; // mathprof@ucsd.edu, role: professor
+  const taUserId = 15; // genius_ta@ucsd.edu, role: ta
+  const studentUserId1 = 16; // jdoe@ucsd.edu, role: student
+  const studentUserId2 = 17; // jd563@ucsd.edu, role: student
+
+  // Run team operations as the seeded professor so permissions pass
+  const teamsHeaders = headersForEmail(PROFESSOR_EMAIL);
+
+  // --- Get all teams ---
+  console.log(`→ Fetching all teams for course id=${teamsCourseId}...`);
+  let res = await fetch(`${BASE_URL}/courses/${teamsCourseId}/teams`, {
+    method: 'GET',
+    headers: teamsHeaders,
+  });
+  let data = await res.json();
+  console.log('Status:', res.status, 'Response:', data);
+
+  // --- Create team (use unique name to avoid constraint violations) ---
+  const uniqueSuffix = Date.now();
+  const teamName = `Test Team Alpha ${uniqueSuffix}`;
+
+  console.log(
+    `→ Creating new team "${teamName}" in course id=${teamsCourseId}...`
+  );
+  res = await fetch(`${BASE_URL}/courses/${teamsCourseId}/teams`, {
+    method: 'POST',
+    headers: teamsHeaders,
+    body: JSON.stringify({
+      name: teamName,
+      description: 'Team created by test-server.js',
+    }),
+  });
+  let createdTeam;
+  try {
+    createdTeam = await res.json();
+  } catch {
+    createdTeam = {};
+  }
+  console.log('Status:', res.status, 'Response:', createdTeam);
+
+  if (!res.ok || !createdTeam.id) {
+    console.error('Team creation failed');
+    process.exit(1);
+  }
+
+  // --- Fetch team ---
+  console.log(`→ Fetching team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}`,
+    {
+      method: 'GET',
+      headers: teamsHeaders,
+    }
+  );
+  data = await res.json();
+  console.log('Status:', res.status, 'Response:', data);
+
+  // --- Fetch team members (API returns { members: [...] }) ---
+  console.log(`→ Fetching members for team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/members`,
+    {
+      method: 'GET',
+      headers: teamsHeaders,
+    }
+  );
+  data = await res.json();
+  console.log('Status:', res.status, 'Response:', data);
+
+  const members = Array.isArray(data)
+    ? data
+    : Array.isArray(data.members)
+      ? data.members
+      : [];
+
+  if (!Array.isArray(members)) {
+    console.error(
+      'Expected team members to be an array or in { members: [...] }'
+    );
+  } else if (members.length > 0) {
+    console.log('Example member shape:', members[0]);
+  }
+
+  // --- Add members (use students, not professor/TA) ---
+  console.log(`→ Adding 2 student members to team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/add_members`,
+    {
+      method: 'POST',
+      headers: teamsHeaders,
+      body: JSON.stringify([
+        { id: studentUserId1, role: 'student' },
+        { id: studentUserId2, role: 'student' },
+      ]),
+    }
+  );
+  let addedResponse;
+  try {
+    addedResponse = await res.json();
+  } catch {
+    addedResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', addedResponse);
+
+  // --- Update team info ---
+  console.log(`→ Updating team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}`,
+    {
+      method: 'PATCH',
+      headers: teamsHeaders,
+      body: JSON.stringify({
+        name: `${teamName} (Updated)`,
+        description: 'Updated team from test-server.js',
+      }),
+    }
+  );
+  let updatedTeam;
+  try {
+    updatedTeam = await res.json();
+  } catch {
+    updatedTeam = {};
+  }
+  console.log('Status:', res.status, 'Response:', updatedTeam);
+
+  // --- Update member roles (update the students, not professor/TA) ---
+  console.log(`→ Updating member roles for team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/update_members`,
+    {
+      method: 'PATCH',
+      headers: teamsHeaders,
+      body: JSON.stringify([
+        { id: studentUserId1, role: 'team_lead' },
+        { id: studentUserId2, role: 'student' },
+      ]),
+    }
+  );
+  let roleUpdateResponse;
+  try {
+    roleUpdateResponse = await res.json();
+  } catch {
+    roleUpdateResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', roleUpdateResponse);
+
+  // --- Remove a member (remove one student) ---
+  console.log(`→ Removing 1 member from team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/remove_members`,
+    {
+      method: 'DELETE',
+      headers: teamsHeaders,
+      body: JSON.stringify({
+        ids: [studentUserId2],
+      }),
+    }
+  );
+  let removeResponse;
+  try {
+    removeResponse = await res.json();
+  } catch {
+    removeResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', removeResponse);
+
+  // --- Delete the team ---
+  console.log(`→ Deleting team id=${createdTeam.id}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}`,
+    {
+      method: 'DELETE',
+      headers: teamsHeaders,
+      body: JSON.stringify({}),
+    }
+  );
+  let deleteResponse;
+  try {
+    deleteResponse = await res.json();
+  } catch {
+    deleteResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', deleteResponse);
+
+  console.log('\nTEAMS CRUD TESTS COMPLETED SUCCESSFULLY\n');
+}
+
+// ============================================
+// TEAMS TA ASSIGNMENT TESTS
+// ============================================
+
+async function runTeamsTaAssignmentTests() {
+  console.log('\n============================================');
+  console.log('        TEAMS TA ASSIGNMENT TESTS');
+  console.log('============================================\n');
+
+  const teamsCourseId = 13; // CSE210
+
+  const taUserId = 15; // genius_ta@ucsd.edu, role: ta
+
+  // Run these as the seeded professor user via test header.
+  const taTestHeaders = headersForEmail(PROFESSOR_EMAIL);
+
+  // --- Create a fresh team for TA tests (unique name) ---
+  const uniqueSuffix = Date.now();
+  const taTeamName = `Test Team TA Assignment ${uniqueSuffix}`;
+
+  console.log(
+    `→ Creating new team "${taTeamName}" for TA assignment tests in course id=${teamsCourseId}...`
+  );
+  let res = await fetch(`${BASE_URL}/courses/${teamsCourseId}/teams`, {
+    method: 'POST',
+    headers: taTestHeaders,
+    body: JSON.stringify({
+      name: taTeamName,
+      description: 'Team used for TA assignment tests in test-server.js',
+    }),
+  });
+
+  let taTestTeam;
+  try {
+    taTestTeam = await res.json();
+  } catch {
+    taTestTeam = {};
+  }
+  console.log('Status:', res.status, 'Response:', taTestTeam);
+
+  if (!res.ok || !taTestTeam.id) {
+    console.error('TA test team creation failed');
+    process.exit(1);
+  }
+
+  const taTestTeamId = taTestTeam.id;
+
+  // --- Assign TA to team ---
+  console.log(
+    `→ Assigning TA user id=${taUserId} to team id=${taTestTeamId}...`
+  );
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${taTestTeamId}/tas`,
+    {
+      method: 'POST',
+      headers: taTestHeaders,
+      body: JSON.stringify({
+        ids: [taUserId],
+      }),
+    }
+  );
+
+  let assignTaResponse;
+  try {
+    assignTaResponse = await res.json();
+  } catch {
+    assignTaResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', assignTaResponse);
+  if (!res.ok) {
+    console.error('Failed to assign TA to team');
+    process.exit(1);
+  }
+
+  // --- Get TAs for that team (API returns { tas: [...] }) ---
+  console.log(`→ Fetching TAs for team id=${taTestTeamId}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${taTestTeamId}/tas`,
+    {
+      method: 'GET',
+      headers: taTestHeaders,
+    }
+  );
+
+  let tasForTeam;
+  try {
+    tasForTeam = await res.json();
+  } catch {
+    tasForTeam = {};
+  }
+  console.log('Status:', res.status, 'Response:', tasForTeam);
+
+  const tasArray = Array.isArray(tasForTeam)
+    ? tasForTeam
+    : Array.isArray(tasForTeam.tas)
+      ? tasForTeam.tas
+      : [];
+
+  if (!Array.isArray(tasArray)) {
+    console.error('Expected TAs for team in an array or { tas: [...] }');
+  } else if (tasArray.length > 0) {
+    console.log('Example TA assignment shape:', tasArray[0]);
+  }
+  if (!res.ok) {
+    console.error('Failed to fetch TAs for team');
+    process.exit(1);
+  }
+
+  // --- Get teams for this TA in the course (API returns { teams: [...] }) ---
+  console.log(
+    `→ Fetching teams for TA user id=${taUserId} in course id=${teamsCourseId}...`
+  );
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/tas/${taUserId}/teams`,
+    {
+      method: 'GET',
+      headers: taTestHeaders,
+    }
+  );
+
+  let taTeams;
+  try {
+    taTeams = await res.json();
+  } catch {
+    taTeams = {};
+  }
+  console.log('Status:', res.status, 'Response:', taTeams);
+
+  const teamsArray = Array.isArray(taTeams)
+    ? taTeams
+    : Array.isArray(taTeams.teams)
+      ? taTeams.teams
+      : [];
+
+  if (!Array.isArray(teamsArray)) {
+    console.error('Expected teams for TA in an array or { teams: [...] }');
+  } else {
+    console.log(
+      `Found ${teamsArray.length} team(s) for TA user id=${taUserId}.`
+    );
+  }
+
+  if (!res.ok) {
+    console.error('Failed to fetch teams for TA');
+    process.exit(1);
+  }
+
+  // --- Remove TA from team ---
+  console.log(
+    `→ Removing TA user id=${taUserId} from team id=${taTestTeamId}...`
+  );
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${taTestTeamId}/tas`,
+    {
+      method: 'DELETE',
+      headers: taTestHeaders,
+      body: JSON.stringify({
+        ids: [taUserId],
+      }),
+    }
+  );
+
+  let removeTaResponse;
+  try {
+    removeTaResponse = await res.json();
+  } catch {
+    removeTaResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', removeTaResponse);
+  if (!res.ok) {
+    console.error('Failed to remove TA from team');
+    process.exit(1);
+  }
+
+  // --- Clean up: delete the TA test team ---
+  console.log(`→ Deleting TA test team id=${taTestTeamId}...`);
+  res = await fetch(
+    `${BASE_URL}/courses/${teamsCourseId}/teams/${taTestTeamId}`,
+    {
+      method: 'DELETE',
+      headers: taTestHeaders,
+      body: JSON.stringify({}),
+    }
+  );
+
+  let deleteTaTeamResponse;
+  try {
+    deleteTaTeamResponse = await res.json();
+  } catch {
+    deleteTaTeamResponse = {};
+  }
+  console.log('Status:', res.status, 'Response:', deleteTaTeamResponse);
+  if (!res.ok) {
+    console.error('Failed to delete TA test team');
+    process.exit(1);
+  }
+
+  console.log('\n✅ TEAMS TA ASSIGNMENT TESTS COMPLETED SUCCESSFULLY\n');
+}
+
+// Run both test suites in order
+await runTeamsCrudTests();
+await runTeamsTaAssignmentTests();
 // console.log('\n============================================');
 // console.log('          TEAMS CRUD TESTS BEGIN');
 // console.log('============================================\n');
