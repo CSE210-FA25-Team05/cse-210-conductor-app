@@ -16,7 +16,7 @@
             
             <section id="profile-section">
                 <p id="profile-loading" role="status">Loading profile...</p>
-                <article id="profile-content">
+                <article id="profile-content" style="display: none;">
                     <form id="profile-form">
                         <fieldset>
                             <h2>Account Information</h2>
@@ -83,6 +83,120 @@
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
+        <script type="module">
+            import { getProfile, updateProfile } from '/src/js/api/profile.js';
+            
+            const profileSection = document.getElementById('profile-section');
+            const profileLoading = document.getElementById('profile-loading');
+            const profileContent = document.getElementById('profile-content');
+            const profileForm = document.getElementById('profile-form');
+            const profileMessage = document.getElementById('profile-message');
+            
+            // Validation function to check no numbers
+            function validateField(field, errorElement) {
+                const value = field.value.trim();
+                const hasNumbers = /\d/.test(value);
+                
+                if (hasNumbers) {
+                    errorElement.textContent = 'Numbers are not allowed';
+                    errorElement.style.display = 'block';
+                    errorElement.style.color = 'var(--color-error, red)';
+                    return false;
+                } else {
+                    errorElement.style.display = 'none';
+                    field.setCustomValidity('');
+                    return true;
+                }
+            }
+            
+            const firstNameField = document.getElementById('first-name');
+            const lastNameField = document.getElementById('last-name');
+            const pronounsField = document.getElementById('pronouns');
+            const firstNameError = document.getElementById('first-name-error');
+            const lastNameError = document.getElementById('last-name-error');
+            const pronounsError = document.getElementById('pronouns-error');
+            
+            // Load profile on page load
+            async function loadProfile() {
+                try {
+                    const profile = await getProfile();
+                    
+                    document.getElementById('email').value = profile.email || '';
+                    document.getElementById('first-name').value = profile.first_name || '';
+                    document.getElementById('last-name').value = profile.last_name || '';
+                    document.getElementById('pronouns').value = profile.pronouns || '';
+                    document.getElementById('global-role').value = profile.global_role || '';
+                    
+                    // Show content
+                    profileLoading.style.display = 'none';
+                    profileContent.style.display = 'block';
+                } catch (error) {
+                    profileLoading.textContent = 'Error loading profile: ' + error.message;
+                    console.error('Error loading profile:', error);
+                }
+            }
+            
+            // Handle form submission
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Validate all fields before submission
+                const fieldErrorPairs = [
+                    [firstNameField, firstNameError],
+                    [lastNameField, lastNameError],
+                    [pronounsField, pronounsError]
+                ];
+                
+                let allValid = true;
+                for (const [field, errorElement] of fieldErrorPairs) {
+                    if (!validateField(field, errorElement)) {
+                        allValid = false;
+                    }
+                }
+                
+                if (!allValid) {
+                    profileMessage.style.display = 'block';
+                    profileMessage.textContent = 'Please fix the errors before saving.';
+                    profileMessage.style.color = 'var(--color-error, red)';
+                    return;
+                }
+                
+                const saveButton = document.getElementById('save-button');
+                const originalText = saveButton.textContent;
+                saveButton.disabled = true;
+                saveButton.textContent = 'Saving...';
+                
+                try {
+                    const formData = new FormData(profileForm);
+                    const updateData = {
+                        first_name: formData.get('first_name').trim(),
+                        last_name: formData.get('last_name').trim(),
+                        pronouns: formData.get('pronouns').trim(),
+                    };
+                    
+                    const updatedProfile = await updateProfile(updateData);
+                    
+                    // Show success message
+                    profileMessage.style.display = 'block';
+                    profileMessage.textContent = 'Profile updated successfully!';
+                    profileMessage.style.color = 'var(--color-success, green)';
+                    
+                    // Reload profile to sync
+                    await loadProfile();
+                    
+                } catch (error) {
+                    profileMessage.style.display = 'block';
+                    profileMessage.textContent = 'Error updating profile: ' + error.message;
+                    profileMessage.style.color = 'var(--error-color, red)';
+                    console.error('Error updating profile:', error);
+                } finally {
+                    saveButton.disabled = false;
+                    saveButton.textContent = originalText;
+                }
+            });
+            
+            loadProfile();
+        </script>
     </body>
 </html>
 
