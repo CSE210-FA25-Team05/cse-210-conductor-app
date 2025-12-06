@@ -15,13 +15,14 @@ class CourseDropdown extends HTMLElement {
 
     this.boundedHandleNewCourseOpen = this.handleNewCourseOpen.bind(this);
     this.boundedHandleJoinCourseOpen = this.handleJoinCourseOpen.bind(this);
-
-    this.role = getUserRole();
-    this.courseId = getCourseId();
-    this.courses = getCachedCourses();
   }
 
   connectedCallback() {
+
+    this.role = getUserRole();
+    this.courseId = parseInt(getCourseId());
+    this.courses = getCachedCourses();
+
     // Course Dropdown
     this.courseDropdown = document.createElement('conductor-dropdown');
     const details = document.createElement('details');
