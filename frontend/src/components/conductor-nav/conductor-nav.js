@@ -15,7 +15,7 @@ class ConductorNav extends HTMLElement {
       Atoms: '/course/atoms',
       Journals: '/course/journals',
       ZingGrid: '/course/zinggrid',
-      Directory: '/directory',
+      Directory: '/course/directory',
       Profile: '/profile',
     };
     this.courses = [];

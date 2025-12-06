@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Class Directory - Conductor</title>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" async src="/src/js/common.js"></script>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Class Directory</h1>
+                <theme-toggle></theme-toggle>
+            </header>
+            <article id="directory-content">
+                <p id="directory-loading">Loading directory...</p>
+                <zing-grid
+                    id="directory-grid"
+                    style="display: block;"
+                    caption="Class Directory"
+                    theme="default"
+                    pager
+                    page-size="25"
+                    page-size-options="10,25,50,100"
+                    search>
+                </zing-grid>
+                <p id="directory-error" style="display: none; color: var(--color-error);"></p>
+            </article>
+        </main>
+        <aside>
+            <conductor-nav></conductor-nav>
+        </aside>
+    </body>
+</html>
