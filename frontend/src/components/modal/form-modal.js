@@ -28,7 +28,7 @@
  *   modal.open(); // opens with the menu view
  * </script>
  */
-class FormModal extends HTMLElement {
+export class FormModal extends HTMLElement {
   constructor() {
     super();
     this.forms = [];
