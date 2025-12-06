@@ -1,5 +1,7 @@
-import '/src/components/logout-button/logout-button.js'; // IMP
-import '/src/components/modal/modal.js'; // IMP
+import '/src/components/logout-button/logout-button.js';
+import '/src/components/modal/modal.js';
+import '/src/components/dropdown.js';
+import '/src/components/course-dropdown.js';
 
 class ConductorNav extends HTMLElement {
   constructor() {
@@ -14,6 +16,7 @@ class ConductorNav extends HTMLElement {
       Journals: '/course/journals',
       ZingGrid: '/course/zinggrid',
     };
+    this.courses = [];
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
     this.boundedHandleResize = this.handleResize.bind(this);
     this.boundedHandleCloseModal = this.handleCloseModal.bind(this);
@@ -30,6 +33,7 @@ class ConductorNav extends HTMLElement {
     const header = document.createElement('header');
     const footer = document.createElement('footer');
     const logoutButtonInstance = document.createElement('logout-button');
+    const courseDropdown = document.createElement('course-dropdown');
 
     for (const displayName of Object.keys(this.paths)) {
       const li = document.createElement('li');
@@ -53,6 +57,7 @@ class ConductorNav extends HTMLElement {
 
     // modal trigger button
     const modalButton = document.createElement('button');
+    modalButton.id = 'new-button';
     modalButton.innerHTML = 'New<i>add</i>';
     // modal
     const modal = document.createElement('modal-component');
@@ -75,6 +80,7 @@ class ConductorNav extends HTMLElement {
     this.modal = modal;
 
     header.appendChild(menuToggle);
+    header.appendChild(courseDropdown);
     header.appendChild(modalButton);
     nav.appendChild(ul);
     footer.appendChild(logoutButtonInstance);
@@ -103,6 +109,12 @@ class ConductorNav extends HTMLElement {
 
   handleCloseModal() {
     this.modal.close();
+  }
+
+  disconnectedCallback() {
+    if (this.boundedHandleResize) {
+      window.removeEventListener('resize', this.boundedHandleResize);
+    }
   }
 }
 

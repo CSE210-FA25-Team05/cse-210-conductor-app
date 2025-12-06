@@ -72,6 +72,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.get(
     '/courses/:course_id/users',
     {
+      preHandler: [fastify.requireEnrolledInCourse],
       schema: courseSchemas.GetCourseUsersSchema,
     },
     async (request, reply) => {
@@ -89,6 +90,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.get(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireEnrolledInCourse],
       schema: courseSchemas.GetCourseUserSchema,
     },
     async (request, reply) => {
@@ -107,6 +109,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.post(
     '/courses',
     {
+      preHandler: [fastify.requireGlobalProfessor],
       schema: courseSchemas.CreateCourseSchema,
     },
     async (request, reply) => {
@@ -122,6 +125,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.UpdateCourseSchema,
     },
     async (request, reply) => {
@@ -140,6 +144,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.delete(
     '/courses/:course_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.DeleteCourseSchema,
     },
     async (request, reply) => {
@@ -155,6 +160,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.post(
     '/courses/:course_id/users',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.AddUserInCourseSchema,
     },
     async (request, reply) => {
@@ -182,7 +188,9 @@ module.exports = async function courseRoutes(fastify, options) {
           request.body.join_code
         );
         if (!isValid) {
-          return reply.code(400).send({ error: 'Invalid join code' });
+          return reply
+            .code(400)
+            .send({ statusCode: 400, error: 'Invalid join code' });
         }
         await courseRepo.addEnrollment(
           parseInt(request.params.course_id, 10),
@@ -198,6 +206,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.UpdateUserInCourseSchema,
     },
     async (request, reply) => {
@@ -217,6 +226,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.delete(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.RemoveUserFromCourseSchema,
     },
     async (request, reply) => {

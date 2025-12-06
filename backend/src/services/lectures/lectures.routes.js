@@ -141,6 +141,33 @@ async function routes(fastify) {
       }
     }
   );
+
+  // Activate attendance for a lecture (generate code and start 5-minute timer)
+  fastify.post(
+    '/api/courses/:course_id/lectures/:lecture_id/activate-attendance',
+    {
+      preHandler: [
+        fastify.loadCourse,
+        fastify.loadLecture,
+        fastify.requireTAOrProfessorInCourse,
+      ],
+      schema: lecturesSchemas.ActivateAttendanceSchema,
+    },
+    async (req, reply) => {
+      try {
+        const lectureId = parseInt(req.params.lecture_id, 10);
+        const lecture = await lecturesService.activateAttendance(
+          req.user,
+          req.course,
+          req.enrollment,
+          lectureId
+        );
+        return reply.send(lecture);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
 }
 
 module.exports = routes;

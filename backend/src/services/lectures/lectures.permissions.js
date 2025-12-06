@@ -28,12 +28,18 @@ class LecturesPermissions {
    * Check if a user can view lectures in a course.
    * Anyone enrolled in the course (professor, TA, or student) can view lectures.
    *
-   * @param {number} userId - ID of the user
-   * @param {number} courseId - ID of the course
+   * @param {Object} user - User object
+   * @param {Object} course - Course object
+   * @param {Object|null} enrollment - Enrollment object (null if not enrolled)
    * @returns {Promise<boolean>} True if user can view lectures, false otherwise
    */
-  async canViewLectures(userId, courseId) {
-    const role = await this.getUserCourseRole(userId, courseId);
+  async canViewLectures(user, course, enrollment) {
+    // If enrollment is provided, use it directly
+    if (enrollment !== null) {
+      return true; // Enrolled users can view
+    }
+    // Otherwise, query for enrollment
+    const role = await this.getUserCourseRole(user.id, course.id);
     return role !== null;
   }
 
@@ -41,12 +47,18 @@ class LecturesPermissions {
    * Check if a user can modify lectures in a course.
    * Only professors and TAs can create, update, or delete lectures.
    *
-   * @param {number} userId - ID of the user
-   * @param {number} courseId - ID of the course
+   * @param {Object} user - User object
+   * @param {Object} course - Course object
+   * @param {Object|null} enrollment - Enrollment object (null if not enrolled)
    * @returns {Promise<boolean>} True if user can modify lectures, false otherwise
    */
-  async canModifyLectures(userId, courseId) {
-    const role = await this.getUserCourseRole(userId, courseId);
+  async canModifyLectures(user, course, enrollment) {
+    // If enrollment is provided, use it directly
+    if (enrollment !== null) {
+      return enrollment.role === 'professor' || enrollment.role === 'ta';
+    }
+    // Otherwise, query for enrollment role
+    const role = await this.getUserCourseRole(user.id, course.id);
     return role === 'professor' || role === 'ta';
   }
 }

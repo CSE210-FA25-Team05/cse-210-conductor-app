@@ -50,7 +50,6 @@ dialog[open]::backdrop {
 @media (max-width: 500px) {
   dialog {
     width: 100dvw;
-    height: 90dvh;
     margin: auto auto 0 auto; /* Anchor to bottom */
   }
 }

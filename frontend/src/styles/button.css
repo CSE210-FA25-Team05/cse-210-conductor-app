@@ -58,6 +58,7 @@ button .material-icons {
 }
 button.icon-only {
   padding: var(--spacing-small);
+  width: fit-content;
 }
 button.icon-round {
   padding: var(--spacing-small);
