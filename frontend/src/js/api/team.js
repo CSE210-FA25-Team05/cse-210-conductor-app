@@ -169,7 +169,7 @@ export async function updateTeamMembers(courseID, teamID, updatedMembers) {
  */
 export async function removeTeamMembers(courseID, teamID, memberIDs) {
   let response = await deleteWrapper(
-    `/api/courses/${courseID}/teams/${teamID}/remove`,
+    `/api/courses/${courseID}/teams/${teamID}/remove_members`,
     { ids: memberIDs }
   );
   if (!response.ok) {
