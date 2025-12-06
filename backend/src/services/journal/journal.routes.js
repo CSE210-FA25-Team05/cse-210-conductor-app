@@ -110,7 +110,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.patch(
     '/journals/:journal_id',
     {
-      preHandler: [fastify.canUpdateJournalEntry],
+      preHandler: [fastify.requireJournalUpdate],
       schema: journalSchemas.UpdateJournalSchema,
     },
     async (request, reply) => {
