@@ -21,15 +21,10 @@ class CreateLectureForm extends ConductorForm {
   get fields() {
     return [
       {
-        label: 'Emotion Marker',
-        id: 'emotion-marker',
-        name: 'emotion_marker',
-        type: 'radio-group',
-        options: [
-          { label: 'Positive', value: 'positive' },
-          { label: 'Neutral', value: 'neutral' },
-          { label: 'Negative', value: 'negative' },
-        ],
+        label: 'Lecture Date',
+        id: 'lecture-date',
+        name: 'lecture_date',
+        type: 'date',
       },
     ];
   }
