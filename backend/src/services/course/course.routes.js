@@ -224,10 +224,10 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.updateEnrollmentRole(
+        const res = await courseService.updateUserInCourse(
           parseInt(request.params.course_id, 10),
           parseInt(request.params.user_id, 10),
-          request.body.role
+          request.body
         );
         reply.send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {

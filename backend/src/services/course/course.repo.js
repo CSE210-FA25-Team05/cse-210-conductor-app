@@ -1,6 +1,7 @@
 'use strict';
 
 const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
+const { CourseRoles } = require('../shared/shared.enums');
 
 /**
  * Course Repository
@@ -153,7 +154,7 @@ class CourseRepo {
         enrollments: {
           create: {
             user_id: user.id,
-            role: 'professor',
+            role: CourseRoles.PROFESSOR,
           },
         },
         pulse_configs: {
@@ -245,8 +246,10 @@ class CourseRepo {
   async updateEnrollmentRole(courseId, userId, role) {
     const updatedEnrollment = await this.db.enrollments.update({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
       data: {
         role: role,
@@ -274,8 +277,10 @@ class CourseRepo {
   async deleteEnrollment(courseId, userId) {
     const deletedEnrollment = await this.db.enrollments.delete({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
     });
     return deletedEnrollment;

@@ -1,5 +1,7 @@
 'use strict';
 
+const { isValidEnumValue, CourseRoles } = require('../shared/shared.enums');
+
 /**
  * Course Service
  *
@@ -30,6 +32,23 @@ class CourseService {
   async enrollByJoinCode(joinCode, userId) {
     joinCode = joinCode.toUpperCase();
     return this.courseRepo.enrollByJoinCode(joinCode, userId);
+  }
+
+  async updateUserInCourse(courseId, userId, updateData) {
+    const updatedRole = updateData.role;
+    if (!isValidEnumValue(CourseRoles, updatedRole)) {
+      const e = new Error(
+        `Invalid course role: ${updatedRole}. Must be one of ${Object.values(CourseRoles).join(', ')}`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    return await this.courseRepo.updateEnrollmentRole(
+      parseInt(courseId, 10),
+      parseInt(userId, 10),
+      updatedRole
+    );
   }
 }
 
