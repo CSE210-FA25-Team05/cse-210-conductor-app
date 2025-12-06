@@ -15,10 +15,24 @@ import {
  */
 
 /**
- * @typedef TeamMember
+ * @typedef TeamMemberSimple
  * @type { object }
- * @property { number } id - Member's ID number.
+ * @property { number } id - Member ID number.
  * @property { string } role - Member's role in the class, which determines permissions.
+ */
+
+/**
+ * @typedef TeamMemberComplex
+ * @type { object }
+ * @property { number } id - Member ID number.
+ * @property { number } user_id - Member's user ID number (different from member ID).
+ * @property { number } course_id - Course ID number.
+ * @property { string } user_email - Member's email address.
+ * @property { string } user_first_name - Member's first name.
+ * @property { string } user_last_name - Member's last name.
+ * @property { number } team_id - Team ID number.
+ * @property { string } role - Member's role in the class, which determines permissions.
+ * @property { string } created_at - Date and time when member was added to the course.
  */
 
 /**
@@ -40,7 +54,7 @@ export async function getAllTeams(courseID) {
  * @param { object } newTeam - And object containing the new team's information.
  * @param { string } newTeam.name - Team name.
  * @param { string } newTeam.description - Short description of the team.
- * @param { TeamMember[] } newTeam.members - List of all the team's members.
+ * @param { TeamMemberSimple[] } newTeam.members - List of all the team's members.
  * @returns { Team } Created team with its information.
  */
 export async function createTeam(courseID, newTeam) {
@@ -103,7 +117,7 @@ export async function updateTeam(courseID, teamID, updatedTeam) {
  * @description Get a list of all the team members from a specific team in a specific course.
  * @param { number } courseID - ID of the course.
  * @param { number } teamID - ID of the team.
- * @returns { TeamMember[] } List of all the team members with their information.
+ * @returns { TeamMemberComplex[] } List of all the team members with their information.
  */
 export async function getTeamMembers(courseID, teamID) {
   let response = await getWrapper(
@@ -112,14 +126,14 @@ export async function getTeamMembers(courseID, teamID) {
   if (!response.ok) {
     throw new Error(response.error);
   }
-  return response.data.members;
+  return response.data.members; // Need this extra .members since we receive an object with the team list stored in .members
 }
 
 /**
  * @description Add new members to a specific team in a specific course.
  * @param { number } courseID - ID of the course.
  * @param { number } teamID - ID of the team.
- * @param { TeamMember[] } newMembers - List of the new members getting added to the team.
+ * @param { TeamMemberSimple[] } newMembers - List of the new members getting added to the team.
  */
 export async function addTeamMembers(courseID, teamID, newMembers) {
   let response = await postWrapper(
@@ -135,7 +149,7 @@ export async function addTeamMembers(courseID, teamID, newMembers) {
  * @description Update the roles of members in a specific team in a specific course.
  * @param { number } courseID - ID of the course.
  * @param { number } teamID - ID of the team.
- * @param { TeamMember[] } updatedMembers - List of members with new roles.
+ * @param { TeamMemberSimple[] } updatedMembers - List of members with new roles.
  */
 export async function updateTeamMembers(courseID, teamID, updatedMembers) {
   let response = await patchWrapper(
