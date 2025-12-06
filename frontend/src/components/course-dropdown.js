@@ -18,7 +18,6 @@ class CourseDropdown extends HTMLElement {
   }
 
   connectedCallback() {
-
     this.role = getUserRole();
     this.courseId = parseInt(getCourseId());
     this.courses = getCachedCourses();
