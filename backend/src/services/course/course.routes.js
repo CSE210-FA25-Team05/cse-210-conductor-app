@@ -196,25 +196,19 @@ module.exports = async function courseRoutes(fastify, options) {
   );
 
   fastify.post(
-    '/courses/:course_id/join',
+    '/courses/join',
     {
       schema: courseSchemas.JoinCourseSchema,
     },
     async (request, reply) => {
       try {
-        const isValid = await courseService.checkCourseJoinCode(
-          parseInt(request.params.course_id, 10),
-          request.body.join_code
+        const res = await courseService.enrollByJoinCode(
+          request.body.join_code,
+          request.user.id
         );
-        if (!isValid) {
-          return reply
-            .code(400)
-            .send({ statusCode: 400, error: 'Invalid join code' });
+        if (!res) {
+          return reply.code(404).send({ error: 'Join code not found' });
         }
-        const res = await courseRepo.addEnrollment(
-          parseInt(request.params.course_id, 10),
-          request.body.user_id
-        );
         reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);

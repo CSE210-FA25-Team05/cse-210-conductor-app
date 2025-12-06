@@ -27,9 +27,9 @@ class CourseService {
    * @param {string} joinCode - Join code to verify
    * @returns {Promise<boolean>} True if join code matches, false otherwise
    */
-  async checkCourseJoinCode(courseId, joinCode) {
-    const storedJoinCode = await this.courseRepo.getCourseJoinCode(courseId);
-    return storedJoinCode === joinCode;
+  async enrollByJoinCode(joinCode, userId) {
+    joinCode = joinCode.toUpperCase();
+    return this.courseRepo.enrollByJoinCode(joinCode, userId);
   }
 }
 
