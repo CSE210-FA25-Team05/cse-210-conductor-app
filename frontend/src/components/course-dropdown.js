@@ -1,7 +1,7 @@
 import {
-    getCachedCourses,
-    getCourseId,
-    getUserRole,
+  getCachedCourses,
+  getCourseId,
+  getUserRole,
 } from '/src/js/utils/cache-utils.js';
 
 import '/src/components/modal/modal.js';
@@ -75,7 +75,7 @@ class CourseDropdown extends HTMLElement {
     this.courseDropdown.appendChild(details);
     this.appendChild(this.courseDropdown);
 
-    this.renderCourseDropdown()
+    this.renderCourseDropdown();
   }
 
   handleJoinCourseOpen() {
@@ -133,10 +133,10 @@ class CourseDropdown extends HTMLElement {
     this.ul.appendChild(li);
 
     // Add action buttons at the end
-    if (this.role === 'professor') { 
-        const createLi = document.createElement('li');
-        createLi.appendChild(this.newCourseButton);
-        this.ul.appendChild(createLi);
+    if (this.role === 'professor') {
+      const createLi = document.createElement('li');
+      createLi.appendChild(this.newCourseButton);
+      this.ul.appendChild(createLi);
     }
 
     const joinLi = document.createElement('li');
@@ -145,7 +145,6 @@ class CourseDropdown extends HTMLElement {
 
     this.updateCourseDropdownLabel();
   }
-
 }
 
 customElements.define('course-dropdown', CourseDropdown);
