@@ -1,4 +1,9 @@
-import { getWrapper, postWrapper, patchWrapper, deleteWrapper } from '/src/js/fetch-wrapper.js';
+import {
+  getWrapper,
+  postWrapper,
+  patchWrapper,
+  deleteWrapper,
+} from '/src/js/fetch-wrapper.js';
 
 /**
  * @typedef JournalEntryInfo
@@ -35,7 +40,10 @@ export async function getJournals(courseID) {
  * @returns { JournalEntryInfo } Created journal entry with its information.
  */
 export async function createJournalEntry(courseID, newJournalEntry) {
-  let response = await postWrapper(`/api/courses/${courseID}/journals`, newJournalEntry);
+  let response = await postWrapper(
+    `/api/courses/${courseID}/journals`,
+    newJournalEntry
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -49,7 +57,9 @@ export async function createJournalEntry(courseID, newJournalEntry) {
  * @returns { [JournalEntryInfo] } Array of journal entries from the specified user in a course
  */
 export async function getJournalsByUser(userID, courseID) {
-  let response = await getWrapper(`/api/courses/${courseID}/journals/user/${userID}`,);
+  let response = await getWrapper(
+    `/api/courses/${courseID}/journals/user/${userID}`
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -63,7 +73,9 @@ export async function getJournalsByUser(userID, courseID) {
  * @returns { JournalEntryInfo } Requested journal entry information.
  */
 export async function getJournalById(courseID, journalID) {
-  let response = await getWrapper(`/api/courses/${courseID}/journals/${journalID}`);
+  let response = await getWrapper(
+    `/api/courses/${courseID}/journals/${journalID}`
+  );
   if (!response.ok) {
     throw new Error(response.error);
   }
@@ -91,10 +103,10 @@ export async function updateJournalEntry(courseID, journalID, updatedJournal) {
 }
 
 export async function deleteJournalEntry(courseID, journalID) {
-    let response = await deleteWrapper(
-        `/api/courses/${courseID}/journals/${journalID}`
-    );
-    if (!response.ok) {
-        throw new Error(response.error);
-    }
+  let response = await deleteWrapper(
+    `/api/courses/${courseID}/journals/${journalID}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
 }
