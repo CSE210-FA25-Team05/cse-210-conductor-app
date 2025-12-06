@@ -37,10 +37,17 @@ export async function fetchWrapper(
           numRetries -= 1;
           continue;
         }
+        // Try to get the error message given by the server, but if it doesn't work just use the status code
+        let error_message;
+        try {
+          error_message = (await response.json()).message;
+        } catch (err) {
+          error_message = `Server Error: ${response.status} ${response.statusText}`;
+        }
         return {
           ok: false,
           status: response.status,
-          error: 'Server Error: ' + response.status + ' ' + response.statusText,
+          error: error_message,
         };
       }
 
