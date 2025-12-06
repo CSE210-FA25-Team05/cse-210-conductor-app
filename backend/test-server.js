@@ -278,6 +278,34 @@ async function updateRoleTest(courseId, userId, role) {
   }
 }
 
+async function updateRoleWrongValueTest(courseId, userId) {
+  console.log('Updating user role in course...');
+  const res = await fetch(`${BASE_URL}/courses/${courseId}/users/${userId}`, {
+    method: 'PATCH',
+    headers: headers(),
+    body: JSON.stringify({ role: 'invalid_role' }),
+  });
+  console.log('Status:', res.status);
+  const text = await res.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = text;
+  }
+  console.log('Response:', data);
+
+  if (res.ok) {
+    console.error(`Should not have updated user role in course`);
+    process.exit(1);
+  } else {
+    console.log(`Updated user role in course failed as expected.`);
+  }
+}
+
+await updateRoleTest(1, 2, 'ta');
+await updateRoleWrongValueTest(1, 2);
+
 async function removeUserFromCourseTest(courseId, userId) {
   console.log('Removing user from course...');
   const res = await fetch(`${BASE_URL}/courses/${courseId}/users/${userId}`, {
@@ -1524,3 +1552,169 @@ async function runTeamsTaAssignmentTests() {
 // Run both test suites in order
 await runTeamsCrudTests();
 await runTeamsTaAssignmentTests();
+// console.log('\n============================================');
+// console.log('          TEAMS CRUD TESTS BEGIN');
+// console.log('============================================\n');
+
+// const teamsCourseId = 5;
+// const memberUserId1 = 9; // professor in course 5
+// const memberUserId2 = 10; // ta in course 5
+
+// // --- Get all teams ---
+// console.log(`→ Fetching all teams for course id=${teamsCourseId}...`);
+// let res = await fetch(`${BASE_URL}/courses/${teamsCourseId}/teams`, {
+//   method: 'GET',
+//   headers: headers(),
+// });
+// let data = await res.json();
+// console.log('Status:', res.status, 'Response:', data);
+
+// // --- Create team ---
+// console.log(`→ Creating new team in course id=${teamsCourseId}...`);
+// res = await fetch(`${BASE_URL}/courses/${teamsCourseId}/teams`, {
+//   method: 'POST',
+//   headers: headers(),
+//   body: JSON.stringify({
+//     name: 'Test Team Alpha',
+//     description: 'Team created by test-server.js',
+//   }),
+// });
+// let createdTeam;
+// try {
+//   createdTeam = await res.json();
+// } catch {
+//   createdTeam = {};
+// }
+// console.log('Status:', res.status, 'Response:', createdTeam);
+
+// if (!res.ok) {
+//   console.error('❌ Team creation failed');
+//   process.exit(1);
+// }
+
+// // --- Fetch team ---
+// console.log(`→ Fetching team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}`,
+//   {
+//     method: 'GET',
+//     headers: headers(),
+//   }
+// );
+// data = await res.json();
+// console.log('Status:', res.status, 'Response:', data);
+
+// // --- Fetch team members ---
+// console.log(`→ Fetching members for team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/members`,
+//   {
+//     method: 'GET',
+//     headers: headers(),
+//   }
+// );
+// data = await res.json();
+// console.log('Status:', res.status, 'Response:', data);
+
+// // --- Add members ---
+// console.log(`→ Adding 2 members to team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/add_members`,
+//   {
+//     method: 'POST',
+//     headers: headers(),
+//     body: JSON.stringify([
+//       { id: memberUserId1, role: CourseRoles.PROFESSOR },
+//       { id: memberUserId2, role: CourseRoles.TA },
+//     ]),
+//   }
+// );
+// let addedResponse;
+// try {
+//   addedResponse = await res.json();
+// } catch {
+//   addedResponse = {};
+// }
+// console.log('Status:', res.status, 'Response:', addedResponse);
+
+// // --- Update team info ---
+// console.log(`→ Updating team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}`,
+//   {
+//     method: 'PATCH',
+//     headers: headers(),
+//     body: JSON.stringify({
+//       name: 'Test Team Alpha (Updated)',
+//       description: 'Updated team from test-server.js',
+//     }),
+//   }
+// );
+// let updatedTeam;
+// try {
+//   updatedTeam = await res.json();
+// } catch {
+//   updatedTeam = {};
+// }
+// console.log('Status:', res.status, 'Response:', updatedTeam);
+
+// // --- Update member roles ---
+// console.log(`→ Updating member roles for team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/update_members`,
+//   {
+//     method: 'PATCH',
+//     headers: headers(),
+//     body: JSON.stringify([
+//       { id: memberUserId1, role: 'team_lead' },
+//       { id: memberUserId2, role: 'student' },
+//     ]),
+//   }
+// );
+// let roleUpdateResponse;
+// try {
+//   roleUpdateResponse = await res.json();
+// } catch {
+//   roleUpdateResponse = {};
+// }
+// console.log('Status:', res.status, 'Response:', roleUpdateResponse);
+
+// // --- Remove a member ---
+// console.log(`→ Removing 1 member from team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}/remove_members`,
+//   {
+//     method: 'DELETE',
+//     headers: headers(),
+//     body: JSON.stringify({
+//       ids: [memberUserId2],
+//     }),
+//   }
+// );
+// let removeResponse;
+// try {
+//   removeResponse = await res.json();
+// } catch {
+//   removeResponse = {};
+// }
+// console.log('Status:', res.status, 'Response:', removeResponse);
+
+// // --- Delete the team ---
+// console.log(`→ Deleting team id=${createdTeam.id}...`);
+// res = await fetch(
+//   `${BASE_URL}/courses/${teamsCourseId}/teams/${createdTeam.id}`,
+//   {
+//     method: 'DELETE',
+//     headers: headers(),
+//     body: JSON.stringify({}),
+//   }
+// );
+// let deleteResponse;
+// try {
+//   deleteResponse = await res.json();
+// } catch {
+//   deleteResponse = {};
+// }
+// console.log('Status:', res.status, 'Response:', deleteResponse);
+
+// console.log('\n✅ TEAMS CRUD TESTS COMPLETED SUCCESSFULLY\n');

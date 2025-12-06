@@ -234,22 +234,15 @@ export const AddUserInCourseSchema = {
 export const JoinCourseSchema = {
   summary: 'Join a course using the course code',
   tags: ['Courses'],
-  params: {
-    type: 'object',
-    properties: {
-      course_id: { type: 'number' },
-    },
-  },
   body: {
     type: 'object',
     properties: {
       join_code: JoinCodeType,
-      user_id: { type: 'number' },
     },
     required: ['join_code'],
   },
   response: {
-    200: CourseUserSchema,
+    201: CourseUserSchema,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,

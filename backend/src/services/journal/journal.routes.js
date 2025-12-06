@@ -76,6 +76,13 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const journal_id = request.params.journal_id;
         const res = await journalService.getJournalById(journal_id);
+        if (!res) {
+          return reply.code(404).send({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Journal entry not found',
+          });
+        }
         return res;
       } catch (error) {
         console.error(error);

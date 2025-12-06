@@ -1,5 +1,7 @@
 'use strict';
 
+const { CourseRoles } = require('../shared/shared.enums');
+
 /**
  * Attendances Permissions
  *
@@ -29,7 +31,10 @@ class AttendancesPermissions {
     }
 
     // Professors and TAs can create any attendance
-    if (enrollment.role === 'professor' || enrollment.role === 'ta') {
+    if (
+      enrollment.role === CourseRoles.PROFESSOR ||
+      enrollment.role === CourseRoles.TA
+    ) {
       return true;
     }
 
@@ -55,7 +60,10 @@ class AttendancesPermissions {
     }
 
     // Only professors and TAs can modify attendance
-    return enrollment.role === 'professor' || enrollment.role === 'ta';
+    return (
+      enrollment.role === CourseRoles.PROFESSOR ||
+      enrollment.role === CourseRoles.TA
+    );
   }
 }
 

@@ -1,5 +1,9 @@
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
+const {
+  CourseRoles,
+  GlobalRoles,
+} = require('../src/services/shared/shared.enums');
 
 const prisma = new PrismaClient();
 
@@ -33,7 +37,7 @@ async function main() {
       last_name: 'Mathematics',
       email: 'mathprof@ucsd.edu',
       pronouns: 'She/Her/Hers',
-      global_role: 'professor',
+      global_role: GlobalRoles.PROFESSOR,
       is_profile_complete: true,
     },
   });
@@ -44,7 +48,7 @@ async function main() {
       last_name: 'Genius',
       email: 'genius_ta@ucsd.edu',
       pronouns: 'He/Him/His',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
       is_profile_complete: true,
     },
   });
@@ -55,7 +59,7 @@ async function main() {
       last_name: 'Doe',
       email: 'jdoe@ucsd.edu',
       pronouns: 'He/Him/His',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
       is_profile_complete: true,
     },
   });
@@ -66,7 +70,7 @@ async function main() {
       last_name: 'Doe',
       email: 'jd563@ucsd.edu',
       pronouns: 'She/Her/Hers',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
       is_profile_complete: true,
     },
   });
@@ -74,7 +78,7 @@ async function main() {
   await prisma.users.create({
     data: {
       email: 'incomplete@ucsd.edu',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
       is_profile_complete: false,
     },
   });
@@ -153,7 +157,7 @@ async function main() {
     data: {
       user_id: professor.id,
       course_id: cse210.id,
-      role: 'professor',
+      role: CourseRoles.PROFESSOR,
     },
   });
 
@@ -161,7 +165,7 @@ async function main() {
     data: {
       user_id: professor.id,
       course_id: cse110.id,
-      role: 'professor',
+      role: CourseRoles.PROFESSOR,
     },
   });
 
@@ -169,7 +173,7 @@ async function main() {
     data: {
       user_id: ta.id,
       course_id: cse210.id,
-      role: 'ta',
+      role: CourseRoles.TA,
     },
   });
 
@@ -177,7 +181,7 @@ async function main() {
     data: {
       user_id: ta.id,
       course_id: cse110.id,
-      role: 'ta',
+      role: CourseRoles.TA,
     },
   });
 
@@ -186,7 +190,7 @@ async function main() {
       user_id: john.id,
       course_id: cse210.id,
       team_id: team1.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -195,7 +199,7 @@ async function main() {
       user_id: jane.id,
       course_id: cse210.id,
       team_id: team2.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -204,7 +208,7 @@ async function main() {
       user_id: john.id,
       course_id: cse110.id,
       team_id: team4.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -213,7 +217,7 @@ async function main() {
       user_id: jane.id,
       course_id: cse110.id,
       team_id: team5.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
