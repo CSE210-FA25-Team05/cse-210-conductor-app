@@ -34,8 +34,13 @@ class PulseForm extends ConductorForm {
         id: 'pulses',
         type: 'radio-group',
         options: [
-          { label: 'Happy', value: 'happy', color: 'green', id: 'happy'},
-          { label: 'Stressed', value: 'stressed', color: 'red', id: 'stressed' },
+          { label: 'Happy', value: 'happy', color: 'green', id: 'happy' },
+          {
+            label: 'Stressed',
+            value: 'stressed',
+            color: 'red',
+            id: 'stressed',
+          },
           { label: 'Neutral', value: 'neutral', color: 'gray', id: 'neutral' },
         ],
       },
@@ -59,7 +64,6 @@ class PulseForm extends ConductorForm {
       option: values.option,
       description: values.description,
     };
-
   }
 }
 

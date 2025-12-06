@@ -14,7 +14,6 @@ import { ConductorForm } from '/src/components/forms/conductor-form.js';
  * <journal-form></journal-form>
  */
 class JournalForm extends ConductorForm {
-
   constructor() {
     super();
   }
@@ -25,7 +24,7 @@ class JournalForm extends ConductorForm {
         id: 'journal-title',
         name: 'journal_title',
         type: 'text',
-      }, 
+      },
       {
         label: 'Content',
         id: 'journal-content',
@@ -41,8 +40,6 @@ class JournalForm extends ConductorForm {
 
   async onSubmit(values) {
     console.log('Submit journal', values);
-
-
   }
 }
 
