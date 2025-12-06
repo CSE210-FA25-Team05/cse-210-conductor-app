@@ -14,18 +14,23 @@ import { ConductorForm } from '/src/components/forms/conductor-form.js';
  * <journal-form></journal-form>
  */
 class JournalForm extends ConductorForm {
+
+  constructor() {
+    super();
+  }
   get fields() {
     return [
       {
-        label: 'Emotion Marker',
-        id: 'emotion-marker',
-        name: 'emotion_marker',
-        type: 'radio-group',
-        options: [
-          { label: 'Positive', value: 'positive' },
-          { label: 'Neutral', value: 'neutral' },
-          { label: 'Negative', value: 'negative' },
-        ],
+        label: 'Title',
+        id: 'journal-title',
+        name: 'journal_title',
+        type: 'text',
+      }, 
+      {
+        label: 'Content',
+        id: 'journal-content',
+        name: 'journal_content',
+        type: 'textarea',
       },
     ];
   }
@@ -36,6 +41,8 @@ class JournalForm extends ConductorForm {
 
   async onSubmit(values) {
     console.log('Submit journal', values);
+
+
   }
 }
 

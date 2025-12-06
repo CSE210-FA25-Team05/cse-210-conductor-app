@@ -115,8 +115,9 @@ export class ConductorForm extends HTMLElement {
 
       const radio = document.createElement('input');
       radio.type = 'radio';
-      radio.name = field.name;
-      radio.value = field.value;
+      radio.id = opt.id;
+      radio.name = opt.name;
+      radio.value = opt.value;
 
       label.appendChild(radio);
       label.appendChild(document.createTextNode(opt.label || opt.value));

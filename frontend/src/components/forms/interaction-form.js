@@ -22,9 +22,9 @@ class InteractionForm extends ConductorForm {
         name: 'emotion_marker',
         type: 'radio-group',
         options: [
-          { label: 'Positive', value: 'positive' },
-          { label: 'Neutral', value: 'neutral' },
-          { label: 'Negative', value: 'negative' },
+          { label: 'Positive', value: 'positive', id: 'positive'},
+          { label: 'Neutral', value: 'neutral', id: 'neutral'},
+          { label: 'Negative', value: 'negative', id: 'negative'},
         ],
       },
     ];

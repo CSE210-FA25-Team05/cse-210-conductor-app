@@ -31,17 +31,18 @@ class PulseForm extends ConductorForm {
       {
         label: 'How do you feel?',
         name: 'pulses',
+        id: 'pulses',
         type: 'radio-group',
         options: [
-          { label: 'Happy', value: 'happy', color: 'green' },
-          { label: 'Stressed', value: 'stressed', color: 'red' },
-          { label: 'Neutral', value: 'neutral', color: 'gray' },
+          { label: 'Happy', value: 'happy', color: 'green', id: 'happy'},
+          { label: 'Stressed', value: 'stressed', color: 'red', id: 'stressed' },
+          { label: 'Neutral', value: 'neutral', color: 'gray', id: 'neutral' },
         ],
       },
       {
         label: 'Description',
-        id: 'description',
-        name: 'description',
+        id: 'pulse-description',
+        name: 'puluse_description',
         type: 'textarea',
       },
     ];
@@ -59,14 +60,6 @@ class PulseForm extends ConductorForm {
       description: values.description,
     };
 
-    alert('Body:', values, body);
-  }
-
-  getFormValues() {
-    const values = super.getFormValues();
-    if (this.description) values.description = this.description.value;
-    alert(values);
-    return values;
   }
 }
 
