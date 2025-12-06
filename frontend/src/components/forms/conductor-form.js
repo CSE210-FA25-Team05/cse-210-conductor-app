@@ -35,6 +35,8 @@ export class ConductorForm extends HTMLElement {
   }
 
   connectedCallback() {
+    if (this.querySelector('form')) return; // already built
+
     this.form = document.createElement('form');
     this.renderFields();
     this.renderErrorCard();
