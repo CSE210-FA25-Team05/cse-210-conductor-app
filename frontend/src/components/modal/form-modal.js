@@ -59,7 +59,8 @@ class FormModal extends HTMLElement {
     this.content.style.height = '50dvh';
 
     this.menu = document.createElement('div');
-    this.menu.style = 'display: flex; flex-wrap: wrap; gap: var(--spacing-medium)';
+    this.menu.style =
+      'display: flex; flex-wrap: wrap; gap: var(--spacing-medium)';
     this.content.appendChild(this.menu);
 
     this.modal.append(this.backButton, this.header, this.content);
@@ -135,7 +136,6 @@ class FormModal extends HTMLElement {
     this.header = null;
     this.content = null;
   }
-
 }
 
 customElements.define('form-modal', FormModal);
