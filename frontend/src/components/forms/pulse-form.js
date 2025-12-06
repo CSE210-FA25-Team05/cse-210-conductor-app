@@ -1,5 +1,8 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
-import { getCachedCourseId } from '/src/js/utils/cache-utils.js';
+import {
+  getCachedCourseId,
+  getCachedPulseConfig,
+} from '/src/js/utils/cache-utils.js';
 
 /**
  * PulseForm Web Component
@@ -19,10 +22,32 @@ import { getCachedCourseId } from '/src/js/utils/cache-utils.js';
  * <pulse-form></pulse-form>
  */
 class PulseForm extends ConductorForm {
-  // TODO: Build fields dynamically from config
   get fields() {
-    return [
-      {
+    // Build fields dynamically from config
+    const fields = [];
+    const config = getCachedPulseConfig(getCachedCourseId());
+    const options = config?.config?.options;
+    if (options) {
+      let fieldOptions = [];
+      for (const opt of options) {
+        fieldOptions.push({
+          label: opt.value,
+          value: opt.value,
+          color: opt.color,
+          id: opt.value,
+        });
+      }
+
+      fields.push({
+        label: 'How do you feel?',
+        name: 'pulse',
+        id: 'pulse',
+        type: 'radio-group',
+        options: fieldOptions,
+      });
+    } else {
+      // Fallback if no config
+      fields.push({
         label: 'How do you feel?',
         name: 'pulse',
         id: 'pulse',
@@ -37,14 +62,17 @@ class PulseForm extends ConductorForm {
           },
           { label: 'Neutral', value: 'Neutral', color: 'gray', id: 'neutral' },
         ],
-      },
-      {
-        label: 'Description:',
-        id: 'pulse-description',
-        name: 'pulse_description',
-        type: 'textarea',
-      },
-    ];
+      });
+    }
+
+    fields.push({
+      label: 'Description:',
+      id: 'pulse-description',
+      name: 'pulse_description',
+      type: 'textarea',
+    });
+
+    return fields;
   }
 
   async onSubmit(values) {
