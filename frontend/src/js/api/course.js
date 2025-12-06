@@ -189,8 +189,9 @@ export async function removeUserFromCourse(courseID, userID) {
  * @param { string } joinAndUser.user_id - User ID of the user joining the course.
  * @param { string } joinAndUser.join_code - Code for enrolling in the course.
  */
-export async function joinCourseWithCode(courseID, joinAndUser) {
-  let response = await postWrapper(`/api/courses/${courseID}/join`, {
+export async function joinCourseWithCode(joinAndUser) {
+  console.log(joinAndUser);
+  let response = await postWrapper(`/api/courses/join`, {
     join_code: joinAndUser.join_code,
     user_id: joinAndUser.user_id,
   });
