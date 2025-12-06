@@ -8,6 +8,12 @@ label {
   flex-direction: column;
 }
 
+form > [role="group"] {
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
+  margin-bottom: var(--spacing-medium);
+}
+
 textarea,
 input {
   background-color: var(--color-bg-white);
@@ -33,4 +39,9 @@ textarea:focus,
 input:focus {
   outline: var(--outline-selected);
   border: var(--border-selected);
+}
+
+textarea {
+    resize: none;
+    height: 100%;
 }
