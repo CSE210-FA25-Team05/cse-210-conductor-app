@@ -27,8 +27,7 @@ input {
 
   -webkit-appearance: none;
 }
-
-input:has(+ small) {
+! input:has(+ small) {
   margin-bottom: 0;
 }
 input + small {
@@ -41,7 +40,17 @@ input:focus {
   border: var(--border-selected);
 }
 
-textarea {
+quick-add-modal form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 50dvh;
+}
+quick-add-modal textarea {
   resize: none;
-  height: 100%;
+  width: stretch;
+  height: stretch;
+}
+quick-add-modal label:has(textarea) {
+  flex: 1 !important;
 }
