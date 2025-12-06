@@ -78,6 +78,18 @@ const RemoveMembersBody = {
   required: ['ids'],
 };
 
+// TA assignment body: { ids: [ta_user_id, ...] }
+const TAIdsBody = {
+  type: 'object',
+  properties: {
+    ids: {
+      type: 'array',
+      items: { type: 'integer' },
+    },
+  },
+  required: ['ids'],
+};
+
 const ListTeamsSchema = {
   summary: 'Get all teams for a course',
   tags: ['Teams'],
@@ -273,6 +285,108 @@ const RemoveMembersSchema = {
   },
 };
 
+// =========================================
+// TA assignment schemas
+// =========================================
+
+const GetTeamTAsSchema = {
+  summary: 'Get TAs assigned to a team',
+  tags: ['Teams'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      team_id: { type: 'integer' },
+    },
+    required: ['course_id', 'team_id'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        tas: createArrayReponseSchema({
+          // ta_teams record + nested users
+          type: 'object',
+          additionalProperties: true,
+        }),
+      },
+      required: ['tas'],
+    },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
+const AssignTeamTAsSchema = {
+  summary: 'Assign TAs to a team',
+  tags: ['Teams'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      team_id: { type: 'integer' },
+    },
+    required: ['course_id', 'team_id'],
+  },
+  body: TAIdsBody,
+  response: {
+    204: { type: 'null' },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
+const RemoveTeamTAsSchema = {
+  summary: 'Remove TAs from a team',
+  tags: ['Teams'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      team_id: { type: 'integer' },
+    },
+    required: ['course_id', 'team_id'],
+  },
+  body: TAIdsBody,
+  response: {
+    204: { type: 'null' },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
+const GetTeamsForTASchema = {
+  summary: 'Get teams assigned to a TA in a course',
+  tags: ['Teams'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      ta_user_id: { type: 'integer' },
+    },
+    required: ['course_id', 'ta_user_id'],
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        teams: createArrayReponseSchema(TeamInfo),
+      },
+      required: ['teams'],
+    },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
+
 module.exports = {
   TeamMemberRef,
   TeamInfo,
@@ -281,6 +395,7 @@ module.exports = {
   AddMembersBody,
   UpdateMembersBody,
   RemoveMembersBody,
+  TAIdsBody,
   ListTeamsSchema,
   GetTeamSchema,
   GetTeamMembersSchema,
@@ -290,4 +405,8 @@ module.exports = {
   AddMembersSchema,
   UpdateMembersSchema,
   RemoveMembersSchema,
+  GetTeamTAsSchema,
+  AssignTeamTAsSchema,
+  RemoveTeamTAsSchema,
+  GetTeamsForTASchema,
 };
