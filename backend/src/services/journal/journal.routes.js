@@ -87,6 +87,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.post(
     '/journals',
     {
+      prehandler: [fastify.requireEnrolledInCourse],
       schema: journalSchemas.CreateJournalSchema,
     },
     async (request, reply) => {
@@ -109,7 +110,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.patch(
     '/journals/:journal_id',
     {
-      preHandler: [fastify.requireJournalUpdate],
+      preHandler: [fastify.canUpdateJournalEntry],
       schema: journalSchemas.UpdateJournalSchema,
     },
     async (request, reply) => {
