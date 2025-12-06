@@ -151,8 +151,8 @@ class TeamsService {
     const members = Array.isArray(membersRaw)
       ? membersRaw
       : membersRaw
-      ? [membersRaw]
-      : [];
+        ? [membersRaw]
+        : [];
 
     if (members.length === 0) {
       return;
@@ -306,10 +306,9 @@ class TeamsService {
     await this.assertCanView(user, course, enrollment);
 
     // Optional safety: ensure the TA is enrolled in this course.
-    const enrollments = await this.teamsRepo.getEnrollmentsForUsers(
-      course.id,
-      [taUserId]
-    );
+    const enrollments = await this.teamsRepo.getEnrollmentsForUsers(course.id, [
+      taUserId,
+    ]);
     if (!enrollments || enrollments.length === 0) {
       const e = new Error('TA user is not enrolled in this course');
       e.code = 'BAD_REQUEST';

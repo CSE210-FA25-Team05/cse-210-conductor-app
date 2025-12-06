@@ -346,7 +346,6 @@ class TeamsRepo {
     return records;
   }
 
-
   /**
    * Assign one or more TAs to a team.
    * Idempotent due to unique constraint + skipDuplicates.

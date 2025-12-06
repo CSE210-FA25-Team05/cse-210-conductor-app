@@ -1135,9 +1135,9 @@ async function runTeamsCrudTests() {
   const teamsCourseId = 13; // CSE210
 
   const professorUserId = 14; // mathprof@ucsd.edu, role: professor
-  const taUserId = 15;        // genius_ta@ucsd.edu, role: ta
-  const studentUserId1 = 16;  // jdoe@ucsd.edu, role: student
-  const studentUserId2 = 17;  // jd563@ucsd.edu, role: student
+  const taUserId = 15; // genius_ta@ucsd.edu, role: ta
+  const studentUserId1 = 16; // jdoe@ucsd.edu, role: student
+  const studentUserId2 = 17; // jd563@ucsd.edu, role: student
 
   // Run team operations as the seeded professor so permissions pass
   const teamsHeaders = headersForEmail(PROFESSOR_EMAIL);
@@ -1203,10 +1203,11 @@ async function runTeamsCrudTests() {
   data = await res.json();
   console.log('Status:', res.status, 'Response:', data);
 
-  const members =
-    Array.isArray(data) ? data :
-    Array.isArray(data.members) ? data.members :
-    [];
+  const members = Array.isArray(data)
+    ? data
+    : Array.isArray(data.members)
+      ? data.members
+      : [];
 
   if (!Array.isArray(members)) {
     console.error(
@@ -1412,10 +1413,11 @@ async function runTeamsTaAssignmentTests() {
   }
   console.log('Status:', res.status, 'Response:', tasForTeam);
 
-  const tasArray =
-    Array.isArray(tasForTeam) ? tasForTeam :
-    Array.isArray(tasForTeam.tas) ? tasForTeam.tas :
-    [];
+  const tasArray = Array.isArray(tasForTeam)
+    ? tasForTeam
+    : Array.isArray(tasForTeam.tas)
+      ? tasForTeam.tas
+      : [];
 
   if (!Array.isArray(tasArray)) {
     console.error('Expected TAs for team in an array or { tas: [...] }');
@@ -1447,10 +1449,11 @@ async function runTeamsTaAssignmentTests() {
   }
   console.log('Status:', res.status, 'Response:', taTeams);
 
-  const teamsArray =
-    Array.isArray(taTeams) ? taTeams :
-    Array.isArray(taTeams.teams) ? taTeams.teams :
-    [];
+  const teamsArray = Array.isArray(taTeams)
+    ? taTeams
+    : Array.isArray(taTeams.teams)
+      ? taTeams.teams
+      : [];
 
   if (!Array.isArray(teamsArray)) {
     console.error('Expected teams for TA in an array or { teams: [...] }');
