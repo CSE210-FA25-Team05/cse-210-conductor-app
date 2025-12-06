@@ -61,6 +61,14 @@ class CourseService {
       throw e;
     }
 
+    if (role === 'professor') {
+      const e = new Error(
+        `Professor role is not allowed to be added to a course`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
     // Normalize email to lowercase
     const normalizedEmail = email.toLowerCase().trim();
 
