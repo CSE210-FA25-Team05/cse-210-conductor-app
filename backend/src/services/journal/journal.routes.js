@@ -43,6 +43,26 @@ module.exports = async function journalRoutes(fastify, options) {
       }
     }
   );
+
+  fastify.get(
+    '/journals/user/:user_id',
+    {
+      preHandler: [fastify.requireTAOrProfessorInCourse],
+      schema: journalSchemas.GetJournalsByUserSchema,
+    },
+    async (request, reply) => {
+      try {
+        const user_id = request.params.user_id;
+        const course_id = request.params.course_id;
+        const res = await journalService.getJournalsByUserIdAndCourseId(user_id, course_id);
+        return res;
+      } catch (error) {
+        console.error(error);
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
   fastify.get(
     '/journals/:journal_id',
     {

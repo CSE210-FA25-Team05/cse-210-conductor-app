@@ -21,6 +21,13 @@ class JournalPermissions {
       return false;
     }
 
+    // if the user is professor or ta in the course, they can access the journal
+    const isProfessor = await this.coursePermissions.isProfessorInCourse(userId, journal.course_id);
+    const isTA = await this.coursePermissions.isTAInCourse(userId, journal.course_id);
+    if (isProfessor || isTA) {
+      return true;
+    }
+
     // Owner can always access their own journal
     if (journal.user_id === userId) {
       return true;
@@ -48,23 +55,7 @@ class JournalPermissions {
     if (userTeam === journalOwnerTeam) {
       return true;
     }
-
-    // Check if user is a TA managing the journal owner's team
-    const isTA = await this.coursePermissions.isTAInCourse(
-      userId,
-      journal.course_id
-    );
-    if (isTA) {
-      const isTAManagingTeam =
-        await this.journalRepo.isJournalCreatorInTAManagedTeam(
-          userId,
-          journalId
-        );
-      if (isTAManagingTeam) {
-        return true;
-      }
-    }
-
+    
     return false;
   }
 
@@ -108,19 +99,10 @@ class JournalPermissions {
       userId,
       journal.course_id
     );
-    if (isProfessor) {
+    const isTA = await this.coursePermissions.isTAInCourse(userId, journal.course_id);
+    if (isProfessor || isTA) {
       return true;
     }
-
-    // Check if user is a TA in the course
-    const isTA = await this.coursePermissions.isTAInCourse(
-      userId,
-      journal.course_id
-    );
-    if (isTA) {
-      return true;
-    }
-
     return false;
   }
 }

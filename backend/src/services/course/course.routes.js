@@ -71,7 +71,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.get(
     '/courses/:course_id/users',
     {
-      preHandler: [fastify.requireTAOrProfessorInCourse],
+      preHandler: [fastify.requireEnrolledInCourse],
       schema: courseSchemas.GetCourseUsersSchema,
     },
     async (request, reply) => {
@@ -203,6 +203,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.UpdateUserInCourseSchema,
     },
     async (request, reply) => {

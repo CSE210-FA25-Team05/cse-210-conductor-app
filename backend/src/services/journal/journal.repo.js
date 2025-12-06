@@ -116,18 +116,7 @@ class JournalRepo {
     return entry;
   }
 
-  async getJournalTeamId(journalId) {
-    const entry = await this.getJournalById(journalId);
-    if (!entry) {
-      return null;
-    }
-    const user = await this.db.enrollments.findFirst({
-      where: {
-        user_id: entry.user_id,
-      },
-    });
-    return user ? user.team_id : null;
-  }
+
 
   /**
    * Get the team_id of the journal owner (creator) in the journal's course.
