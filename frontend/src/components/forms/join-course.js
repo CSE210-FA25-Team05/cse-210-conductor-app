@@ -1,5 +1,6 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
 import { cacheCourses, getUserId } from '/src/js/utils/cache-utils.js';
+import { joinCourseWithCode } from '/src/js/api/course.js';
 
 /**
  * JoinCourseForm Web Component
@@ -23,11 +24,10 @@ import { cacheCourses, getUserId } from '/src/js/utils/cache-utils.js';
 class JoinCourseForm extends ConductorForm {
   get fields() {
     return [
-      { label: 'Course ID', id: 'join-course-id', name: 'course_id' },
       {
         label: 'Join Code',
         id: 'join-course-code',
-        name: 'course_code',
+        name: 'join_code',
         min_length: 6,
         max_length: 6,
       },
@@ -39,22 +39,10 @@ class JoinCourseForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-    const joinRes = await fetch(`/api/courses/${values.course_id}/join`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        user_id: getUserId(),
-        join_code: values.course_code,
-      }),
+    await joinCourseWithCode({
+      user_id: getUserId(),
+      join_code: values.join_code,
     });
-
-    let result = {};
-    const text = await joinRes.text();
-    if (text) {
-      result = JSON.parse(text);
-    }
-
-    if (!joinRes.ok) throw new Error(result.message);
 
     cacheCourses(); // Update cache
     window.location.href = `/course/${values.course_id}/dashboard`;
