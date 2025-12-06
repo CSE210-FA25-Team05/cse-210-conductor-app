@@ -85,11 +85,23 @@
   --color-state: var(--color-neutral-medium);
   --color-border: var(--color-neutral-medium);
 }
+article.neutral {
+  background-color: var(--color-neutral-light);
+  color: var(--color-neutral-medium);
+  --color-state: var(--color-neutral-medium);
+  border-color: var(--color-neutral-medium);
+}
 .primary {
   --color-bg: var(--color-primary-light);
   --color-fd: var(--color-primary-dark);
   --color-state: var(--color-primary-dark);
   --color-border: var(--color-primary-medium);
+}
+article.primary {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  --color-state: var(--color-primary-dark);
+  border-color: var(--color-primary-medium);
 }
 .secondary {
   --color-bg: var(--color-secondary-light);
@@ -97,15 +109,33 @@
   --color-state: var(--color-secondary-dark);
   --color-border: var(--color-secondary-medium);
 }
+article.secondary {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+  --color-state: var(--color-secondary-dark);
+  border-color: var(--color-secondary-medium);
+}
 .error {
   --color-bg: var(--color-error-light);
   --color-fg: var(--color-error);
   --color-state: var(--color-error);
   --color-border: var(--color-error);
 }
+article.error {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  --color-state: var(--color-error);
+  border-color: var(--color-error);
+}
 .success {
   --color-bg: var(--color-success-light);
   --color-fg: var(--color-success);
   --color-state: var(--color-success);
   --color-border: var(--color-success);
+}
+article.success {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  --color-state: var(--color-success);
+  border-color: var(--color-success);
 }
