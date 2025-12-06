@@ -47,7 +47,7 @@ dialog[open]::backdrop {
   opacity: 1;
 }
 
-:host-context(quick-add-modal) ::slotted(article[slot="content"]) {
+:host-context(quick-add-modal) ::slotted(article[slot='content']) {
   width: 50dvw;
   height: 50dvh;
 }
@@ -58,4 +58,3 @@ dialog[open]::backdrop {
     margin: auto auto 0 auto; /* Anchor to bottom */
   }
 }
-
