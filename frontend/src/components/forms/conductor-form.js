@@ -162,7 +162,7 @@ export class ConductorForm extends HTMLElement {
           if (input) values[field.name] = input.value;
         }
       }
-    };
+    }
     return values;
   }
 
