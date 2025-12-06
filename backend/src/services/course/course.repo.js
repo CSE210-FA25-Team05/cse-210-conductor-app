@@ -194,16 +194,19 @@ class CourseRepo {
   }
 
   /**
-   * Get the join code for a course.
-   * @param {number} courseId - ID of the course
-   * @returns {Promise<string|null>} Join code of the course or null if not found
+   * Enroll a user by join code.
+   * @param {string} joinCode - Join code to enroll by
+   * @param {number} userId - ID of the user to enroll
+   * @returns {Promise<Object>} Enrollment object
    */
-  async getCourseJoinCode(courseId) {
-    const course = await this.db.courses.findUnique({
-      where: { id: courseId },
-      select: { join_code: true },
+  async enrollByJoinCode(joinCode, userId) {
+    const course = await this.db.courses.findFirst({
+      where: { join_code: joinCode },
     });
-    return course ? course.join_code : null;
+    if (!course) {
+      return null;
+    }
+    return this.addEnrollment(course.id, userId);
   }
 
   /**
