@@ -28,9 +28,6 @@ class CourseService {
    * @returns {Promise<boolean>} True if join code matches, false otherwise
    */
   async enrollByJoinCode(joinCode, userId) {
-    if (!joinCode) {
-      throw new Error('Join code is required');
-    }
     joinCode = joinCode.toUpperCase();
     return this.courseRepo.enrollByJoinCode(joinCode, userId);
   }
