@@ -84,6 +84,20 @@ class CourseService {
       }
     }
 
+    // Check if user is already enrolled in this course
+    const existingEnrollment = await this.courseRepo.getEnrollmentByUserAndCourse(
+      user.id,
+      courseId
+    );
+
+    if (existingEnrollment) {
+      const e = new Error(
+        `User ${normalizedEmail} is already enrolled in this course with role: ${existingEnrollment.role}`
+      );
+      e.code = 'CONFLICT';
+      throw e;
+    }
+
     // Add enrollment
     const enrollment = await this.courseRepo.addEnrollment(
       courseId,
