@@ -14,7 +14,7 @@ export const CreateCourseParams = {
     course_code: { type: 'string' },
     course_name: { type: 'string' },
     term: { type: 'string' },
-    section: { type: 'string', default: '1' },
+    section: { type: 'string', default: 'A00' },
     join_code: JoinCodeType,
     start_date: DateType,
     end_date: DateType,
