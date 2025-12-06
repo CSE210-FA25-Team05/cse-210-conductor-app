@@ -22,9 +22,19 @@ class InteractionForm extends ConductorForm {
         id: 'interaction',
         type: 'radio-group',
         options: [
-          { label: 'Negative', value: 'Negative', color: 'red', id: 'negative' },
+          {
+            label: 'Negative',
+            value: 'Negative',
+            color: 'red',
+            id: 'negative',
+          },
           { label: 'Neutral', value: 'Neutral', color: 'gray', id: 'neutral' },
-          { label: 'Positive', value: 'Positive', color: 'green', id: 'positive' },
+          {
+            label: 'Positive',
+            value: 'Positive',
+            color: 'green',
+            id: 'positive',
+          },
         ],
       },
       {
