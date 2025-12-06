@@ -830,5 +830,3 @@ const journalId = 11; // change as needed
 //   content: 'This is an updated test journal entry.',
 // });
 // await deleteJournalEntryTest(courseId, journalId);
-// In backend/test-server.js, near the bottom:
-// (inside an async IIFE, or run from node REPL)
