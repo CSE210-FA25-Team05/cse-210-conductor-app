@@ -55,8 +55,6 @@ export class FormModal extends HTMLElement {
 
     this.content = document.createElement('article');
     this.content.slot = 'content';
-    this.content.style.width = '50dvw';
-    this.content.style.height = '50dvh';
 
     this.menu = document.createElement('div');
     this.menu.style =
