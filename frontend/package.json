@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
+    "chart.js": "^4.5.1",
     "zinggrid": "^2.1.5"
   }
 }

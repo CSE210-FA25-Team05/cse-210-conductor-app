@@ -59,7 +59,14 @@ class TeamsRepo {
         deleted_at: null,
       },
       include: {
-        users: true,
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
     return members;
@@ -293,6 +300,129 @@ class TeamsRepo {
         team_id: null,
       },
     });
+  }
+
+  // ============================================================
+  // TA ↔ Team assignment helpers (using ta_teams join table)
+  // ============================================================
+
+  /**
+   * Get all TAs assigned to a team (with user details).
+   * @param {number} courseId
+   * @param {number} teamId
+   * @returns {Promise<Array>}
+   */
+  /**
+   * Get all TAs assigned to a team (with limited user details).
+   * @param {number} courseId
+   * @param {number} teamId
+   * @returns {Promise<Array>}
+   */
+  async getTeamTAs(courseId, teamId) {
+    const records = await this.db.ta_teams.findMany({
+      where: {
+        course_id: courseId,
+        team_id: teamId,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+        ta_user_id: true,
+        course_id: true,
+        team_id: true,
+        created_at: true,
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: { id: 'asc' },
+    });
+
+    return records;
+  }
+
+  /**
+   * Assign one or more TAs to a team.
+   * Idempotent due to unique constraint + skipDuplicates.
+   *
+   * @param {number} courseId
+   * @param {number} teamId
+   * @param {number[]} taUserIds
+   * @returns {Promise<void>}
+   */
+  async assignTAsToTeam(courseId, teamId, taUserIds) {
+    if (!Array.isArray(taUserIds) || taUserIds.length === 0) {
+      return;
+    }
+
+    const data = taUserIds.map((taUserId) => ({
+      ta_user_id: taUserId,
+      course_id: courseId,
+      team_id: teamId,
+    }));
+
+    await this.db.ta_teams.createMany({
+      data,
+      skipDuplicates: true, // respects @@unique([ta_user_id, course_id, team_id])
+    });
+  }
+
+  /**
+   * Remove (soft-delete) one or more TAs from a team.
+   *
+   * @param {number} courseId
+   * @param {number} teamId
+   * @param {number[]} taUserIds
+   * @returns {Promise<void>}
+   */
+  async removeTAsFromTeam(courseId, teamId, taUserIds) {
+    if (!Array.isArray(taUserIds) || taUserIds.length === 0) {
+      return;
+    }
+
+    const now = new Date();
+
+    await this.db.ta_teams.updateMany({
+      where: {
+        course_id: courseId,
+        team_id: teamId,
+        ta_user_id: { in: taUserIds },
+        deleted_at: null,
+      },
+      data: {
+        deleted_at: now,
+      },
+    });
+  }
+
+  /**
+   * Get all teams in a course that a given TA is assigned to.
+   *
+   * @param {number} courseId
+   * @param {number} taUserId
+   * @returns {Promise<Array>}
+   */
+  async getTeamsForTA(courseId, taUserId) {
+    const teams = await this.db.teams.findMany({
+      where: {
+        course_id: courseId,
+        deleted_at: null,
+        ta_teams: {
+          some: {
+            ta_user_id: taUserId,
+            deleted_at: null,
+          },
+        },
+      },
+      orderBy: { id: 'asc' },
+    });
+
+    return teams;
   }
 }
 

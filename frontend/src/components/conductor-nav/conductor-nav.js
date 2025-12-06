@@ -1,7 +1,7 @@
 import '/src/components/logout-button/logout-button.js';
-import '/src/components/modal/modal.js';
 import '/src/components/dropdown.js';
 import '/src/components/course-dropdown.js';
+import '/src/components/modal/quick-add-modal.js';
 
 class ConductorNav extends HTMLElement {
   constructor() {
@@ -15,11 +15,11 @@ class ConductorNav extends HTMLElement {
       Atoms: '/course/atoms',
       Journals: '/course/journals',
       ZingGrid: '/course/zinggrid',
+      Profile: '/profile',
     };
     this.courses = [];
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
     this.boundedHandleResize = this.handleResize.bind(this);
-    this.boundedHandleCloseModal = this.handleCloseModal.bind(this);
     this.boundedHandleOpenModal = this.handleOpenModal.bind(this);
     this.parentAside = this.parentElement;
 
@@ -60,22 +60,7 @@ class ConductorNav extends HTMLElement {
     modalButton.id = 'new-button';
     modalButton.innerHTML = 'New<i>add</i>';
     // modal
-    const modal = document.createElement('modal-component');
-    modal.setAttribute('button-align', 'end');
-    const modalHeader = document.createElement('h2');
-    modalHeader.setAttribute('slot', 'header');
-    modalHeader.innerText = 'New Entry';
-    const modalContent = document.createElement('p');
-    modalContent.setAttribute('slot', 'content');
-    modalContent.innerText =
-      'Create a new entry for a Signal, Interaction, Meeting, etc here!';
-    const modalFooter = document.createElement('button');
-    modalFooter.setAttribute('slot', 'buttons');
-    modalFooter.innerText = 'Submit';
-    modal.appendChild(modalHeader);
-    modal.appendChild(modalContent);
-    modal.appendChild(modalFooter);
-    modalFooter.addEventListener('click', this.boundedHandleCloseModal);
+    const modal = document.createElement('quick-add-modal');
     modalButton.addEventListener('click', this.boundedHandleOpenModal);
     this.modal = modal;
 
@@ -105,10 +90,6 @@ class ConductorNav extends HTMLElement {
 
   handleOpenModal() {
     this.modal.open();
-  }
-
-  handleCloseModal() {
-    this.modal.close();
   }
 
   disconnectedCallback() {
