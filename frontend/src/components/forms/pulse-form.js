@@ -1,4 +1,5 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
+import { createPulseInCourse } from '/src/js/api/pulse.js';
 import {
   getCachedCourseId,
   getCachedPulseConfig,
@@ -80,17 +81,8 @@ class PulseForm extends ConductorForm {
       option: values.pulse,
       description: values.pulse_description,
     };
-    console.log('BODY: ', body);
 
-    const response = await fetch(`/api/courses/${getCachedCourseId()}/pulses`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(body),
-    });
-
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.message);
+    createPulseInCourse(getCachedCourseId(), body);
     this.form.reset();
   }
 }

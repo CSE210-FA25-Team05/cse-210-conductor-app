@@ -1,3 +1,5 @@
+import { getCachedCourseId } from '/src/js/utils/cache-utils.js';
+import { createLecture } from '/src/js/api/lecture.js';
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
 
 /**
@@ -30,7 +32,7 @@ class CreateLectureForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-    console.log('HERE', values);
+    createLecture(getCachedCourseId(), values);
     this.form.reset();
   }
 }

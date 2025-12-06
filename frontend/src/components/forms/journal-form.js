@@ -1,4 +1,6 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
+import { getCachedCourseId, getUserId } from '/src/js/utils/cache-utils.js';
+import { createJournalEntry } from '/src/js/api/journal.js';
 
 /**
  * JournalForm Web Component
@@ -36,7 +38,12 @@ class JournalForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-    console.log('Submit journal', values);
+    const body = {
+      title: values.journal_title,
+      content: values.journal_content,
+      user_id: getUserId(),
+    };
+    createJournalEntry(getCachedCourseId(), body);
     this.form.reset();
   }
 }
