@@ -94,7 +94,7 @@ class CourseDropdown extends HTMLElement {
         (course) => course.id === this.courseId
       );
       if (currentCourse) {
-        this.label.textContent = currentCourse.course_code;
+        this.label.textContent = currentCourse.course_code.slice(0, 7);
         return;
       }
     }
