@@ -204,6 +204,72 @@ class AttendancesRepo {
       attendance_percentage: Math.round(attendancePercentage * 100) / 100, // Round to 2 decimal places
     };
   }
+
+  /**
+   * Get completed lectures for a course (where attendance was activated and window has closed).
+   * Only includes lectures where:
+   * - Attendance was activated (code_expires_at is not null)
+   * - Attendance window has closed (code_expires_at is in the past)
+   *
+   * @param {number} courseId - ID of the course
+   * @param {Date|null} startTime - Optional start date filter for lecture_date
+   * @param {Date|null} endTime - Optional end date filter for lecture_date
+   * @returns {Promise<Array>} List of completed lectures
+   */
+  async getCompletedLectures(courseId, startTime = null, endTime = null) {
+    const now = new Date();
+    const where = {
+      course_id: courseId,
+      deleted_at: null,
+      // Only include lectures where attendance was activated
+      code_expires_at: {
+        not: null,
+        // And attendance window has closed (expired)
+        lt: now,
+      },
+    };
+
+    // Optional: Filter by lecture_date range
+    if (startTime || endTime) {
+      where.lecture_date = {};
+      if (startTime) {
+        where.lecture_date.gte = startTime;
+      }
+      if (endTime) {
+        where.lecture_date.lte = endTime;
+      }
+    }
+
+    return this.db.lectures.findMany({
+      where,
+      orderBy: {
+        lecture_date: 'desc', // Newest first
+      },
+    });
+  }
+
+  /**
+   * Get user's attendances for specific lectures.
+   *
+   * @param {number} userId - ID of the user
+   * @param {Array<number>} lectureIds - Array of lecture IDs
+   * @returns {Promise<Array>} List of attendances
+   */
+  async getUserAttendancesForLectures(userId, lectureIds) {
+    if (!lectureIds || lectureIds.length === 0) {
+      return [];
+    }
+
+    return this.db.attendances.findMany({
+      where: {
+        user_id: userId,
+        lecture_id: {
+          in: lectureIds,
+        },
+        deleted_at: null,
+      },
+    });
+  }
 }
 
 module.exports = AttendancesRepo;

@@ -323,6 +323,110 @@ class AttendancesService {
       update_reason: null,
     });
   }
+
+  /**
+   * Get attendance statistics for a student.
+   * Returns summary stats and detailed lecture-by-lecture attendance.
+   * Students can only view their own stats.
+   *
+   * @param {Object} user - Current user object
+   * @param {Object} course - Course object (from req.course)
+   * @param {Object|null} enrollment - Enrollment object (from req.enrollment, null if not enrolled)
+   * @param {Date|null} startTime - Optional start date filter
+   * @param {Date|null} endTime - Optional end date filter
+   * @returns {Promise<Object>} Statistics object with summary and lectures array
+   */
+  async getStudentAttendanceStats(
+    user,
+    course,
+    enrollment,
+    startTime = null,
+    endTime = null
+  ) {
+    // Check permissions - must be enrolled to view stats
+    if (enrollment === null) {
+      const error = new Error('You are not enrolled in this course');
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+
+    // Students can only view their own stats
+    // (Professors/TAs can view any student's stats via user_id param in future)
+    const userId = user.id;
+
+    // Get only completed lectures (where attendance was activated and window has closed)
+    // This ensures we only count lectures where attendance was actually taken
+    const lectures = await this.attendancesRepo.getCompletedLectures(
+      course.id,
+      startTime,
+      endTime
+    );
+
+    if (lectures.length === 0) {
+      return {
+        summary: {
+          total_lectures: 0,
+          present: 0,
+          absent: 0,
+          attendance_percentage: 0,
+        },
+        lectures: [],
+      };
+    }
+
+    // Get user's attendances for those lectures
+    const lectureIds = lectures.map((l) => l.id);
+    const attendances =
+      await this.attendancesRepo.getUserAttendancesForLectures(
+        userId,
+        lectureIds
+      );
+
+    // Create a map of lecture_id -> attendance for quick lookup
+    const attendanceMap = new Map();
+    attendances.forEach((attendance) => {
+      attendanceMap.set(attendance.lecture_id, attendance);
+    });
+
+    // Build lectures array with attendance status
+    let presentCount = 0;
+    const lecturesWithAttendance = lectures.map((lecture) => {
+      const attendance = attendanceMap.get(lecture.id);
+      const attended = !!attendance;
+
+      if (attended) {
+        presentCount++;
+      }
+
+      return {
+        lecture_id: lecture.id,
+        lecture_date: lecture.lecture_date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        attended: attended,
+        attendance_id: attendance?.id || null,
+        attendance_created_at: attendance?.created_at
+          ? attendance.created_at.toISOString()
+          : null,
+      };
+    });
+
+    // Calculate summary
+    const totalLectures = lectures.length;
+    const absentCount = totalLectures - presentCount;
+    const attendancePercentage =
+      totalLectures > 0
+        ? Math.round((presentCount / totalLectures) * 100 * 100) / 100
+        : 0;
+
+    return {
+      summary: {
+        total_lectures: totalLectures,
+        present: presentCount,
+        absent: absentCount,
+        attendance_percentage: attendancePercentage,
+      },
+      lectures: lecturesWithAttendance,
+    };
+  }
 }
 
 module.exports = AttendancesService;

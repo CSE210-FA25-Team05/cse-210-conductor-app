@@ -50,6 +50,51 @@ async function routes(fastify) {
     }
   );
 
+  // Get student attendance statistics for a course
+  fastify.get(
+    '/courses/:course_id/attendances/stats',
+    {
+      preHandler: fastify.loadCourse,
+      schema: attendancesSchemas.GetStudentAttendanceStatsSchema,
+    },
+    async (req, reply) => {
+      try {
+        // Parse optional date filters
+        let startTime = null;
+        let endTime = null;
+
+        if (req.query.start_time) {
+          startTime = new Date(req.query.start_time);
+          if (isNaN(startTime.getTime())) {
+            const error = new Error('Invalid start_time format');
+            error.code = 'BAD_REQUEST';
+            throw error;
+          }
+        }
+
+        if (req.query.end_time) {
+          endTime = new Date(req.query.end_time);
+          if (isNaN(endTime.getTime())) {
+            const error = new Error('Invalid end_time format');
+            error.code = 'BAD_REQUEST';
+            throw error;
+          }
+        }
+
+        const stats = await attendancesService.getStudentAttendanceStats(
+          req.user,
+          req.course,
+          req.enrollment,
+          startTime,
+          endTime
+        );
+        return reply.send(stats);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
   // Get all attendances for a lecture
   fastify.get(
     '/courses/:course_id/lectures/:lecture_id/attendances',

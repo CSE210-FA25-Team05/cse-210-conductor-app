@@ -194,3 +194,69 @@ export const CreateAttendanceByCodeSchema = {
     410: ErrorSchema,
   },
 };
+
+export const GetStudentAttendanceStatsSchema = {
+  summary: 'Get student attendance statistics for a course',
+  tags: ['Attendances'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+    },
+    required: ['course_id'],
+  },
+  querystring: {
+    type: 'object',
+    properties: {
+      start_time: { type: 'string', format: 'date' },
+      end_time: { type: 'string', format: 'date' },
+    },
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        summary: {
+          type: 'object',
+          properties: {
+            total_lectures: { type: 'number' },
+            present: { type: 'number' },
+            absent: { type: 'number' },
+            attendance_percentage: { type: 'number' },
+          },
+          required: [
+            'total_lectures',
+            'present',
+            'absent',
+            'attendance_percentage',
+          ],
+        },
+        lectures: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              lecture_id: { type: 'number' },
+              lecture_date: { type: 'string' },
+              attended: { type: 'boolean' },
+              attendance_id: { type: ['number', 'null'] },
+              attendance_created_at: { type: ['string', 'null'] },
+            },
+            required: [
+              'lecture_id',
+              'lecture_date',
+              'attended',
+              'attendance_id',
+              'attendance_created_at',
+            ],
+          },
+        },
+      },
+      required: ['summary', 'lectures'],
+    },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+};
