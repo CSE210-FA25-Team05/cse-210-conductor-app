@@ -29,7 +29,7 @@
   /* Text Colors */
   --color-text-primary: #212121;
   --color-text-secondary: #757575;
-  --color-text-disabled: #bdbdbd;
+  --color-text-disabled: #9c9c9c;
 
   /* Border Color */
   --color-border-light: #bac0c5;
@@ -52,7 +52,7 @@
   --color-secondary-medium: #666f8d;
   --color-secondary-dark: #cfd0d8;
 
-  --color-error: #ed9795;
+  --color-error: #ffa8a7;
   --color-error-light: #cf3737;
   --color-error-dark: #ffe1e4;
 
@@ -75,7 +75,7 @@
   --color-border: #546e7a;
   --color-border-dark: #bac0c5;
   --color-border-medium: #787e83;
-  --color-border-light: #222426;
+  --color-border-light: #454d55;
 }
 
 /* Colors */
