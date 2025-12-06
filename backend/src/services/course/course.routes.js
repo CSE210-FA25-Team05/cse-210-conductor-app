@@ -193,9 +193,7 @@ module.exports = async function courseRoutes(fastify, options) {
           request.user.id
         );
         if (!res) {
-          return reply
-            .code(404)
-            .send({ error: 'Join code not found' });
+          return reply.code(404).send({ error: 'Join code not found' });
         }
         reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
