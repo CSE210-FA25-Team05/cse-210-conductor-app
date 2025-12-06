@@ -242,8 +242,10 @@ class CourseRepo {
   async updateEnrollmentRole(courseId, userId, role) {
     const updatedEnrollment = await this.db.enrollments.update({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
       data: {
         role: role,
@@ -271,8 +273,10 @@ class CourseRepo {
   async deleteEnrollment(courseId, userId) {
     const deletedEnrollment = await this.db.enrollments.delete({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
     });
     return deletedEnrollment;
