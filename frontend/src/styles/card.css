@@ -5,8 +5,8 @@ article {
 
   padding: var(--card-padding);
   border-radius: var(--border-radius);
-  background-color: var(--color-bg);
-  color: var(--color-fg);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
   border-color: var(--color-border);
 
   margin-bottom: var(--spacing-medium);
@@ -22,7 +22,7 @@ article > header {
 
   gap: var(--spacing-medium);
   margin: var(--card-padding-negative);
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-light);
 }
 
 article > header {
