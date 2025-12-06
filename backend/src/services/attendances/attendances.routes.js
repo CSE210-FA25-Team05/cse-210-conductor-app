@@ -50,12 +50,12 @@ async function routes(fastify) {
     }
   );
 
-  // Get student attendance statistics for a course
+  // Get attendance statistics for a course (student or class-wide based on role)
   fastify.get(
     '/courses/:course_id/attendances/stats',
     {
       preHandler: fastify.loadCourse,
-      schema: attendancesSchemas.GetStudentAttendanceStatsSchema,
+      schema: attendancesSchemas.GetCourseAttendanceStatsSchema,
     },
     async (req, reply) => {
       try {
@@ -81,14 +81,31 @@ async function routes(fastify) {
           }
         }
 
-        const stats = await attendancesService.getStudentAttendanceStats(
-          req.user,
-          req.course,
-          req.enrollment,
-          startTime,
-          endTime
-        );
-        return reply.send(stats);
+        // Return different response based on user role
+        if (
+          req.enrollment &&
+          (req.enrollment.role === 'professor' || req.enrollment.role === 'ta')
+        ) {
+          // Professors/TAs get class-wide stats
+          const stats = await attendancesService.getClassAttendanceStats(
+            req.user,
+            req.course,
+            req.enrollment,
+            startTime,
+            endTime
+          );
+          return reply.send(stats);
+        } else {
+          // Students get their own stats
+          const stats = await attendancesService.getStudentAttendanceStats(
+            req.user,
+            req.course,
+            req.enrollment,
+            startTime,
+            endTime
+          );
+          return reply.send(stats);
+        }
       } catch (error) {
         return mapAndReply(error, reply);
       }

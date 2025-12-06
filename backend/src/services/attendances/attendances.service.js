@@ -427,6 +427,129 @@ class AttendancesService {
       lectures: lecturesWithAttendance,
     };
   }
+
+  /**
+   * Get class-wide attendance statistics for professors/TAs.
+   * Returns overall summary and per-lecture trend data.
+   *
+   * @param {Object} user - Current user object
+   * @param {Object} course - Course object (from req.course)
+   * @param {Object|null} enrollment - Enrollment object (from req.enrollment, null if not enrolled)
+   * @param {Date|null} startTime - Optional start date filter for lecture_date
+   * @param {Date|null} endTime - Optional end date filter for lecture_date
+   * @returns {Promise<Object>} Statistics object with summary and trend array
+   */
+  async getClassAttendanceStats(
+    user,
+    course,
+    enrollment,
+    startTime = null,
+    endTime = null
+  ) {
+    // Check permissions - must be enrolled to view stats
+    if (enrollment === null) {
+      const error = new Error('You are not enrolled in this course');
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+
+    // Only professors and TAs can view class-wide stats
+    if (enrollment.role !== 'professor' && enrollment.role !== 'ta') {
+      const error = new Error(
+        'Only professors and TAs can view class-wide attendance statistics'
+      );
+      error.code = 'FORBIDDEN';
+      throw error;
+    }
+
+    // Get total enrolled students
+    const totalEnrolled =
+      await this.attendancesRepo.getTotalEnrolledStudents(course.id);
+
+    // Get only completed lectures (where attendance was activated and window has closed)
+    const lectures = await this.attendancesRepo.getCompletedLectures(
+      course.id,
+      startTime,
+      endTime
+    );
+
+    if (lectures.length === 0) {
+      return {
+        summary: {
+          total_lectures: 0,
+          total_enrolled: totalEnrolled,
+          total_attendances: 0,
+          total_possible_attendances: 0,
+          overall_attendance_percentage: 0,
+          average_lecture_attendance: 0,
+        },
+        trend: [],
+      };
+    }
+
+    // Get all attendances for those lectures
+    const lectureIds = lectures.map((l) => l.id);
+    const allAttendances =
+      await this.attendancesRepo.getAttendancesForLectures(
+        lectureIds,
+        course.id
+      );
+
+    // Create a map of lecture_id -> attendance count
+    const attendanceCountMap = new Map();
+    allAttendances.forEach((attendance) => {
+      const count = attendanceCountMap.get(attendance.lecture_id) || 0;
+      attendanceCountMap.set(attendance.lecture_id, count + 1);
+    });
+
+    // Build trend array with per-lecture stats
+    let totalAttendances = 0;
+    let sumOfPercentages = 0;
+
+    const trend = lectures.map((lecture) => {
+      const presentCount = attendanceCountMap.get(lecture.id) || 0;
+      totalAttendances += presentCount;
+
+      const attendancePercentage =
+        totalEnrolled > 0
+          ? Math.round((presentCount / totalEnrolled) * 100 * 100) / 100
+          : 0;
+      sumOfPercentages += attendancePercentage;
+
+      return {
+        lecture_id: lecture.id,
+        lecture_date: lecture.lecture_date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        total_enrolled: totalEnrolled,
+        total_present: presentCount,
+        attendance_percentage: attendancePercentage,
+      };
+    });
+
+    // Calculate summary
+    const totalLectures = lectures.length;
+    const totalPossibleAttendances = totalLectures * totalEnrolled;
+    const overallAttendancePercentage =
+      totalPossibleAttendances > 0
+        ? Math.round((totalAttendances / totalPossibleAttendances) * 100 * 100) /
+          100
+        : 0;
+    const averageLectureAttendance =
+      totalLectures > 0
+        ? Math.round((totalAttendances / totalLectures) * 100) / 100
+        : 0;
+
+    return {
+      summary: {
+        total_lectures: totalLectures,
+        total_enrolled: totalEnrolled,
+        total_attendances: totalAttendances,
+        total_possible_attendances: totalPossibleAttendances,
+        overall_attendance_percentage: overallAttendancePercentage,
+        average_lecture_attendance: averageLectureAttendance,
+      },
+      trend: trend,
+    };
+  }
 }
 
 module.exports = AttendancesService;

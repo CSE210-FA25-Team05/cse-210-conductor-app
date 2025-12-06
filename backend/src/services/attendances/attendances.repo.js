@@ -270,6 +270,64 @@ class AttendancesRepo {
       },
     });
   }
+
+  /**
+   * Get total enrolled students in a course (including team_lead).
+   *
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<number>} Total enrolled students
+   */
+  async getTotalEnrolledStudents(courseId) {
+    return this.db.enrollments.count({
+      where: {
+        course_id: courseId,
+        role: {
+          in: ['student', 'team_lead'],
+        },
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
+   * Get all attendances for specific lectures (class-wide).
+   *
+   * @param {Array<number>} lectureIds - Array of lecture IDs
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<Array>} List of all attendances
+   */
+  async getAttendancesForLectures(lectureIds, courseId) {
+    if (!lectureIds || lectureIds.length === 0) {
+      return [];
+    }
+
+    return this.db.attendances.findMany({
+      where: {
+        lecture_id: {
+          in: lectureIds,
+        },
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
+   * Get attendance count for a specific lecture.
+   *
+   * @param {number} lectureId - ID of the lecture
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<number>} Count of attendances
+   */
+  async getAttendanceCountForLecture(lectureId, courseId) {
+    return this.db.attendances.count({
+      where: {
+        lecture_id: lectureId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+  }
 }
 
 module.exports = AttendancesRepo;
