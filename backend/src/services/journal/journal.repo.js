@@ -84,7 +84,7 @@ class JournalRepo {
    * @returns {Promise<object>} updated journal entry
    */
   async updateJournalEntry(journal_id, title, content) {
-    const entry = await this.db.journals.updateMany({
+    const entry = await this.db.journals.update({
       where: {
         id: journal_id,
         deleted_at: null,
@@ -104,7 +104,7 @@ class JournalRepo {
    * @returns {Promise<object>} deleted journal entry
    */
   async deleteJournalEntry(journalId) {
-    const entry = await this.db.journals.updateMany({
+    const entry = await this.db.journals.update({
       where: {
         id: journalId,
         deleted_at: null,
@@ -114,6 +114,98 @@ class JournalRepo {
       },
     });
     return entry;
+  }
+
+  /**
+   * Get the team_id of the journal owner (creator) in the journal's course.
+   * @param {number} journalId - ID of the journal entry
+   * @returns {Promise<number|null>} team_id of the journal owner, or null if not found or not in a team
+   */
+  async getJournalOwnerTeam(journalId) {
+    const journal = await this.getJournalById(journalId);
+    if (!journal) {
+      return null;
+    }
+    const enrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: journal.user_id,
+        course_id: journal.course_id,
+        deleted_at: null,
+      },
+    });
+    return enrollment ? enrollment.team_id : null;
+  }
+
+  /**
+   * Get the team_id for a user in a specific course.
+   * @param {number} userId - ID of the user
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<number|null>} team_id of the user in the course, or null if not found or not in a team
+   */
+  async getTeamIdByUserId(userId, courseId) {
+    const enrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: userId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+    return enrollment ? enrollment.team_id : null;
+  }
+
+  /**
+   * Get the enrollment role for a user in a specific course.
+   * @param {number} userId - ID of the user
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<string|null>} role ('professor', 'ta', 'student') or null if not enrolled
+   */
+  async getEnrollmentRole(userId, courseId) {
+    const enrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: userId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+    return enrollment ? enrollment.role : null;
+  }
+
+  /**
+   * Check if the journal creator is in a team managed by the given TA user.
+   * @param {number} taUserId - ID of the TA user
+   * @param {number} journalId - ID of the journal entry
+   * @returns {Promise<boolean>} true if journal creator is in a team managed by the TA
+   */
+  async isJournalCreatorInTAManagedTeam(taUserId, journalId) {
+    const journal = await this.getJournalById(journalId);
+    if (!journal) {
+      return false;
+    }
+
+    // Get the journal creator's enrollment to find their team_id
+    const creatorEnrollment = await this.db.enrollments.findFirst({
+      where: {
+        user_id: journal.user_id,
+        course_id: journal.course_id,
+        deleted_at: null,
+      },
+    });
+
+    if (!creatorEnrollment || !creatorEnrollment.team_id) {
+      return false;
+    }
+
+    // Check if the TA manages this team in this course
+    const taTeam = await this.db.ta_teams.findFirst({
+      where: {
+        ta_user_id: taUserId,
+        course_id: journal.course_id,
+        team_id: creatorEnrollment.team_id,
+        deleted_at: null,
+      },
+    });
+
+    return taTeam !== null;
   }
 }
 module.exports = JournalRepo;

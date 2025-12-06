@@ -43,25 +43,11 @@ module.exports = async function journalRoutes(fastify, options) {
       }
     }
   );
-  fastify.get(
-    '/journals/entry/:journal_id',
-    {
-      schema: journalSchemas.GetJournalByIdSchema,
-    },
-    async (request, reply) => {
-      try {
-        const journal_id = request.params.journal_id;
-        const res = await journalService.getJournalById(journal_id);
-        return res;
-      } catch (error) {
-        console.error(error);
-        return mapAndReply(error, reply);
-      }
-    }
-  );
+
   fastify.get(
     '/journals/user/:user_id',
     {
+      preHandler: [fastify.requireTAOrProfessorInCourse],
       schema: journalSchemas.GetJournalsByUserSchema,
     },
     async (request, reply) => {
@@ -79,9 +65,29 @@ module.exports = async function journalRoutes(fastify, options) {
       }
     }
   );
+
+  fastify.get(
+    '/journals/:journal_id',
+    {
+      preHandler: [fastify.requireJournalAccess],
+      schema: journalSchemas.GetJournalByIdSchema,
+    },
+    async (request, reply) => {
+      try {
+        const journal_id = request.params.journal_id;
+        const res = await journalService.getJournalById(journal_id);
+        return res;
+      } catch (error) {
+        console.error(error);
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
   fastify.post(
     '/journals',
     {
+      prehandler: [fastify.requireEnrolledInCourse],
       schema: journalSchemas.CreateJournalSchema,
     },
     async (request, reply) => {
@@ -104,6 +110,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.patch(
     '/journals/:journal_id',
     {
+      preHandler: [fastify.requireJournalUpdate],
       schema: journalSchemas.UpdateJournalSchema,
     },
     async (request, reply) => {
@@ -125,6 +132,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.delete(
     '/journals/:journal_id',
     {
+      preHandler: [fastify.requireJournalDelete],
       schema: journalSchemas.DeleteJournalSchema,
     },
     async (request, reply) => {

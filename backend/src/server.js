@@ -50,6 +50,7 @@ fastify.register(require('./prisma'));
 //decorators
 fastify.register(require('./decorators/auth'));
 fastify.register(require('./decorators/course'));
+fastify.register(require('./decorators/journal'));
 
 //hooks
 fastify.register(require('./hooks/authenticate'));
@@ -58,17 +59,10 @@ fastify.register(require('./hooks/profile-complete'));
 //services
 fastify.register(require('./services/auth'));
 fastify.register(require('./services/lectures'));
+fastify.register(require('./services/course'));
+fastify.register(require('./services/journal'));
 fastify.register(require('./services/attendances'));
 fastify.register(require('./services/teams'));
-
-//course routes
-fastify.register(require('./services/course/course.routes'));
-
-//journal routes
-fastify.register(require('./services/journal/journal.routes'), {
-  prefix: '/courses/:course_id',
-});
-
 fastify.register(require('./services/pulse'));
 
 //health check
