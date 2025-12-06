@@ -116,7 +116,7 @@ export class ConductorForm extends HTMLElement {
       const radio = document.createElement('input');
       radio.type = 'radio';
       radio.id = opt.id;
-      radio.name = opt.name;
+      radio.name = field.name;
       radio.value = opt.value;
 
       label.appendChild(radio);
@@ -149,7 +149,7 @@ export class ConductorForm extends HTMLElement {
 
   getFormValues() {
     const values = {};
-    for (const field in this.fields) {
+    for (const field of this.fields) {
       switch (field.type) {
         case 'radio-group': {
           const selected = this.form.querySelector(

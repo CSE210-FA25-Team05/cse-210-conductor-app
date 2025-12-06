@@ -19,19 +19,13 @@ import { getCachedCourseId } from '/src/js/utils/cache-utils.js';
  * <pulse-form></pulse-form>
  */
 class PulseForm extends ConductorForm {
-  constructor() {
-    super();
-    this.config = null;
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
   // TODO: Build fields dynamically from config
   get fields() {
     return [
       {
         label: 'How do you feel?',
-        name: 'pulses',
-        id: 'pulses',
+        name: 'pulse',
+        id: 'pulse',
         type: 'radio-group',
         options: [
           { label: 'Happy', value: 'happy', color: 'green', id: 'happy' },
@@ -45,25 +39,31 @@ class PulseForm extends ConductorForm {
         ],
       },
       {
-        label: 'Description',
+        label: 'Description:',
         id: 'pulse-description',
-        name: 'puluse_description',
+        name: 'pulse_description',
         type: 'textarea',
       },
     ];
   }
 
-  get submitLabel() {
-    return 'Submit';
-  }
-
   async onSubmit(values) {
-    console.log('Submit pulse', values);
 
     const body = {
-      option: values.option,
-      description: values.description,
+      option: values.pulse,
+      description: values.pulse_description,
     };
+    console.log("BODY: ", body);
+
+    const response = await fetch(`/api/courses/${getCachedCourseId()}/pulses`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(body),
+    });
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.message);
   }
 }
 

@@ -1,21 +1,17 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
 
 /**
- * NewInteractionForm Web Component
+ * CreateLectureForm Web Component
  * --------------------------------
- * A form for logging a new interaction, including:
- *  - emotion_marker (radio buttons: Positive, Neutral, Negative)
- *  - participants (search bar)
- *  - description (textarea)
+ * A form for creating a new form, including:
  *
  * On submission:
- *  1. Sends POST /api/interactions with form data
- *  2. Optionally resets form or handles navigation
+ *  1. Sends POST /api/course/course_id/lectures
  *
  * @extends ConductorForm
  *
  * @example
- * <new-interaction-form></new-interaction-form>
+ * <create-lecture-form></create-lecture-form>
  */
 class CreateLectureForm extends ConductorForm {
   get fields() {

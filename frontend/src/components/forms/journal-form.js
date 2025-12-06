@@ -14,9 +14,6 @@ import { ConductorForm } from '/src/components/forms/conductor-form.js';
  * <journal-form></journal-form>
  */
 class JournalForm extends ConductorForm {
-  constructor() {
-    super();
-  }
   get fields() {
     return [
       {
