@@ -47,6 +47,16 @@ dialog[open]::backdrop {
   opacity: 1;
 }
 
+@media (min-width: 500px) {
+  :host-context(quick-add-modal) ::slotted(article[slot='content']) {
+    width: 50dvw;
+    height: 50dvh;
+  }
+}
+:host-context(quick-add-modal) ::slotted(article[slot='content']) {
+  margin: 0 !important;
+}
+
 @media (max-width: 500px) {
   dialog {
     width: 100dvw;

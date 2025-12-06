@@ -77,6 +77,33 @@ const RemoveMembersBody = {
   required: ['ids'],
 };
 
+// Shape returned by mapUserAndEnrollmentToCourseUser()
+const TeamMemberDetails = {
+  type: 'object',
+  properties: {
+    id: { type: 'integer' }, // enrollment id
+    user_id: { type: 'integer' },
+    course_id: { type: 'integer' },
+    user_email: { type: 'string' },
+    user_first_name: { type: 'string' },
+    user_last_name: { type: 'string' },
+    team_id: { type: 'integer', nullable: true },
+    role: { type: 'string', nullable: true },
+    created_at: { type: 'string', format: 'date-time' },
+  },
+  required: [
+    'id',
+    'user_id',
+    'course_id',
+    'user_email',
+    'user_first_name',
+    'user_last_name',
+    'team_id',
+    'role',
+    'created_at',
+  ],
+};
+
 const ListTeamsSchema = {
   summary: 'Get all teams for a course',
   tags: ['Teams'],
@@ -137,10 +164,7 @@ const GetTeamMembersSchema = {
     200: {
       type: 'object',
       properties: {
-        members: createArrayReponseSchema({
-          type: 'object',
-          additionalProperties: true, // enrollment + nested user
-        }),
+        members: createArrayReponseSchema(TeamMemberDetails),
       },
       required: ['members'],
     },

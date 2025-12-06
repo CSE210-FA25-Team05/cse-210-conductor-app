@@ -1,3 +1,5 @@
+const { CourseRoles } = require('../shared/shared.enums');
+
 class PulsePermissions {
   constructor(pulseRepo) {
     this.pulseRepo = pulseRepo;
@@ -5,14 +7,17 @@ class PulsePermissions {
 
   canViewPulses(user, enrollment, filters) {
     // Professors and TAs can view all pulses
-    if (enrollment.role === 'professor' || enrollment.role === 'ta') {
+    if (
+      enrollment.role === CourseRoles.PROFESSOR ||
+      enrollment.role === CourseRoles.TA
+    ) {
       return true;
     }
 
     // Team leads can view pulses of their team members
     if (filters.team_id != null) {
       if (
-        enrollment.role === 'team_lead' &&
+        enrollment.role === CourseRoles.TEAM_LEAD &&
         filters.team_id === enrollment.team_id
       ) {
         return true;

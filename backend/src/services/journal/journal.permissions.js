@@ -1,5 +1,7 @@
 'use strict';
 
+const { CourseRoles } = require('../shared/shared.enums');
+
 class JournalPermissions {
   constructor(journalRepo, authRepo) {
     this.journalRepo = journalRepo;
@@ -25,7 +27,7 @@ class JournalPermissions {
       userId,
       journal.course_id
     );
-    if (role === 'professor' || role === 'ta') {
+    if (role === CourseRoles.PROFESSOR || role === CourseRoles.TA) {
       return true;
     }
 
@@ -100,7 +102,7 @@ class JournalPermissions {
       userId,
       journal.course_id
     );
-    if (role === 'professor' || role === 'ta') {
+    if (role === CourseRoles.PROFESSOR || role === CourseRoles.TA) {
       return true;
     }
 

@@ -5,6 +5,9 @@ const TeamsRepo = require('./teams.repo');
 const TeamsService = require('./teams.service');
 const TeamsPermissions = require('./teams.permissions');
 const teamsSchemas = require('./teams.schemas');
+const {
+  mapUserAndEnrollmentToCourseUser,
+} = require('../shared/shared.mappers');
 
 /**
  * Teams Routes Plugin
@@ -74,7 +77,11 @@ module.exports = async function teamsRoutes(fastify /*, options */) {
           req.enrollment,
           teamId
         );
-        return reply.send({ members });
+        return reply.send({
+          members: members.map((m) =>
+            mapUserAndEnrollmentToCourseUser(m.users, m)
+          ),
+        });
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -217,6 +224,104 @@ module.exports = async function teamsRoutes(fastify /*, options */) {
           memberIds
         );
         return reply.code(204).send();
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // =========================================
+  // TA assignment routes
+  // =========================================
+
+  // GET /courses/:course_id/teams/:team_id/tas
+  fastify.get(
+    '/courses/:course_id/teams/:team_id/tas',
+    {
+      preHandler: fastify.loadCourse,
+      schema: teamsSchemas.GetTeamTAsSchema,
+    },
+    async (req, reply) => {
+      try {
+        const teamId = parseInt(req.params.team_id, 10);
+        const tas = await teamsService.getTeamTAs(
+          req.user,
+          req.course,
+          req.enrollment,
+          teamId
+        );
+        return reply.send({ tas });
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // POST /courses/:course_id/teams/:team_id/tas
+  fastify.post(
+    '/courses/:course_id/teams/:team_id/tas',
+    {
+      preHandler: fastify.loadCourse,
+      schema: teamsSchemas.AssignTeamTAsSchema,
+    },
+    async (req, reply) => {
+      try {
+        const teamId = parseInt(req.params.team_id, 10);
+        await teamsService.assignTeamTAs(
+          req.user,
+          req.course,
+          req.enrollment,
+          teamId,
+          req.body
+        );
+        return reply.code(204).send();
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // DELETE /courses/:course_id/teams/:team_id/tas
+  fastify.delete(
+    '/courses/:course_id/teams/:team_id/tas',
+    {
+      preHandler: fastify.loadCourse,
+      schema: teamsSchemas.RemoveTeamTAsSchema,
+    },
+    async (req, reply) => {
+      try {
+        const teamId = parseInt(req.params.team_id, 10);
+        await teamsService.removeTeamTAs(
+          req.user,
+          req.course,
+          req.enrollment,
+          teamId,
+          req.body
+        );
+        return reply.code(204).send();
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // GET /courses/:course_id/tas/:ta_user_id/teams
+  fastify.get(
+    '/courses/:course_id/tas/:ta_user_id/teams',
+    {
+      preHandler: fastify.loadCourse,
+      schema: teamsSchemas.GetTeamsForTASchema,
+    },
+    async (req, reply) => {
+      try {
+        const taUserId = parseInt(req.params.ta_user_id, 10);
+        const teams = await teamsService.getTeamsForTA(
+          req.user,
+          req.course,
+          req.enrollment,
+          taUserId
+        );
+        return reply.send({ teams });
       } catch (error) {
         return mapAndReply(error, reply);
       }

@@ -10,9 +10,39 @@
     <body>
         <main>
             <h1>Journal</h1>
+            <zing-grid id="journals-grid" 
+                layout="row" 
+                pager 
+                page-size="10" 
+                filter 
+                sort>
+            </zing-grid>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
+        <script type="module">
+            import { getCourseId, getUserId } from '/src/js/utils/cache-utils.js';
+            import { getJournalsByUser } from '/src/js/api/journal.js';
+            
+            async function fetchUserJournals() {
+                try {
+                    const courseId = getCourseId();
+                    const userId = getUserId();
+                    const journals = await getJournalsByUser(userId, courseId);
+                    const rows = (journals || []).map(j => ({
+                      Title: j.title || '',
+                      Content: j.content || '',
+                      Created: j.created_at ? new Date(j.created_at).toLocaleDateString() : '',
+                    }));
+
+                    const gridRef = document.getElementById('journals-grid');
+                    gridRef.setAttribute('data', JSON.stringify(rows));
+                } catch (error) {
+                    console.error('Error fetching journals:', error);
+                }
+            }
+            fetchUserJournals();
+        </script>
     </body>
 </html>

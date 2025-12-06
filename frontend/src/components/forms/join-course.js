@@ -15,7 +15,7 @@ import { cacheCourses, getUserId } from '/src/js/utils/cache-utils.js';
  *  2. POST /api/courses/:id/join with the user's ID and join code
  *  3. Redirects to /course/:id/dashboard on success
  *
- * @extends BaseForm
+ * @extends ConductorForm
  *
  * @example
  * <join-course-form></join-course-form>

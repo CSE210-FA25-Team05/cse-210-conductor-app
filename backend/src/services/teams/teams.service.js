@@ -7,6 +7,11 @@
  * Business logic for team operations.
  */
 
+const {
+  mapUserAndEnrollmentToCourseUser,
+  mapUserAndTaTeamToTaAssignment,
+} = require('../shared/shared.mappers');
+
 class TeamsService {
   constructor(teamsRepo, teamsPermissions) {
     this.teamsRepo = teamsRepo;
@@ -58,10 +63,19 @@ class TeamsService {
 
   /**
    * Get members of a team.
+   *
+   * Returns an array of flattened course-user objects using
+   * mapUserAndEnrollmentToCourseUser.
    */
   async getTeamMembers(user, course, enrollment, teamId) {
     await this.getTeam(user, course, enrollment, teamId); // checks view + existence
-    return this.teamsRepo.getTeamMembers(course.id, teamId);
+
+    const rawMembers = await this.teamsRepo.getTeamMembers(course.id, teamId);
+    const members = rawMembers.map((row) =>
+      mapUserAndEnrollmentToCourseUser(row.users, row)
+    );
+
+    return members;
   }
 
   /**
@@ -194,6 +208,114 @@ class TeamsService {
       teamId,
       memberIds || []
     );
+  }
+
+  // ============================================================
+  // TA ↔ Team assignment logic
+  // ============================================================
+
+  /**
+   * Get all TAs assigned to a team.
+   *
+   * Returns an array of flattened TA assignment objects using
+   * mapUserAndTaTeamToTaAssignment.
+   */
+  async getTeamTAs(user, course, enrollment, teamId) {
+    // Reuse getTeam to ensure course membership + team existence
+    await this.getTeam(user, course, enrollment, teamId);
+
+    const rawAssignments = await this.teamsRepo.getTeamTAs(course.id, teamId);
+    const tas = rawAssignments.map((row) =>
+      mapUserAndTaTeamToTaAssignment(row.users, row)
+    );
+
+    return tas;
+  }
+
+  /**
+   * Assign one or more TAs to a team.
+   *
+   * Body shape: { ids: [ta_user_id, ...] }
+   * Validates that each user is a TA in this course (enrollments.role === 'ta').
+   */
+  async assignTeamTAs(user, course, enrollment, teamId, body) {
+    await this.assertCanModify(
+      user,
+      course,
+      enrollment,
+      'Only professors and TAs can assign TAs to teams'
+    );
+    await this.getTeam(user, course, enrollment, teamId);
+
+    const idsRaw = body && body.ids;
+    const taUserIds = Array.isArray(idsRaw) ? idsRaw : [];
+
+    if (taUserIds.length === 0) {
+      return;
+    }
+
+    const enrollments = await this.teamsRepo.getEnrollmentsForUsers(
+      course.id,
+      taUserIds
+    );
+
+    const taEnrollments = enrollments.filter((e) => e.role === 'ta');
+    const validTaIds = new Set(taEnrollments.map((e) => e.user_id));
+
+    const invalidIds = taUserIds.filter((id) => !validTaIds.has(id));
+
+    if (invalidIds.length > 0) {
+      const e = new Error(
+        `Some users are not TAs in this course: ${invalidIds.join(', ')}`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    await this.teamsRepo.assignTAsToTeam(course.id, teamId, taUserIds);
+  }
+
+  /**
+   * Remove (soft-delete) one or more TAs from a team.
+   *
+   * Body shape: { ids: [ta_user_id, ...] }
+   */
+  async removeTeamTAs(user, course, enrollment, teamId, body) {
+    await this.assertCanModify(
+      user,
+      course,
+      enrollment,
+      'Only professors and TAs can remove TAs from teams'
+    );
+    await this.getTeam(user, course, enrollment, teamId);
+
+    const idsRaw = body && body.ids;
+    const taUserIds = Array.isArray(idsRaw) ? idsRaw : [];
+
+    if (taUserIds.length === 0) {
+      return;
+    }
+
+    await this.teamsRepo.removeTAsFromTeam(course.id, teamId, taUserIds);
+  }
+
+  /**
+   * Get all teams in a course that a given TA is assigned to.
+   */
+  async getTeamsForTA(user, course, enrollment, taUserId) {
+    await this.assertCanView(user, course, enrollment);
+
+    // Optional safety: ensure the TA is enrolled in this course.
+    const enrollments = await this.teamsRepo.getEnrollmentsForUsers(course.id, [
+      taUserId,
+    ]);
+    if (!enrollments || enrollments.length === 0) {
+      const e = new Error('TA user is not enrolled in this course');
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    return this.teamsRepo.getTeamsForTA(course.id, taUserId);
   }
 }
 

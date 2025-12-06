@@ -18,6 +18,9 @@ class Modal extends HTMLElement {
     const closeIcon = document.createElement('i');
 
     // Create the slots
+    const backSlot = document.createElement('slot');
+    backSlot.name = 'back';
+
     const headerSlot = document.createElement('slot');
     headerSlot.name = 'header';
 
@@ -33,6 +36,7 @@ class Modal extends HTMLElement {
 
     // Header: header slot + close button
     closeButton.appendChild(closeIcon);
+    header.appendChild(backSlot);
     header.appendChild(headerSlot);
     header.appendChild(closeButton);
 
