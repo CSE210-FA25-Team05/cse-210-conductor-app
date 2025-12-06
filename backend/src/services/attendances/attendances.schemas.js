@@ -164,3 +164,33 @@ export const GetAttendanceStatsSchema = {
     404: ErrorSchema,
   },
 };
+
+export const CreateAttendanceByCodeParams = {
+  type: 'object',
+  properties: {
+    code: { type: 'string' },
+  },
+  required: ['code'],
+};
+
+export const CreateAttendanceByCodeSchema = {
+  summary: 'Create attendance by code (simplified flow for students)',
+  tags: ['Attendances'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+    },
+    required: ['course_id'],
+  },
+  body: CreateAttendanceByCodeParams,
+  response: {
+    201: AttendanceInfo,
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+    409: ErrorSchema,
+    410: ErrorSchema,
+  },
+};

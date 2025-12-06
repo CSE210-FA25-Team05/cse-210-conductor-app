@@ -57,6 +57,45 @@ class LecturesRepo {
   }
 
   /**
+   * Get a lecture by its attendance code (only active codes).
+   * Only returns lectures with active (non-expired) codes.
+   *
+   * @param {number} courseId - ID of the course
+   * @param {string} code - Attendance code
+   * @returns {Promise<Object|null>} Lecture object or null if not found
+   */
+  async getLectureByCode(courseId, code) {
+    return this.db.lectures.findFirst({
+      where: {
+        course_id: courseId,
+        code: code,
+        deleted_at: null,
+        code_expires_at: {
+          gte: new Date(), // Only active (non-expired) codes
+        },
+      },
+    });
+  }
+
+  /**
+   * Get a lecture by code regardless of expiration status.
+   * Used to check if code exists but expired (for better error messages).
+   *
+   * @param {number} courseId - ID of the course
+   * @param {string} code - Attendance code
+   * @returns {Promise<Object|null>} Lecture object or null if not found
+   */
+  async getLectureByCodeAnyStatus(courseId, code) {
+    return this.db.lectures.findFirst({
+      where: {
+        course_id: courseId,
+        code: code,
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
    * Generate a unique code for a course.
    * Ensures the code doesn't already exist in the course.
    * Uses the same pattern as course join code generation.

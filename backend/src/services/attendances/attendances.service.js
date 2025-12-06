@@ -7,9 +7,10 @@
  */
 
 class AttendancesService {
-  constructor(attendancesRepo, attendancesPermissions) {
+  constructor(attendancesRepo, attendancesPermissions, lecturesRepo = null) {
     this.attendancesRepo = attendancesRepo;
     this.attendancesPermissions = attendancesPermissions;
+    this.lecturesRepo = lecturesRepo;
   }
 
   /**
@@ -265,6 +266,62 @@ class AttendancesService {
     }
 
     return await this.attendancesRepo.getAttendanceStats(lecture.id, course.id);
+  }
+
+  /**
+   * Create attendance by code.
+   * Finds the lecture by code and creates attendance for the current user.
+   * This is the simplified flow for students who only have a code.
+   *
+   * @param {Object} user - Current user object
+   * @param {Object} course - Course object (from req.course)
+   * @param {Object|null} enrollment - Enrollment object (from req.enrollment, null if not enrolled)
+   * @param {string} code - Attendance code
+   * @returns {Promise<Object>} Created attendance object
+   */
+  async createAttendanceByCode(user, course, enrollment, code) {
+    if (!this.lecturesRepo) {
+      const error = new Error('Lectures repository not available');
+      error.code = 'INTERNAL_SERVER_ERROR';
+      throw error;
+    }
+
+    // Find lecture by code (only active codes)
+    const lecture = await this.lecturesRepo.getLectureByCode(course.id, code);
+    if (!lecture) {
+      // Check if code exists but expired for more specific error message
+      const expiredLecture =
+        await this.lecturesRepo.getLectureByCodeAnyStatus(course.id, code);
+      if (expiredLecture) {
+        // Code exists but expired
+        const error = new Error(
+          'Attendance code has expired. Please contact your instructor if you were present.'
+        );
+        error.code = 'EXPIRED';
+        throw error;
+      }
+
+      // Code doesn't exist at all (or code was never activated)
+      const error = new Error(
+        'Invalid attendance code. Please check the code and try again.'
+      );
+      error.code = 'NOT_FOUND';
+      throw error;
+    }
+
+    // Use existing createAttendance logic with the found lecture
+    // (createAttendance will verify the code matches and handle all validations)
+    return await this.createAttendance(
+      user,
+      course,
+      enrollment,
+      lecture,
+      {
+        user_id: user.id,
+        code: code,
+        update_reason: null,
+      }
+    );
   }
 }
 

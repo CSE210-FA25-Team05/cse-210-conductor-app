@@ -3,25 +3,51 @@
 /**
  * Attendances Routes
  *
- * GET    /api/courses/:course_id/lectures/:lecture_id/attendances - Get all attendances for a lecture
- * GET    /api/courses/:course_id/lectures/:lecture_id/attendances/stats - Get attendance statistics
- * POST   /api/courses/:course_id/lectures/:lecture_id/attendances - Create a new attendance record
- * PATCH  /api/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id - Update an attendance record
- * DELETE /api/courses/:course_id/lectures/:lecture_id/attendances/:attendance_id - Delete an attendance record
+ * POST   /courses/:course_id/attendances - Create attendance by code (simplified flow for students)
+ * GET    /courses/:course_id/lectures/:lecture_id/attendances - Get all attendances for a lecture
+ * GET    /courses/:course_id/lectures/:lecture_id/attendances/stats - Get attendance statistics
+ * POST   /courses/:course_id/lectures/:lecture_id/attendances - Create a new attendance record
+ * PATCH  /courses/:course_id/lectures/:lecture_id/attendances/:attendance_id - Update an attendance record
+ * DELETE /courses/:course_id/lectures/:lecture_id/attendances/:attendance_id - Delete an attendance record
  */
 
 const { mapAndReply } = require('../../utils/error-map');
 const AttendancesRepo = require('./attendances.repo');
 const AttendancesService = require('./attendances.service');
 const AttendancesPermissions = require('./attendances.permissions');
+const LecturesRepo = require('../lectures/lectures.repo');
 const attendancesSchemas = require('./attendances.schemas');
 
 async function routes(fastify) {
   const attendancesRepo = new AttendancesRepo(fastify.db);
+  const lecturesRepo = new LecturesRepo(fastify.db);
   const attendancesPermissions = new AttendancesPermissions(attendancesRepo);
   const attendancesService = new AttendancesService(
     attendancesRepo,
-    attendancesPermissions
+    attendancesPermissions,
+    lecturesRepo
+  );
+
+  // Create attendance by code (simplified flow for students)
+  fastify.post(
+    '/courses/:course_id/attendances',
+    {
+      preHandler: fastify.loadCourse,
+      schema: attendancesSchemas.CreateAttendanceByCodeSchema,
+    },
+    async (req, reply) => {
+      try {
+        const attendance = await attendancesService.createAttendanceByCode(
+          req.user,
+          req.course,
+          req.enrollment,
+          req.body.code
+        );
+        return reply.code(201).send(attendance);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
   );
 
   // Get all attendances for a lecture
