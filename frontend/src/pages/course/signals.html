@@ -7,12 +7,81 @@
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
     </head>
-    <body>
-        <main>
-            <h1>Signals</h1>
-        </main>
-        <aside>
-            <conductor-nav></conductor-nav>
-        </aside>
-    </body>
+  <body>
+    <main>
+      <header>
+        <h1>Pulse Records</h1>
+        <theme-toggle></theme-toggle>
+      </header>
+      <article id="pulse-content">
+        <p id="pulse-loading">Loading pulse data...</p>
+        <zing-grid
+          id="pulse-grid"
+          style="display: block;"
+          caption="Course Pulse Records"
+          theme="default"
+          pager
+          page-size="25"
+          page-size-options="10,25,50,100"
+          search
+        >
+        </zing-grid>
+        <p
+          id="pulse-error"
+          style="display: none; color: var(--color-error);"
+        ></p>
+      </article>
+    </main>
+    <aside>
+      <conductor-nav></conductor-nav>
+    </aside>
+
+    <script type="module">
+      import { getCourseId } from '/src/js/utils/cache-utils.js';
+      import { getPulseRecords } from '/src/js/api/pulse.js';
+
+      const pulseContent = document.getElementById('pulse-content');
+      const pulseLoading = document.getElementById('pulse-loading');
+      const pulseGrid = document.getElementById('pulse-grid');
+      const pulseError = document.getElementById('pulse-error');
+
+      async function loadPulseData() {
+        try {
+          // Get course ID from URL or cache
+          const courseId = getCourseId();
+          if (!courseId) throw new Error('Course ID not found in URL');
+
+          // Fetch all pulse records for this course
+          const pulses = await getPulseRecords(courseId);
+          if (!pulses || pulses.length === 0) {
+            pulseLoading.textContent = 'No pulse records found for this course.';
+            return;
+          }
+
+          // Map and format pulse data for grid
+          console.log(pulses);
+          const gridData = pulses.map((p) => ({
+            first_name: p.user_first_name ?? 'N/A',
+            last_name: p.user_last_name ?? 'N/A',
+            value: p.value ?? 'N/A',
+            description: p.description ?? 'N/A',
+            created_at: p.created_at
+              ? new Date(p.created_at).toLocaleString()
+              : 'N/A',
+          }));
+
+          pulseGrid.data = gridData;
+          pulseLoading.style.display = 'none';
+        } catch (error) {
+          console.error('Error loading pulse data:', error);
+          pulseLoading.style.display = 'none';
+          pulseError.textContent = `Error loading pulse data: ${error.message}`;
+          pulseError.style.display = 'block';
+        }
+      }
+
+      loadPulseData();
+    </script>
+  </body>
 </html>
+
