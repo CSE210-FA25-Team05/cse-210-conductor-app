@@ -187,7 +187,7 @@ export function getUserRole() {
  */
 export function getUserId() {
   const profile = getCache(CACHE_KEYS.PROFILE);
-  return profile?.user_id ?? null;
+  return profile?.id ?? null;
 }
 
 // -------------------------------------------------------------
