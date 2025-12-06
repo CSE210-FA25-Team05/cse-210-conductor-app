@@ -3,9 +3,25 @@
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3001';
 const AUTH = process.env.AUTH_TOKEN || ''; // optional, if you have auth
 
+// Seeded test users (see prisma/seed.js)
+const PROFESSOR_EMAIL = 'mathprof@ucsd.edu';
+const TA_EMAIL = 'genius_ta@ucsd.edu';
+const JOHN_EMAIL = 'jdoe@ucsd.edu';
+const JANE_EMAIL = 'jd563@ucsd.edu';
+
 function headers() {
   const h = { 'Content-Type': 'application/json' };
   if (AUTH) h['Authorization'] = AUTH;
+  return h;
+}
+
+// Use Fastify test-mode headers to impersonate a specific user by email.
+// Requires NODE_ENV=development and TEST_MODE=true on the backend.
+function headersForEmail(email) {
+  const h = headers();
+  if (email) {
+    h['x-test-user-email'] = email;
+  }
   return h;
 }
 
