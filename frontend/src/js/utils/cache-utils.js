@@ -263,7 +263,6 @@ export async function cachePulseConfig(courseId) {
  * @throws {Error} If any network requests fail.
  */
 export async function cacheAllPulseConfigs() {
-
   const courses = getCachedCourses() || (await cacheCourses());
   const configs = {};
 
