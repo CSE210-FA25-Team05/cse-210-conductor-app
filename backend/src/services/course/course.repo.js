@@ -1,6 +1,7 @@
 'use strict';
 
 const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
+const { CourseRoles } = require('../shared/shared.enums');
 
 /**
  * Course Repository
@@ -153,7 +154,7 @@ class CourseRepo {
         enrollments: {
           create: {
             user_id: user.id,
-            role: 'professor',
+            role: CourseRoles.PROFESSOR,
           },
         },
         pulse_configs: {

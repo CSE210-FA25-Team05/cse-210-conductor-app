@@ -1227,8 +1227,8 @@ async function getPulseStatsTest(courseId) {
 //     method: 'POST',
 //     headers: headers(),
 //     body: JSON.stringify([
-//       { id: memberUserId1, role: 'professor' },
-//       { id: memberUserId2, role: 'ta' },
+//       { id: memberUserId1, role: CourseRoles.PROFESSOR },
+//       { id: memberUserId2, role: CourseRoles.TA },
 //     ]),
 //   }
 // );

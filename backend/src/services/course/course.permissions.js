@@ -1,5 +1,7 @@
 'use strict';
 
+const { CourseRoles } = require('../shared/shared.enums');
+
 /**
  * Course Permissions
  *
@@ -54,7 +56,7 @@ class CoursePermissions {
    */
   async isProfessorInCourse(userId, courseId) {
     const role = await this.getEnrollmentRole(userId, courseId);
-    return role === 'professor';
+    return role === CourseRoles.PROFESSOR;
   }
 
   /**
