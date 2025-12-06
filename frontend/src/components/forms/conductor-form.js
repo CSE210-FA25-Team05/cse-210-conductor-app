@@ -36,19 +36,19 @@ export class ConductorForm extends HTMLElement {
 
   connectedCallback() {
     queueMicrotask(() => {
-       if (this.form) return;
-       this.form = document.createElement('form');
-       this.renderFields();
-       this.renderErrorCard();
-       this.renderSubmit();
-       this.appendChild(this.form);
-       this.form.addEventListener('submit', this.handleSubmit);
+      if (this.form) return;
+      this.form = document.createElement('form');
+      this.renderFields();
+      this.renderErrorCard();
+      this.renderSubmit();
+      this.appendChild(this.form);
+      this.form.addEventListener('submit', this.handleSubmit);
     });
   }
 
   disconnectedCallback() {
     if (this.form) {
-        this.form.removeEventListener('submit', this.handleSubmit);
+      this.form.removeEventListener('submit', this.handleSubmit);
     }
   }
 
