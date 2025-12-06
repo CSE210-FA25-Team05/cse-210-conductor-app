@@ -7,6 +7,11 @@
  * Business logic for team operations.
  */
 
+const {
+  mapUserAndEnrollmentToCourseUser,
+  mapUserAndTaTeamToTaAssignment,
+} = require('../shared/shared.mappers');
+
 class TeamsService {
   constructor(teamsRepo, teamsPermissions) {
     this.teamsRepo = teamsRepo;
@@ -58,10 +63,19 @@ class TeamsService {
 
   /**
    * Get members of a team.
+   *
+   * Returns an array of flattened course-user objects using
+   * mapUserAndEnrollmentToCourseUser.
    */
   async getTeamMembers(user, course, enrollment, teamId) {
     await this.getTeam(user, course, enrollment, teamId); // checks view + existence
-    return this.teamsRepo.getTeamMembers(course.id, teamId);
+
+    const rawMembers = await this.teamsRepo.getTeamMembers(course.id, teamId);
+    const members = rawMembers.map((row) =>
+      mapUserAndEnrollmentToCourseUser(row.users, row)
+    );
+
+    return members;
   }
 
   /**
@@ -137,8 +151,8 @@ class TeamsService {
     const members = Array.isArray(membersRaw)
       ? membersRaw
       : membersRaw
-        ? [membersRaw]
-        : [];
+      ? [membersRaw]
+      : [];
 
     if (members.length === 0) {
       return;
@@ -202,11 +216,20 @@ class TeamsService {
 
   /**
    * Get all TAs assigned to a team.
+   *
+   * Returns an array of flattened TA assignment objects using
+   * mapUserAndTaTeamToTaAssignment.
    */
   async getTeamTAs(user, course, enrollment, teamId) {
     // Reuse getTeam to ensure course membership + team existence
     await this.getTeam(user, course, enrollment, teamId);
-    return this.teamsRepo.getTeamTAs(course.id, teamId);
+
+    const rawAssignments = await this.teamsRepo.getTeamTAs(course.id, teamId);
+    const tas = rawAssignments.map((row) =>
+      mapUserAndTaTeamToTaAssignment(row.users, row)
+    );
+
+    return tas;
   }
 
   /**

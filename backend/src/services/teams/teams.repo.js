@@ -312,6 +312,12 @@ class TeamsRepo {
    * @param {number} teamId
    * @returns {Promise<Array>}
    */
+  /**
+   * Get all TAs assigned to a team (with limited user details).
+   * @param {number} courseId
+   * @param {number} teamId
+   * @returns {Promise<Array>}
+   */
   async getTeamTAs(courseId, teamId) {
     const records = await this.db.ta_teams.findMany({
       where: {
@@ -319,14 +325,27 @@ class TeamsRepo {
         team_id: teamId,
         deleted_at: null,
       },
-      include: {
-        users: true, // TA user record
+      select: {
+        id: true,
+        ta_user_id: true,
+        course_id: true,
+        team_id: true,
+        created_at: true,
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
       orderBy: { id: 'asc' },
     });
 
     return records;
   }
+
 
   /**
    * Assign one or more TAs to a team.

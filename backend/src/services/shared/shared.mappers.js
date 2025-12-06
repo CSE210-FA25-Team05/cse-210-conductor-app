@@ -12,6 +12,28 @@ function mapUserAndEnrollmentToCourseUser(user, enrollment) {
   };
 }
 
+/**
+ * Map a TA user + ta_teams row into a flat TA assignment object.
+ *
+ * Mirrors the pattern of mapUserAndEnrollmentToCourseUser.
+ *
+ * @param {Object} user   - TA user row (from users table)
+ * @param {Object} taTeam - ta_teams row
+ */
+function mapUserAndTaTeamToTaAssignment(user, taTeam) {
+  return {
+    id: taTeam.id,
+    course_id: taTeam.course_id,
+    team_id: taTeam.team_id,
+    user_id: user.id,
+    user_email: user.email,
+    user_first_name: user.first_name,
+    user_last_name: user.last_name,
+    assigned_at: taTeam.created_at,
+  };
+}
+
 module.exports = {
   mapUserAndEnrollmentToCourseUser,
+  mapUserAndTaTeamToTaAssignment,
 };
