@@ -177,6 +177,8 @@ class LecturesService {
   /**
    * Activate attendance for a lecture by generating a code and starting the 5-minute timer.
    * Only professors and TAs can activate attendance.
+   * If a code already exists and is still valid, returns the existing lecture without generating a new code.
+   * Once attendance has been activated for a lecture, it cannot be reactivated (one activation per lecture).
    *
    * @param {Object} user - Current user object
    * @param {Object} course - Course object (from req.course)
@@ -198,9 +200,32 @@ class LecturesService {
       throw error;
     }
 
-    // activateAttendance handles checking if lecture exists and belongs to course
-    // It also handles the case where code is already active (returns existing lecture)
-    // Once attendance is activated, it cannot be reactivated (one activation per lecture)
+    // Check if lecture exists and belongs to the course
+    const existingLecture = await this.lecturesRepo.getLectureById(
+      lectureId,
+      course.id
+    );
+    if (!existingLecture) {
+      const error = new Error('Lecture not found');
+      error.code = 'NOT_FOUND';
+      throw error;
+    }
+
+    // If code already exists and is still valid, return existing lecture
+    if (this.lecturesRepo.isCodeValid(existingLecture)) {
+      return existingLecture;
+    }
+
+    // If attendance was already activated (code_expires_at was set), prevent reactivation
+    if (existingLecture.code_expires_at !== null) {
+      const error = new Error(
+        'Attendance has already been activated for this lecture and cannot be reactivated'
+      );
+      error.code = 'BAD_REQUEST';
+      throw error;
+    }
+
+    // Generate new code (first activation only)
     return await this.lecturesRepo.activateAttendance(lectureId, course.id);
   }
 }

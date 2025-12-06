@@ -71,7 +71,11 @@ class AttendancesService {
 
     // For students: verify code is correct and still valid (5 minutes expiration)
     // Professors/TAs can create attendance even if code is expired (manual attendance)
-    const isStudent = enrollment === null || enrollment.role === 'student';
+    // Note: team_lead is treated as a student for attendance purposes
+    const isStudent =
+      enrollment === null ||
+      enrollment.role === 'student' ||
+      enrollment.role === 'team_lead';
     if (isStudent) {
       // Students can only create their own attendance
       if (user.id !== attendanceData.user_id) {

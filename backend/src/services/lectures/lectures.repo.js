@@ -185,39 +185,15 @@ class LecturesRepo {
   }
 
   /**
-   * Activate attendance for a lecture by generating a code and starting the 5-minute timer.
-   * This should be called when the professor/TA clicks "Start Attendance" button.
-   * If a code already exists and is still valid, returns the existing lecture without generating a new code.
-   * Once attendance has been activated for a lecture, it cannot be reactivated (one activation per lecture).
+   * Generate and set attendance code for a lecture.
+   * This is a simple data access method - business logic should be in the service layer.
    *
    * @param {number} lectureId - ID of the lecture
    * @param {number} courseId - ID of the course (for generating unique code and validation)
    * @returns {Promise<Object>} Updated lecture object with code and expiration timestamps
    */
   async activateAttendance(lectureId, courseId) {
-    // First, check if lecture exists and belongs to the course
-    const existingLecture = await this.getLectureById(lectureId, courseId);
-    if (!existingLecture) {
-      const error = new Error('Lecture not found');
-      error.code = 'NOT_FOUND';
-      throw error;
-    }
-
-    // If code already exists and is still valid, return existing lecture
-    if (this.isCodeValid(existingLecture)) {
-      return existingLecture;
-    }
-
-    // If attendance was already activated (code_expires_at was set), prevent reactivation
-    if (existingLecture.code_expires_at !== null) {
-      const error = new Error(
-        'Attendance has already been activated for this lecture and cannot be reactivated'
-      );
-      error.code = 'BAD_REQUEST';
-      throw error;
-    }
-
-    // Generate new code (first activation only)
+    // Generate new code
     const code = await this.generateUniqueCode(courseId);
     const codeGeneratedAt = new Date();
     const codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes

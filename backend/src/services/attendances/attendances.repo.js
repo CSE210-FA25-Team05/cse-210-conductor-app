@@ -174,11 +174,13 @@ class AttendancesRepo {
    * @returns {Promise<Object>} Statistics object with total_enrolled, total_present, attendance_percentage
    */
   async getAttendanceStats(lectureId, courseId) {
-    // Get total enrolled students in the course
+    // Get total enrolled students in the course (including team_lead)
     const totalEnrolled = await this.db.enrollments.count({
       where: {
         course_id: courseId,
-        role: 'student',
+        role: {
+          in: ['student', 'team_lead'], // Include both student and team_lead roles
+        },
         deleted_at: null,
       },
     });
