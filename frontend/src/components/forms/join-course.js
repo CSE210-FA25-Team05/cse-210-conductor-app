@@ -1,4 +1,5 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
+import { cacheCourses, getUserId } from '/src/js/utils/cache-utils.js';
 
 /**
  * JoinCourseForm Web Component
@@ -38,24 +39,24 @@ class JoinCourseForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-    const profileRes = await fetch(`/api/me/profile`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    const profile = await profileRes.json();
-
     const joinRes = await fetch(`/api/courses/${values.course_id}/join`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        user_id: profile.id,
+        user_id: getUserId(),
         join_code: values.course_code,
       }),
     });
 
-    const result = await joinRes.json();
+    let result = {};
+    const text = await joinRes.text();
+    if (text) {
+      result = JSON.parse(text);
+    }
+
     if (!joinRes.ok) throw new Error(result.message);
 
+    cacheCourses(); // Update cache
     window.location.href = `/course/${values.course_id}/dashboard`;
   }
 }

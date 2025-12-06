@@ -1,3 +1,9 @@
+import {
+  getCachedCourses,
+  getCourseId,
+  getUserRole,
+} from '/src/js/utils/cache-utils.js';
+
 import '/src/components/modal/modal.js';
 import '/src/components/dropdown.js';
 import '/src/components/forms/create-course.js';
@@ -9,11 +15,13 @@ class CourseDropdown extends HTMLElement {
 
     this.boundedHandleNewCourseOpen = this.handleNewCourseOpen.bind(this);
     this.boundedHandleJoinCourseOpen = this.handleJoinCourseOpen.bind(this);
-
-    this.courses = [];
   }
 
   connectedCallback() {
+    this.role = getUserRole();
+    this.courseId = parseInt(getCourseId());
+    this.courses = getCachedCourses();
+
     // Course Dropdown
     this.courseDropdown = document.createElement('conductor-dropdown');
     const details = document.createElement('details');
@@ -67,7 +75,7 @@ class CourseDropdown extends HTMLElement {
     this.courseDropdown.appendChild(details);
     this.appendChild(this.courseDropdown);
 
-    this.fetchCourses();
+    this.renderCourseDropdown();
   }
 
   handleJoinCourseOpen() {
@@ -78,50 +86,15 @@ class CourseDropdown extends HTMLElement {
     this.newCourseModal.open();
   }
 
-  async fetchCourses() {
-    try {
-      const response = await fetch('/api/courses', {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const courses = await response.json();
-      this.courses = courses;
-      this.renderCourseDropdown();
-    } catch (error) {
-      console.error('Error fetching courses:', error);
-      this.renderCourseError();
-    }
-  }
-
-  getCurrentCourseId() {
-    // Get course ID from URL pattern /course/{course_id}/page
-    const pathParts = window.location.pathname.split('/');
-    const courseIndex = pathParts.indexOf('course');
-    if (courseIndex !== -1 && pathParts[courseIndex + 1]) {
-      return parseInt(pathParts[courseIndex + 1], 10);
-    }
-    return null;
-  }
-
   updateCourseDropdownLabel() {
-    const currentCourseId = this.getCurrentCourseId();
-
     if (!this.label) return;
 
-    if (currentCourseId) {
+    if (this.courseId) {
       const currentCourse = this.courses.find(
-        (course) => course.id === currentCourseId
+        (course) => course.id === this.courseId
       );
       if (currentCourse) {
-        this.label.textContent = currentCourse.course_code;
+        this.label.textContent = currentCourse.course_code.slice(0, 7);
         return;
       }
     }
@@ -160,23 +133,17 @@ class CourseDropdown extends HTMLElement {
     this.ul.appendChild(li);
 
     // Add action buttons at the end
-    const createLi = document.createElement('li');
-    createLi.appendChild(this.newCourseButton);
-    this.ul.appendChild(createLi);
+    if (this.role === 'professor') {
+      const createLi = document.createElement('li');
+      createLi.appendChild(this.newCourseButton);
+      this.ul.appendChild(createLi);
+    }
 
     const joinLi = document.createElement('li');
     joinLi.appendChild(this.joinCourseButton);
     this.ul.appendChild(joinLi);
 
     this.updateCourseDropdownLabel();
-  }
-
-  renderCourseError() {
-    if (!this.ul) return;
-    this.ul.innerHTML = `
-      <li><span style="color: var(--color-error);">Error loading courses</span></li>
-      <li><button onclick="this.closest('conductor-nav').fetchCourses()">Retry</button></li>
-    `;
   }
 }
 
