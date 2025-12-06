@@ -15,6 +15,7 @@ class ConductorNav extends HTMLElement {
       Atoms: '/course/atoms',
       Journals: '/course/journals',
       ZingGrid: '/course/zinggrid',
+      Profile: '/profile',
     };
     this.courses = [];
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);

@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Profile - Conductor</title>
+        <link rel="stylesheet" href="/src/styles/styles.css">
+        <script type="module" async src="/src/js/common.js"></script>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>Profile</h1>
+                <theme-toggle></theme-toggle>
+            </header>
+            
+            <section id="profile-section">
+                <p id="profile-loading" role="status">Loading profile...</p>
+                <article id="profile-content" style="display: none;">
+                    <form id="profile-form">
+                        <fieldset>
+                            <h2>Account Information</h2>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" readonly disabled aria-label="Email address">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="global-role">Role</label>
+                                <input type="text" id="global-role" name="global_role" readonly disabled aria-label="User role">
+                            </div>
+                        </fieldset>
+                        
+                        <fieldset>
+                            <h2>Personal Information</h2>
+                            <div class="form-group">
+                                <label for="first-name">First Name</label>
+                                <input 
+                                    type="text" 
+                                    id="first-name" 
+                                    name="first_name" 
+                                    required 
+                                    maxlength="60"
+                                    aria-label="First name"
+                                    aria-describedby="first-name-error">
+                                <p id="first-name-error" class="error-message" role="alert" style="display: none;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="last-name">Last Name</label>
+                                <input 
+                                    type="text" 
+                                    id="last-name" 
+                                    name="last_name" 
+                                    required 
+                                    maxlength="60"
+                                    aria-label="Last name"
+                                    aria-describedby="last-name-error">
+                                <p id="last-name-error" class="error-message" role="alert" style="display: none;"></p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="pronouns">Pronouns</label>
+                                <input 
+                                    type="text" 
+                                    id="pronouns" 
+                                    name="pronouns" 
+                                    placeholder="e.g., She/Her, He/Him, They/Them" 
+                                    maxlength="20"
+                                    aria-label="Preferred pronouns"
+                                    aria-describedby="pronouns-error">
+                                <p id="pronouns-error" class="error-message" role="alert" style="display: none;"></p>
+                            </div>
+                        </fieldset>
+                        
+                        <button type="submit" id="save-button">Save Changes</button>
+                    </form>
+                    
+                    <output id="profile-message" role="status" style="display: none;" aria-live="polite"></output>
+                </article>
+            </section>
+        </main>
+        <aside>
+            <conductor-nav></conductor-nav>
+        </aside>
+        <script type="module">
+            import { getProfile, updateProfile } from '/src/js/api/profile.js';
+            
+            const profileSection = document.getElementById('profile-section');
+            const profileLoading = document.getElementById('profile-loading');
+            const profileContent = document.getElementById('profile-content');
+            const profileForm = document.getElementById('profile-form');
+            const profileMessage = document.getElementById('profile-message');
+            
+            // Validation function to check no numbers
+            function validateField(field, errorElement) {
+                const value = field.value.trim();
+                const hasNumbers = /\d/.test(value);
+                
+                if (hasNumbers) {
+                    errorElement.textContent = 'Numbers are not allowed';
+                    errorElement.style.display = 'block';
+                    errorElement.style.color = 'var(--color-error, red)';
+                    return false;
+                } else {
+                    errorElement.style.display = 'none';
+                    field.setCustomValidity('');
+                    return true;
+                }
+            }
+            
+            const firstNameField = document.getElementById('first-name');
+            const lastNameField = document.getElementById('last-name');
+            const pronounsField = document.getElementById('pronouns');
+            const firstNameError = document.getElementById('first-name-error');
+            const lastNameError = document.getElementById('last-name-error');
+            const pronounsError = document.getElementById('pronouns-error');
+            
+            // Load profile on page load
+            async function loadProfile() {
+                try {
+                    const profile = await getProfile();
+                    
+                    document.getElementById('email').value = profile.email || '';
+                    document.getElementById('first-name').value = profile.first_name || '';
+                    document.getElementById('last-name').value = profile.last_name || '';
+                    document.getElementById('pronouns').value = profile.pronouns || '';
+                    document.getElementById('global-role').value = profile.global_role || '';
+                    
+                    // Show content
+                    profileLoading.style.display = 'none';
+                    profileContent.style.display = 'block';
+                } catch (error) {
+                    profileLoading.textContent = 'Error loading profile: ' + error.message;
+                    console.error('Error loading profile:', error);
+                }
+            }
+            
+            // Handle form submission
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Validate all fields before submission
+                const fieldErrorPairs = [
+                    [firstNameField, firstNameError],
+                    [lastNameField, lastNameError],
+                    [pronounsField, pronounsError]
+                ];
+                
+                let allValid = true;
+                for (const [field, errorElement] of fieldErrorPairs) {
+                    if (!validateField(field, errorElement)) {
+                        allValid = false;
+                    }
+                }
+                
+                if (!allValid) {
+                    profileMessage.style.display = 'block';
+                    profileMessage.textContent = 'Please fix the errors before saving.';
+                    profileMessage.style.color = 'var(--color-error, red)';
+                    return;
+                }
+                
+                const saveButton = document.getElementById('save-button');
+                const originalText = saveButton.textContent;
+                saveButton.disabled = true;
+                saveButton.textContent = 'Saving...';
+                
+                try {
+                    const formData = new FormData(profileForm);
+                    const updateData = {
+                        first_name: formData.get('first_name').trim(),
+                        last_name: formData.get('last_name').trim(),
+                        pronouns: formData.get('pronouns').trim(),
+                    };
+                    
+                    const updatedProfile = await updateProfile(updateData);
+                    
+                    // Show success message
+                    profileMessage.style.display = 'block';
+                    profileMessage.textContent = 'Profile updated successfully!';
+                    profileMessage.style.color = 'var(--color-success, green)';
+                    
+                    // Reload profile to sync
+                    await loadProfile();
+                    
+                } catch (error) {
+                    profileMessage.style.display = 'block';
+                    profileMessage.textContent = 'Error updating profile: ' + error.message;
+                    profileMessage.style.color = 'var(--error-color, red)';
+                    console.error('Error updating profile:', error);
+                } finally {
+                    saveButton.disabled = false;
+                    saveButton.textContent = originalText;
+                }
+            });
+            
+            loadProfile();
+        </script>
+    </body>
+</html>
+
