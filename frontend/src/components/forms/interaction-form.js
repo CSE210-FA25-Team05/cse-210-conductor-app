@@ -17,15 +17,21 @@ class InteractionForm extends ConductorForm {
   get fields() {
     return [
       {
-        label: 'Emotion Marker',
-        id: 'emotion-marker',
-        name: 'emotion_marker',
+        label: 'How was this interaction?',
+        name: 'interaction',
+        id: 'interaction',
         type: 'radio-group',
         options: [
-          { label: 'Positive', value: 'positive', id: 'positive' },
-          { label: 'Neutral', value: 'neutral', id: 'neutral' },
-          { label: 'Negative', value: 'negative', id: 'negative' },
+          { label: 'Negative', value: 'Negative', color: 'red', id: 'negative' },
+          { label: 'Neutral', value: 'Neutral', color: 'gray', id: 'neutral' },
+          { label: 'Positive', value: 'Positive', color: 'green', id: 'positive' },
         ],
+      },
+      {
+        label: 'Description:',
+        id: 'interaction-description',
+        name: 'interaction_description',
+        type: 'textarea',
       },
     ];
   }
