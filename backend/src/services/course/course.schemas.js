@@ -1,4 +1,5 @@
 import {
+  CourseUserSchema,
   createArrayReponseSchema,
   DateTimeType,
   DateType,
@@ -126,7 +127,7 @@ export const GetCourseUsersSchema = {
     },
   },
   response: {
-    200: createArrayReponseSchema(EnrollmentInfo),
+    200: createArrayReponseSchema(CourseUserSchema),
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -145,7 +146,7 @@ export const GetCourseUserSchema = {
     },
   },
   response: {
-    200: EnrollmentInfo,
+    200: CourseUserSchema,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -222,7 +223,7 @@ export const AddUserInCourseSchema = {
     required: ['user_id'],
   },
   response: {
-    201: EnrollmentInfo,
+    201: CourseUserSchema,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -248,7 +249,7 @@ export const JoinCourseSchema = {
     required: ['join_code'],
   },
   response: {
-    200: EnrollmentInfo,
+    200: CourseUserSchema,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
@@ -268,7 +269,7 @@ export const UpdateUserInCourseSchema = {
   },
   body: UpdateEnrollmentParams,
   response: {
-    200: EnrollmentInfo,
+    200: CourseUserSchema,
     400: ErrorSchema,
     401: ErrorSchema,
     403: ErrorSchema,
