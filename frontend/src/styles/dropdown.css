@@ -64,6 +64,10 @@ details[open] > ol > li {
   border-radius: var(--border-radius);
   padding: var(--button-padding);
   white-space: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 30ch;
+  text-overflow: ellipsis;
 }
 
 details > ul > li > button,
