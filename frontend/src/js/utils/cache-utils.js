@@ -1,4 +1,5 @@
 import { getProfile } from '/src/js/api/profile.js';
+import { getPulseConfigs } from '/src/js/api/pulse.js';
 
 /**
  * -------------------------------------------------------------
@@ -10,6 +11,7 @@ import { getProfile } from '/src/js/api/profile.js';
 
 export const CACHE_KEYS = {
   COURSE_ID: 'course_id',
+  PULSE_CONFIG: 'pulse_config',
   PROFILE: 'profile',
   COURSES: 'courses',
   COURSE_USERS_PREFIX: 'course_', // example: course_<id>_users
@@ -220,6 +222,72 @@ export async function cacheCourses() {
  */
 export function getCachedCourses() {
   return getCache(CACHE_KEYS.COURSES);
+}
+
+// -------------------------------------------------------------
+// Pulse utilities
+// -------------------------------------------------------------
+
+/**
+ * Builds the cache key for pulse configs specific to a course.
+ * @param {string} courseId - The course ID.
+ * @returns {string} A formatted key like `pulse_config_<courseId>`.
+ */
+function getPulseConfigCacheKey(courseId) {
+  return `${CACHE_KEYS.PULSE_CONFIG}_${courseId}`;
+}
+
+/**
+ * Fetch and cache the pulse configuration for a specific course.
+ * @async
+ * @param {string} courseId - The course ID.
+ * @returns {Promise<object>} The fetched pulse configuration object.
+ * @throws {Error} If the network request fails.
+ */
+export async function cachePulseConfig(courseId) {
+  try {
+    const config = await getPulseConfigs(courseId);
+    setCache(getPulseConfigCacheKey(courseId), config);
+    return config;
+  } catch (err) {
+    console.error(`Error fetching pulse config for course ${courseId}:`, err);
+    throw err;
+  }
+}
+
+/**
+ * Fetch and cache the pulse configs for **all courses** the user is enrolled in.
+ * Uses the cached courses list.
+ * @async
+ * @returns {Promise<object>} An object mapping courseId → pulseConfig.
+ * @throws {Error} If any network requests fail.
+ */
+export async function cacheAllPulseConfigs() {
+
+  const courses = getCachedCourses() || (await cacheCourses());
+  const configs = {};
+
+  for (const course of courses) {
+    const courseId = course.id?.toString?.();
+    if (!courseId) continue;
+
+    try {
+      configs[courseId] = await cachePulseConfig(courseId);
+    } catch (err) {
+      console.warn(`Skipping course ${courseId} due to pulse config error.`);
+    }
+  }
+
+  return configs;
+}
+
+/**
+ * Get cached pulse configuration for a specific course.
+ * @param {string} courseId
+ * @returns {object | null}
+ */
+export function getCachedPulseConfig(courseId) {
+  return getCache(getPulseConfigCacheKey(courseId));
 }
 
 // -------------------------------------------------------------
