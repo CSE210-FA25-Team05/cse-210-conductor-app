@@ -1,6 +1,9 @@
 'use strict';
 
 const { mapAndReply } = require('../../utils/error-map');
+const {
+  mapUserAndEnrollmentToCourseUser,
+} = require('../shared/shared.mappers');
 
 /**
  * Course Routes Plugin
@@ -62,6 +65,13 @@ module.exports = async function courseRoutes(fastify, options) {
         const res = await courseRepo.getCourseById(
           parseInt(request.params.course_id, 10)
         );
+        if (!res) {
+          return reply.code(404).send({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Course not found',
+          });
+        }
         return res;
       } catch (error) {
         return mapAndReply(error, reply);
@@ -80,7 +90,9 @@ module.exports = async function courseRoutes(fastify, options) {
         const res = await courseRepo.getUsersInCourse(
           parseInt(request.params.course_id, 10)
         );
-        return res;
+        return res.map((enrollment) =>
+          mapUserAndEnrollmentToCourseUser(enrollment.users, enrollment)
+        );
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -95,11 +107,18 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.getUserDetailsInCourse(
-          parseInt(request.params.course_id, 10),
-          parseInt(request.params.user_id, 10)
+        const res = await courseRepo.getEnrollmentByUserAndCourse(
+          parseInt(request.params.user_id, 10),
+          parseInt(request.params.course_id, 10)
         );
-        return res;
+        if (!res) {
+          return reply.code(404).send({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'User enrollment not found in this course',
+          });
+        }
+        return mapUserAndEnrollmentToCourseUser(res.users, res);
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -114,7 +133,7 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const course = await courseRepo.addCourse(request.body);
+        const course = await courseRepo.addCourse(request.user, request.body);
         reply.code(201).send(course);
       } catch (error) {
         return mapAndReply(error, reply);
@@ -165,11 +184,11 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        await courseRepo.addEnrollment(
+        const res = await courseRepo.addEnrollment(
           parseInt(request.params.course_id, 10),
           request.body.user_id
         );
-        reply.code(201).send();
+        reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -192,11 +211,11 @@ module.exports = async function courseRoutes(fastify, options) {
             .code(400)
             .send({ statusCode: 400, error: 'Invalid join code' });
         }
-        await courseRepo.addEnrollment(
+        const res = await courseRepo.addEnrollment(
           parseInt(request.params.course_id, 10),
           request.body.user_id
         );
-        reply.code(201).send();
+        reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -211,12 +230,12 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        await courseRepo.updateEnrollmentRole(
+        const res = await courseRepo.updateEnrollmentRole(
           parseInt(request.params.course_id, 10),
           parseInt(request.params.user_id, 10),
           request.body.role
         );
-        reply.send();
+        reply.send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);
       }
