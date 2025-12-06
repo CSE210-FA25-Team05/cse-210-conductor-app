@@ -889,15 +889,17 @@ async function createAttendanceByCodeTest(courseId, code, userEmail) {
     );
     return data;
   } else {
-    console.error(
-      `Failed to create attendance by code for user ${userEmail}`
-    );
+    console.error(`Failed to create attendance by code for user ${userEmail}`);
     return null;
   }
 }
 
 // Test: Create attendance with expired code (should fail with 410)
-async function createAttendanceExpiredCodeTest(courseId, expiredCode, userEmail) {
+async function createAttendanceExpiredCodeTest(
+  courseId,
+  expiredCode,
+  userEmail
+) {
   console.log(
     `Testing attendance with expired code for course id=${courseId}...`
   );
@@ -927,7 +929,11 @@ async function createAttendanceExpiredCodeTest(courseId, expiredCode, userEmail)
 }
 
 // Test: Create attendance with invalid code (should fail with 404)
-async function createAttendanceInvalidCodeTest(courseId, invalidCode, userEmail) {
+async function createAttendanceInvalidCodeTest(
+  courseId,
+  invalidCode,
+  userEmail
+) {
   console.log(
     `Testing attendance with invalid code for course id=${courseId}...`
   );
@@ -1021,7 +1027,9 @@ async function runCodeBasedAttendanceTests() {
   // Find a student user
   const studentEnrollment = users.find((u) => u.role === 'student') || users[0];
   const studentEmail = studentEnrollment.email || JOHN_EMAIL; // Fallback to seeded user
-  console.log(`Using student email ${studentEmail} for code-based attendance tests.`);
+  console.log(
+    `Using student email ${studentEmail} for code-based attendance tests.`
+  );
 
   // 1. Create a lecture
   console.log('\nStep 1: Creating lecture...');
@@ -1058,19 +1066,11 @@ async function runCodeBasedAttendanceTests() {
     console.log(
       '\nStep 4: Testing duplicate attendance by code (should fail)...'
     );
-    await createAttendanceByCodeTest(
-      courseId,
-      attendanceCode,
-      studentEmail
-    );
+    await createAttendanceByCodeTest(courseId, attendanceCode, studentEmail);
 
     // 5. Test: Invalid code (should fail with 404)
     console.log('\nStep 5: Testing invalid code (should fail with 404)...');
-    await createAttendanceInvalidCodeTest(
-      courseId,
-      'INVALID',
-      studentEmail
-    );
+    await createAttendanceInvalidCodeTest(courseId, 'INVALID', studentEmail);
 
     // 6. Test: Expired code
     // To test expired code, we need to wait 5+ minutes or create a new lecture
@@ -1083,11 +1083,7 @@ async function runCodeBasedAttendanceTests() {
       'Note: To fully test expired codes, wait 5+ minutes after activation or manually set expired code in DB'
     );
     // This will return 404 (not found) since we can't easily simulate expired codes
-    await createAttendanceInvalidCodeTest(
-      courseId,
-      'EXPIRED',
-      studentEmail
-    );
+    await createAttendanceInvalidCodeTest(courseId, 'EXPIRED', studentEmail);
 
     // 7. Test: Code from different course (should fail with 404)
     console.log('\nStep 7: Testing code from different course...');

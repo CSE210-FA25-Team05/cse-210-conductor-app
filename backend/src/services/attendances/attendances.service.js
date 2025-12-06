@@ -294,8 +294,10 @@ class AttendancesService {
     const lecture = await this.lecturesRepo.getLectureByCode(course.id, code);
     if (!lecture) {
       // Check if code exists but expired for more specific error message
-      const expiredLecture =
-        await this.lecturesRepo.getLectureByCodeAnyStatus(course.id, code);
+      const expiredLecture = await this.lecturesRepo.getLectureByCodeAnyStatus(
+        course.id,
+        code
+      );
       if (expiredLecture) {
         // Code exists but expired
         const error = new Error(
@@ -315,17 +317,11 @@ class AttendancesService {
 
     // Use existing createAttendance logic with the found lecture
     // (createAttendance will verify the code matches and handle all validations)
-    return await this.createAttendance(
-      user,
-      course,
-      enrollment,
-      lecture,
-      {
-        user_id: user.id,
-        code: code,
-        update_reason: null,
-      }
-    );
+    return await this.createAttendance(user, course, enrollment, lecture, {
+      user_id: user.id,
+      code: code,
+      update_reason: null,
+    });
   }
 }
 
