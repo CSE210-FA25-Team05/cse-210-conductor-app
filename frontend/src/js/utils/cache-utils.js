@@ -270,11 +270,14 @@ export async function cacheAllPulseConfigs() {
     const courseId = course.id?.toString?.();
     if (!courseId) continue;
 
-    try {
-      configs[courseId] = await cachePulseConfig(courseId);
-    } catch (err) {
-      console.warn(`Skipping course ${courseId} due to pulse config error.`);
+    if (!getCachedPulseConfig(courseId)) {
+      try {
+          configs[courseId] = await cachePulseConfig(courseId);
+      } catch (err) {
+          console.warn(`Skipping course ${courseId} due to pulse config error.`);
+      }
     }
+
   }
 
   return configs;
