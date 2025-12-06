@@ -33,24 +33,13 @@
         </aside>
         
         <script type="module">
-            import { getCourseId, cacheUsersInCourse, getCachedUsers } from '/src/js/utils/cache-utils.js';
-            import { getUserProfile } from '/src/js/api/profile.js';
+            import { getCourseId } from '/src/js/utils/cache-utils.js';
+            import { getAllUsersInCourse, getUserInCourse } from '/src/js/api/course.js';
             
             const directoryContent = document.getElementById('directory-content');
             const directoryLoading = document.getElementById('directory-loading');
             const directoryGrid = document.getElementById('directory-grid');
             const directoryError = document.getElementById('directory-error');
-            
-            async function getUserInfoByUserId(userId) {
-                // Fetches user information from the database by user_id
-                try {
-                    const userInfo = await getUserProfile(userId);
-                    return userInfo;
-                } catch (error) {
-                    console.error(`Error fetching user info for user_id ${userId}:`, error);
-                    throw error;
-                }
-            }
             
             async function loadDirectory() {
                 try {
@@ -60,46 +49,27 @@
                         throw new Error('Course ID not found in URL');
                     }
 
-                    // Fetch users in course (enrollments with user details)
-                    let enrolledUsers;
-                    const cached = getCachedUsers(courseId);
-                    if (cached) {
-                        enrolledUsers = cached;
-                    } else {
-                        enrolledUsers = await cacheUsersInCourse(courseId);
-                    }
+                    // Fetch all enrollments to get list of user_ids
+                    const enrollments = await getAllUsersInCourse(courseId);
                     
-                    if (!enrolledUsers || enrolledUsers.length === 0) {
+                    if (!enrollments || enrollments.length === 0) {
                         directoryLoading.textContent = 'No participants found in this course.';
                         return;
                     }
 
-                    console.log('enrolledUsers', enrolledUsers);
+                    console.log('enrollments', enrollments);
 
-                    // Fetch user info for each enrollment and print it
-                    const userInfoPromises = enrolledUsers.map(async (enrollment) => {
-                        const userId = enrollment.user_id;
-                        const userInfo = await getUserInfoByUserId(userId);
-                        console.log(`User info for user_id ${userId}:`, userInfo);
-                        return { enrollment, userInfo };
-                    });
-
-                    // Wait for all user info to be fetched
-                    const enrollmentsWithUserInfo = await Promise.all(userInfoPromises);
-
-                    // Transform enrollments to include user details in a flat structure for the grid
-                    const gridData = enrollmentsWithUserInfo.map(({ enrollment, userInfo }) => {
-                        return {
-                            user_id: enrollment.user_id,
-                            first_name: userInfo.first_name || 'N/A',
-                            last_name: userInfo.last_name || 'N/A',
-                            email: userInfo.email || 'N/A',
-                            pronouns: userInfo.pronouns || 'N/A',
-                            role: enrollment.role || 'N/A',
-                            team_id: enrollment.team_id || 'N/A',
-                            global_role: userInfo.global_role || 'N/A',
-                        };
-                    });
+                    // enrollment: {id: 2, user_id: 2, course_id: 1, user_email: 'cat@ucsd.edu', user_first_name: 'Cat', …}
+                    const gridData = enrollments.map(e => ({
+                        user_id: e.user_id,
+                        first_name: e.user_first_name ?? 'N/A',
+                        last_name: e.user_last_name ?? 'N/A',
+                        email: e.user_email ?? 'N/A',
+                        pronouns: e.user_pronouns ?? 'N/A',
+                        role: e.role ?? 'N/A',
+                        team_id: e.team_id ?? 'N/A',
+                        global_role: e.user_global_role ?? 'N/A',
+                    }));
 
                     directoryGrid.data = gridData;
                     directoryLoading.style.display = 'none';
