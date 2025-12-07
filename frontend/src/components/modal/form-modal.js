@@ -55,6 +55,7 @@ export class FormModal extends HTMLElement {
 
     this.content = document.createElement('article');
     this.content.slot = 'content';
+    this.content.classList = ['form-modal-content'];
 
     this.menu = document.createElement('div');
     this.menu.style =
