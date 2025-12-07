@@ -27,5 +27,5 @@ jobs:
             git fetch origin
             git checkout $BRANCH
             git pull origin $BRANCH
-            npm install
-            pm2 restart conductor || pm2 start backend/src/server.js --name conductor
+            npm install --production
+            pm2 restart conductor --update-env || pm2 start backend/src/server.js --name conductor
