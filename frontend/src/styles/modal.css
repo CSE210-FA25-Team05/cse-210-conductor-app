@@ -49,7 +49,6 @@ dialog[open]::backdrop {
 
 .form-modal-content {
   margin: 0 !important;
-  background-color: pink;
 }
 
 @media (min-width: 500px) {
