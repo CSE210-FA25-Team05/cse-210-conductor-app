@@ -5,7 +5,9 @@ article {
 
   padding: var(--card-padding);
   border-radius: var(--border-radius);
-  background-color: var(--card-background-color);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
+  border-color: var(--color-border);
 
   margin-bottom: var(--spacing-medium);
   margin-left: auto;
@@ -18,8 +20,9 @@ article > header {
   align-items: center;
   justify-content: space-between;
 
+  gap: var(--spacing-medium);
   margin: var(--card-padding-negative);
-  background-color: var(--card-header-footer-color);
+  background-color: var(--color-bg-light);
 }
 
 article > header {

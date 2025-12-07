@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - main
+      - deployment
 
 jobs:
   deploy:
@@ -21,8 +22,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd ~/conductor
-            git pull origin main
+            BRANCH="${{ github.ref_name }}"
+            cd ~/conductor    
+            git fetch origin
+            git checkout $BRANCH
+            git pull origin $BRANCH
             npm install
-            npm test
-            pm2 restart conductor || pm2 start backend/src/server.js
+            pm2 restart conductor || pm2 start backend/src/server.js --name conductor

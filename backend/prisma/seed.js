@@ -1,5 +1,9 @@
 require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
+const {
+  CourseRoles,
+  GlobalRoles,
+} = require('../src/services/shared/shared.enums');
 
 const prisma = new PrismaClient();
 
@@ -8,6 +12,11 @@ async function main() {
 
   // Clear existing data (optional - comment out if you want to keep existing data)
   console.log('Clearing existing data...');
+  await prisma.interaction_participants.deleteMany();
+  await prisma.interactions.deleteMany();
+  await prisma.interaction_configs.deleteMany();
+  await prisma.pulses.deleteMany();
+  await prisma.pulse_configs.deleteMany();
   await prisma.attendances.deleteMany();
   await prisma.lectures.deleteMany();
   await prisma.ta_teams.deleteMany();
@@ -28,7 +37,8 @@ async function main() {
       last_name: 'Mathematics',
       email: 'mathprof@ucsd.edu',
       pronouns: 'She/Her/Hers',
-      global_role: 'professor',
+      global_role: GlobalRoles.PROFESSOR,
+      is_profile_complete: true,
     },
   });
 
@@ -38,7 +48,8 @@ async function main() {
       last_name: 'Genius',
       email: 'genius_ta@ucsd.edu',
       pronouns: 'He/Him/His',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
     },
   });
 
@@ -48,7 +59,8 @@ async function main() {
       last_name: 'Doe',
       email: 'jdoe@ucsd.edu',
       pronouns: 'He/Him/His',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
     },
   });
 
@@ -58,7 +70,16 @@ async function main() {
       last_name: 'Doe',
       email: 'jd563@ucsd.edu',
       pronouns: 'She/Her/Hers',
-      global_role: 'student',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
+    },
+  });
+
+  await prisma.users.create({
+    data: {
+      email: 'incomplete@ucsd.edu',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: false,
     },
   });
 
@@ -136,7 +157,7 @@ async function main() {
     data: {
       user_id: professor.id,
       course_id: cse210.id,
-      role: 'professor',
+      role: CourseRoles.PROFESSOR,
     },
   });
 
@@ -144,7 +165,7 @@ async function main() {
     data: {
       user_id: professor.id,
       course_id: cse110.id,
-      role: 'professor',
+      role: CourseRoles.PROFESSOR,
     },
   });
 
@@ -152,7 +173,7 @@ async function main() {
     data: {
       user_id: ta.id,
       course_id: cse210.id,
-      role: 'ta',
+      role: CourseRoles.TA,
     },
   });
 
@@ -160,7 +181,7 @@ async function main() {
     data: {
       user_id: ta.id,
       course_id: cse110.id,
-      role: 'ta',
+      role: CourseRoles.TA,
     },
   });
 
@@ -169,7 +190,7 @@ async function main() {
       user_id: john.id,
       course_id: cse210.id,
       team_id: team1.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -178,7 +199,7 @@ async function main() {
       user_id: jane.id,
       course_id: cse210.id,
       team_id: team2.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -187,7 +208,7 @@ async function main() {
       user_id: john.id,
       course_id: cse110.id,
       team_id: team4.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -196,7 +217,7 @@ async function main() {
       user_id: jane.id,
       course_id: cse110.id,
       team_id: team5.id,
-      role: 'student',
+      role: CourseRoles.STUDENT,
     },
   });
 
@@ -431,13 +452,12 @@ async function main() {
     data: {
       course_id: cse210.id,
       config: {
-        text: 'How are you feeling about the progress of your team project?',
         options: [
-          { value: 'Happy', color: 'rgb(0, 255, 0)' },
-          { value: 'Tired', color: 'rgb(255, 243, 21)' },
-          { value: 'Concerned', color: 'rgba(255, 153, 0, 1)' },
-          { value: 'Worried', color: 'rgb(255, 0, 0)' },
-          { value: 'Sad', color: 'rgb(0, 0, 255)' },
+          { value: 'Happy', color: 'green' },
+          { value: 'Tired', color: 'yellow' },
+          { value: 'Concerned', color: 'orange' },
+          { value: 'Worried', color: 'red' },
+          { value: 'Sad', color: 'blue' },
         ],
       },
       is_editable: false,
@@ -448,11 +468,10 @@ async function main() {
     data: {
       course_id: cse110.id,
       config: {
-        text: 'What do you think about the course so far?',
         options: [
-          { value: 'Good', color: 'rgb(0, 255, 0)' },
-          { value: 'Neutral', color: 'rgb(0, 0, 255)' },
-          { value: 'Bad', color: 'rgb(255, 0, 0)' },
+          { value: 'Good', color: 'green' },
+          { value: 'Neutral', color: 'blue' },
+          { value: 'Bad', color: 'red' },
         ],
       },
       is_editable: true,
@@ -464,6 +483,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: john.id,
+      team_id: team1.id,
       pulse_config_id: cse210_pulse_config.id,
       value: 'Happy',
       description: 'Feeling good about our project progress!',
@@ -475,6 +495,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: jane.id,
+      team_id: team2.id,
       pulse_config_id: cse210_pulse_config.id,
       value: 'Tired',
       description: 'A bit overwhelmed with the workload.',
@@ -486,6 +507,7 @@ async function main() {
     data: {
       course_id: cse210.id,
       user_id: john.id,
+      team_id: team1.id,
       pulse_config_id: cse210_pulse_config.id,
       value: 'Concerned',
       created_at: new Date('2025-10-08T09:00:00Z'),
@@ -501,6 +523,144 @@ async function main() {
       description:
         'Concerned about the upcoming deadlines and progress of team 5.',
       created_at: new Date('2025-10-08T09:10:00Z'),
+    },
+  });
+
+  console.log('Creating interaction configs...');
+  const cse210_interaction_config = await prisma.interaction_configs.create({
+    data: {
+      course_id: cse210.id,
+      config: {
+        options: [
+          { value: 'positive', color: 'rgb(0, 255, 0)' },
+          { value: 'negative', color: 'rgb(255, 0, 0)' },
+          { value: 'neutral', color: 'rgb(128, 128, 128)' },
+        ],
+      },
+      is_editable: false,
+    },
+  });
+
+  const cse110_interaction_config = await prisma.interaction_configs.create({
+    data: {
+      course_id: cse110.id,
+      config: {
+        options: [
+          { value: 'positive', color: 'rgb(0, 255, 0)' },
+          { value: 'negative', color: 'rgb(255, 0, 0)' },
+          { value: 'neutral', color: 'rgb(128, 128, 128)' },
+        ],
+      },
+      is_editable: true,
+    },
+  });
+
+  console.log('Creating interactions...');
+  const interaction1 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'John answered a question about design patterns during lecture. Great explanation!',
+      created_at: new Date('2025-10-01T10:30:00Z'),
+    },
+  });
+
+  const interaction2 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'Jane came to office hours and asked thoughtful questions about the project requirements.',
+      created_at: new Date('2025-10-02T14:00:00Z'),
+    },
+  });
+
+  const interaction3 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'neutral',
+      description:
+        'Team discussion during class about project scope. Need to follow up.',
+      created_at: new Date('2025-10-03T11:15:00Z'),
+    },
+  });
+
+  const interaction4 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: ta.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'positive',
+      description:
+        'John helped another student debug their code during lab. Great teamwork!',
+      created_at: new Date('2025-10-02T15:30:00Z'),
+    },
+  });
+
+  const interaction5 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: professor.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'negative',
+      description:
+        'Student missed multiple office hours appointments without notice.',
+      created_at: new Date('2025-10-02T09:45:00Z'),
+    },
+  });
+
+  console.log('Creating interaction participants...');
+  // Interaction 1: John participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction1.id,
+      user_id: john.id,
+    },
+  });
+
+  // Interaction 2: Jane participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction2.id,
+      user_id: jane.id,
+    },
+  });
+
+  // Interaction 3: Both John and Jane participated in team discussion
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction3.id,
+      user_id: john.id,
+    },
+  });
+
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction3.id,
+      user_id: jane.id,
+    },
+  });
+
+  // Interaction 4: John participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction4.id,
+      user_id: john.id,
+    },
+  });
+
+  // Interaction 5: Jane participated
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction5.id,
+      user_id: jane.id,
     },
   });
 

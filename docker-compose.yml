@@ -17,7 +17,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod   
+      dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -29,6 +29,7 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
     ports:
       - "3001:3001"
+      - "5555:5555"
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -41,8 +42,10 @@ services:
       - "8080:80"
     volumes:
       - ./frontend:/usr/share/nginx/html
+      - node_modules:/usr/share/nginx/html/node_modules
     depends_on:
       - backend
 
 volumes:
   db_data:
+  node_modules:

@@ -1,27 +1,30 @@
 'use strict';
 
 const { mapAndReply } = require('../../utils/error-map');
+const {
+  mapUserAndEnrollmentToCourseUser,
+} = require('../shared/shared.mappers');
 
 /**
  * Course Routes Plugin
  * GET
- * /api/courses - get all courses
- * /api/courses/:course_id - get specific course data
- * /api/courses/:course_id/users - get all users in class
- * /api/courses/:course_id/users/:user_id - get specific user details in context of course
+ * /courses - get all courses
+ * /courses/:course_id - get specific course data
+ * /courses/:course_id/users - get all users in class
+ * /courses/:course_id/users/:user_id - get specific user details in context of course
  *
  * POST
- * /api/courses - create a new course
+ * /courses - create a new course
  *
  * PATCH
- * /api/courses/:course_id - update course details
+ * /courses/:course_id - update course details
  *
  * DELETE
- * /api/courses/:course_id - delete a course
+ * /courses/:course_id - delete a course
  *
  * POST
- * /api/courses/:course_id/users - enroll a user into a course
- * /api/courses/:course_id/join - join a course with join code
+ * /courses/:course_id/users - enroll a user into a course
+ * /courses/:course_id/join - join a course with join code
  *
  *
  */
@@ -42,7 +45,8 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.getAllCourse();
+        // Return only courses the authenticated user is enrolled in / associated with
+        const res = await courseService.getCoursesForUser(request.user.id);
         return res;
       } catch (error) {
         console.error(error);
@@ -61,6 +65,13 @@ module.exports = async function courseRoutes(fastify, options) {
         const res = await courseRepo.getCourseById(
           parseInt(request.params.course_id, 10)
         );
+        if (!res) {
+          return reply.code(404).send({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'Course not found',
+          });
+        }
         return res;
       } catch (error) {
         return mapAndReply(error, reply);
@@ -71,6 +82,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.get(
     '/courses/:course_id/users',
     {
+      preHandler: [fastify.requireEnrolledInCourse],
       schema: courseSchemas.GetCourseUsersSchema,
     },
     async (request, reply) => {
@@ -78,7 +90,9 @@ module.exports = async function courseRoutes(fastify, options) {
         const res = await courseRepo.getUsersInCourse(
           parseInt(request.params.course_id, 10)
         );
-        return res;
+        return res.map((enrollment) =>
+          mapUserAndEnrollmentToCourseUser(enrollment.users, enrollment)
+        );
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -88,15 +102,23 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.get(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireEnrolledInCourse],
       schema: courseSchemas.GetCourseUserSchema,
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.getUserDetailsInCourse(
-          parseInt(request.params.course_id, 10),
-          parseInt(request.params.user_id, 10)
+        const res = await courseRepo.getEnrollmentByUserAndCourse(
+          parseInt(request.params.user_id, 10),
+          parseInt(request.params.course_id, 10)
         );
-        return res;
+        if (!res) {
+          return reply.code(404).send({
+            statusCode: 404,
+            error: 'Not Found',
+            message: 'User enrollment not found in this course',
+          });
+        }
+        return mapUserAndEnrollmentToCourseUser(res.users, res);
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -106,11 +128,12 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.post(
     '/courses',
     {
+      preHandler: [fastify.requireGlobalProfessor],
       schema: courseSchemas.CreateCourseSchema,
     },
     async (request, reply) => {
       try {
-        const course = await courseRepo.addCourse(request.body);
+        const course = await courseRepo.addCourse(request.user, request.body);
         reply.code(201).send(course);
       } catch (error) {
         return mapAndReply(error, reply);
@@ -121,6 +144,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.UpdateCourseSchema,
     },
     async (request, reply) => {
@@ -139,6 +163,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.delete(
     '/courses/:course_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.DeleteCourseSchema,
     },
     async (request, reply) => {
@@ -154,15 +179,16 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.post(
     '/courses/:course_id/users',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.AddUserInCourseSchema,
     },
     async (request, reply) => {
       try {
-        await courseRepo.addEnrollment(
+        const res = await courseRepo.addEnrollment(
           parseInt(request.params.course_id, 10),
           request.body.user_id
         );
-        reply.code(201).send();
+        reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -170,24 +196,20 @@ module.exports = async function courseRoutes(fastify, options) {
   );
 
   fastify.post(
-    '/courses/:course_id/join',
+    '/courses/join',
     {
       schema: courseSchemas.JoinCourseSchema,
     },
     async (request, reply) => {
       try {
-        const isValid = await courseService.checkCourseJoinCode(
-          parseInt(request.params.course_id, 10),
-          request.body.join_code
+        const res = await courseService.enrollByJoinCode(
+          request.body.join_code,
+          request.user.id
         );
-        if (!isValid) {
-          return reply.code(400).send({ error: 'Invalid join code' });
+        if (!res) {
+          return reply.code(404).send({ error: 'Join code not found' });
         }
-        await courseRepo.addEnrollment(
-          parseInt(request.params.course_id, 10),
-          request.body.user_id
-        );
-        reply.code(201).send();
+        reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -197,16 +219,17 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.UpdateUserInCourseSchema,
     },
     async (request, reply) => {
       try {
-        await courseRepo.updateEnrollmentRole(
+        const res = await courseService.updateUserInCourse(
           parseInt(request.params.course_id, 10),
           parseInt(request.params.user_id, 10),
-          request.body.role
+          request.body
         );
-        reply.send();
+        reply.send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
         return mapAndReply(error, reply);
       }
@@ -216,6 +239,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.delete(
     '/courses/:course_id/users/:user_id',
     {
+      preHandler: [fastify.requireProfessorInCourse],
       schema: courseSchemas.RemoveUserFromCourseSchema,
     },
     async (request, reply) => {

@@ -38,9 +38,11 @@ const sensible = require('@fastify/sensible');
 fastify.register(cors, {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 });
 fastify.register(cookie);
 fastify.register(sensible);
+fastify.register(require('./plugins/error-handler'));
 
 //add open telemetry tracing
 require('../../tracing');
@@ -51,6 +53,7 @@ fastify.register(require('./prisma'));
 //decorators
 fastify.register(require('./decorators/auth'));
 fastify.register(require('./decorators/course'));
+fastify.register(require('./decorators/journal'));
 
 //hooks
 fastify.register(require('./hooks/authenticate'));
@@ -59,14 +62,14 @@ fastify.register(require('./hooks/profile-complete'));
 //services
 fastify.register(require('./services/auth'));
 fastify.register(require('./services/lectures'));
-
-//course routes
-fastify.register(require('./services/course/course.routes'), {
-  prefix: '/api',
-});
+fastify.register(require('./services/course'));
+fastify.register(require('./services/journal'));
+fastify.register(require('./services/attendances'));
+fastify.register(require('./services/teams'));
+fastify.register(require('./services/pulse'));
 
 //health check
-fastify.get('/api/health', async () => {
+fastify.get('/health', async () => {
   return { ok: true, time: new Date().toISOString() };
 });
 

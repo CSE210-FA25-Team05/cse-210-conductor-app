@@ -1,5 +1,8 @@
 'use strict';
 
+const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
+const { CourseRoles } = require('../shared/shared.enums');
+
 /**
  * Course Repository
  *
@@ -12,11 +15,31 @@ class CourseRepo {
   }
 
   /**
-   * Get all courses.
+   * Get all courses. This is used for internal operations.
    * @returns {Promise<Array>} List of all courses
    */
   async getAllCourse() {
     const courses = await this.db.courses.findMany();
+    return courses;
+  }
+
+  /**
+   * Get all courses for a specific user (by enrollment).
+   * @param {number} userId - ID of the user
+   * @returns {Promise<Array>} List of courses the user is enrolled in
+   */
+  async getCoursesForUser(userId) {
+    const courses = await this.db.courses.findMany({
+      where: {
+        deleted_at: null,
+        enrollments: {
+          some: {
+            user_id: userId,
+          },
+        },
+      },
+    });
+
     return courses;
   }
 
@@ -40,24 +63,18 @@ class CourseRepo {
   async getUsersInCourse(courseId) {
     const users = await this.db.enrollments.findMany({
       where: { course_id: courseId },
-    });
-    return users;
-  }
-
-  /**
-   * Get user details in a course.
-   * @param {number} courseId
-   * @param {number} userId
-   * @returns {Promise<Object|null>} Enrollment object or null if not found
-   */
-  async getUserDetailsInCourse(courseId, userId) {
-    const user = await this.db.enrollments.findFirst({
-      where: {
-        user_id: userId,
-        course_id: courseId,
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
-    return user;
+    return users;
   }
 
   /**
@@ -73,6 +90,16 @@ class CourseRepo {
         user_id: userId,
         course_id: courseId,
       },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
+      },
     });
     return enrollment;
   }
@@ -82,7 +109,7 @@ class CourseRepo {
    * @param {Object} courseData - Data for the new course
    * @returns {Promise<Object>} Created course object
    */
-  async addCourse(courseData) {
+  async addCourse(user, courseData) {
     const {
       course_code,
       course_name,
@@ -124,6 +151,18 @@ class CourseRepo {
         start_date: start_date ? new Date(start_date) : null,
         end_date: end_date ? new Date(end_date) : null,
         join_code: finalJoinCode,
+        enrollments: {
+          create: {
+            user_id: user.id,
+            role: CourseRoles.PROFESSOR,
+          },
+        },
+        pulse_configs: {
+          create: {
+            config: DEFAULT_PULSE_CONFIG,
+            is_editable: true,
+          },
+        },
       },
     });
     return created;
@@ -156,16 +195,19 @@ class CourseRepo {
   }
 
   /**
-   * Get the join code for a course.
-   * @param {number} courseId - ID of the course
-   * @returns {Promise<string|null>} Join code of the course or null if not found
+   * Enroll a user by join code.
+   * @param {string} joinCode - Join code to enroll by
+   * @param {number} userId - ID of the user to enroll
+   * @returns {Promise<Object>} Enrollment object
    */
-  async getCourseJoinCode(courseId) {
-    const course = await this.db.courses.findUnique({
-      where: { id: courseId },
-      select: { join_code: true },
+  async enrollByJoinCode(joinCode, userId) {
+    const course = await this.db.courses.findFirst({
+      where: { join_code: joinCode },
     });
-    return course ? course.join_code : null;
+    if (!course) {
+      return null;
+    }
+    return this.addEnrollment(course.id, userId);
   }
 
   /**
@@ -180,6 +222,16 @@ class CourseRepo {
         course_id: courseId,
         user_id: userId,
       },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
+      },
     });
     return enrollment;
   }
@@ -192,13 +244,25 @@ class CourseRepo {
    * @returns {Promise<Object>} Updated enrollment object
    */
   async updateEnrollmentRole(courseId, userId, role) {
-    const updatedEnrollment = await this.db.enrollments.updateMany({
+    const updatedEnrollment = await this.db.enrollments.update({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
       data: {
         role: role,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
       },
     });
     return updatedEnrollment;
@@ -211,10 +275,12 @@ class CourseRepo {
    * @returns {Promise<Object>} Deleted enrollment object
    */
   async deleteEnrollment(courseId, userId) {
-    const deletedEnrollment = await this.db.enrollments.deleteMany({
+    const deletedEnrollment = await this.db.enrollments.delete({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
     });
     return deletedEnrollment;
@@ -225,8 +291,7 @@ class CourseRepo {
    * @returns {Promise<string>} Generated join code
    */
   async generateJoinCode() {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let generatedCode = '';
     for (let i = 0; i < 6; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);

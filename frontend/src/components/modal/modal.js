@@ -8,6 +8,7 @@ class Modal extends HTMLElement {
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
+    const footerAttr = this.getAttribute('footer');
 
     const dialog = document.createElement('dialog');
     const article = document.createElement('article');
@@ -17,6 +18,9 @@ class Modal extends HTMLElement {
     const closeIcon = document.createElement('i');
 
     // Create the slots
+    const backSlot = document.createElement('slot');
+    backSlot.name = 'back';
+
     const headerSlot = document.createElement('slot');
     headerSlot.name = 'header';
 
@@ -32,6 +36,7 @@ class Modal extends HTMLElement {
 
     // Header: header slot + close button
     closeButton.appendChild(closeIcon);
+    header.appendChild(backSlot);
     header.appendChild(headerSlot);
     header.appendChild(closeButton);
 
@@ -41,7 +46,9 @@ class Modal extends HTMLElement {
     // Article: header + content slot + footer
     article.appendChild(header);
     article.appendChild(contentSlot);
-    article.appendChild(footer);
+    if (footerAttr !== 'none') {
+      article.appendChild(footer);
+    }
 
     dialog.appendChild(article);
 

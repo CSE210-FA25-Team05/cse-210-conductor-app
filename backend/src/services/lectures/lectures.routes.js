@@ -3,11 +3,11 @@
 /**
  * Lectures Routes
  *
- * GET    /api/courses/:course_id/lectures           - Get all lectures for a course
- * GET    /api/courses/:course_id/lectures/:lecture_id - Get one specific lecture
- * POST   /api/courses/:course_id/lectures           - Create a new lecture (professor/TA only)
- * PATCH  /api/courses/:course_id/lectures/:lecture_id - Update a lecture (professor/TA only)
- * DELETE /api/courses/:course_id/lectures/:lecture_id - Delete a lecture (professor/TA only)
+ * GET    /courses/:course_id/lectures           - Get all lectures for a course
+ * GET    /courses/:course_id/lectures/:lecture_id - Get one specific lecture
+ * POST   /courses/:course_id/lectures           - Create a new lecture (professor/TA only)
+ * PATCH  /courses/:course_id/lectures/:lecture_id - Update a lecture (professor/TA only)
+ * DELETE /courses/:course_id/lectures/:lecture_id - Delete a lecture (professor/TA only)
  */
 
 const { mapAndReply } = require('../../utils/error-map');
@@ -26,7 +26,7 @@ async function routes(fastify) {
 
   // Get all lectures for a course
   fastify.get(
-    '/api/courses/:course_id/lectures',
+    '/courses/:course_id/lectures',
     {
       preHandler: fastify.loadCourse,
       schema: lecturesSchemas.GetAllLecturesSchema,
@@ -47,7 +47,7 @@ async function routes(fastify) {
 
   // Get a single lecture
   fastify.get(
-    '/api/courses/:course_id/lectures/:lecture_id',
+    '/courses/:course_id/lectures/:lecture_id',
     {
       preHandler: fastify.loadCourse,
       schema: lecturesSchemas.GetLectureSchema,
@@ -70,7 +70,7 @@ async function routes(fastify) {
 
   // Create a new lecture
   fastify.post(
-    '/api/courses/:course_id/lectures',
+    '/courses/:course_id/lectures',
     {
       preHandler: fastify.loadCourse,
       schema: lecturesSchemas.CreateLectureSchema,
@@ -92,7 +92,7 @@ async function routes(fastify) {
 
   // Update a lecture
   fastify.patch(
-    '/api/courses/:course_id/lectures/:lecture_id',
+    '/courses/:course_id/lectures/:lecture_id',
     {
       preHandler: fastify.loadCourse,
       schema: lecturesSchemas.UpdateLectureSchema,
@@ -116,7 +116,7 @@ async function routes(fastify) {
 
   // Delete a lecture
   fastify.delete(
-    '/api/courses/:course_id/lectures/:lecture_id',
+    '/courses/:course_id/lectures/:lecture_id',
     {
       preHandler: fastify.loadCourse,
       schema: lecturesSchemas.DeleteLectureSchema,
@@ -137,6 +137,33 @@ async function routes(fastify) {
         return reply.send({ message: 'Lecture deleted successfully' });
       } catch (error) {
         fastify.log.error({ error }, 'DELETE lecture error');
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // Activate attendance for a lecture (generate code and start 5-minute timer)
+  fastify.post(
+    '/api/courses/:course_id/lectures/:lecture_id/activate-attendance',
+    {
+      preHandler: [
+        fastify.loadCourse,
+        fastify.loadLecture,
+        fastify.requireTAOrProfessorInCourse,
+      ],
+      schema: lecturesSchemas.ActivateAttendanceSchema,
+    },
+    async (req, reply) => {
+      try {
+        const lectureId = parseInt(req.params.lecture_id, 10);
+        const lecture = await lecturesService.activateAttendance(
+          req.user,
+          req.course,
+          req.enrollment,
+          lectureId
+        );
+        return reply.send(lecture);
+      } catch (error) {
         return mapAndReply(error, reply);
       }
     }

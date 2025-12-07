@@ -1,0 +1,146 @@
+'use strict';
+
+/**
+ * Pulses Routes
+ *
+ * Endpoints implemented:
+ * - GET  /courses/:course_id/pulses/config     - Get pulse config for a course
+ * - PATCH /courses/:course_id/pulses/config    - Update pulse config (professor/TA only)
+ * - POST /courses/:course_id/pulses            - Submit a pulse (authenticated student)
+ */
+
+const { mapAndReply } = require('../../utils/error-map');
+const PulseRepo = require('./pulse.repo');
+const PulseService = require('./pulse.service');
+const pulseSchemas = require('./pulse.schemas');
+const PulsePermissions = require('./pulse.permissions');
+
+async function routes(fastify) {
+  const pulseRepo = new PulseRepo(fastify.db);
+  const pulsePermissions = new PulsePermissions(pulseRepo);
+  const pulseService = new PulseService(pulseRepo);
+
+  // Get pulse config for a course
+  fastify.get(
+    '/courses/:course_id/pulses/config',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      schema: pulseSchemas.GetPulseConfigSchema,
+    },
+    async (req, reply) => {
+      try {
+        const course = req.course;
+        const cfg = await pulseService.getConfig(course);
+        if (!cfg) {
+          return reply.notFound('Pulse configuration not found for course');
+        }
+        return reply.code(200).send(cfg);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // Update pulse config (professor/TA only)
+  fastify.patch(
+    '/courses/:course_id/pulses/config',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireProfessorInCourse],
+      schema: pulseSchemas.UpdatePulseConfigSchema,
+    },
+    async (req, reply) => {
+      try {
+        const course = req.course;
+        const configObj = req.body;
+
+        const saved = await pulseService.upsertConfig(course, configObj);
+        return reply.code(200).send(saved);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // Submit a pulse
+  fastify.post(
+    '/courses/:course_id/pulses',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      schema: pulseSchemas.CreatePulseSchema,
+    },
+    async (req, reply) => {
+      try {
+        const course = req.course;
+        const user = req.user;
+        const enrollment = req.enrollment;
+
+        const option = req.body.option.trim();
+        const description = req.body.description?.trim() || null;
+
+        const created = await pulseService.submitPulse(
+          course,
+          user,
+          enrollment,
+          {
+            selectedOption: option,
+            description,
+          }
+        );
+
+        return reply.code(201).send(created);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  // Get pulses for a user in a course - TODO: pagination
+  fastify.get(
+    '/courses/:course_id/pulses',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      schema: pulseSchemas.GetPulsesSchema,
+    },
+    async (req, reply) => {
+      try {
+        const course = req.course;
+        const filters = pulseService.buildFiltersFromQuery(req.query, req.user);
+
+        if (
+          !pulsePermissions.canViewPulses(req.user, req.enrollment, filters)
+        ) {
+          return reply.forbidden(
+            'You do not have permission to view these pulse records'
+          );
+        }
+
+        const pulses = await pulseService.getPulses(course, filters);
+
+        return reply.send(pulses);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  fastify.get(
+    '/courses/:course_id/pulses/stats',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
+      schema: pulseSchemas.GetPulseStatsSchema,
+    },
+    async (req, reply) => {
+      try {
+        const stats = await pulseService.getAggregatedStats(
+          req.course,
+          pulseService.buildFiltersFromQuery(req.query, req.user)
+        );
+        return reply.send({ stats });
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+}
+
+module.exports = routes;

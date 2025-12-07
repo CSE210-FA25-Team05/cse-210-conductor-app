@@ -1,6 +1,7 @@
 [role='group'] {
   display: inline-flex;
   vertical-align: middle;
+  flex-wrap: wrap;
 }
 
 [role='group'] > label,

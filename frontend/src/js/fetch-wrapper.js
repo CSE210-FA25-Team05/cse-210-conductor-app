@@ -18,13 +18,16 @@ export async function fetchWrapper(
 ) {
   while (numRetries >= 0) {
     try {
+      // Only set Content-Type for requests with a body
+      const headers = { ...options.headers };
+      if (options.body !== undefined && options.body !== null) {
+        headers['Content-Type'] = 'application/json';
+      }
+
       let response = await fetch(url, {
         ...options,
         credentials: 'include', // Tells the server who we are for authorization purposes
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        }, // Tells the server we're giving them a json object in the body
+        headers: headers,
         signal: AbortSignal.timeout(timeoutDuration), // Interupts the fetch request if it exceeds timeoutDuration number of milliseconds
       });
 
@@ -34,10 +37,17 @@ export async function fetchWrapper(
           numRetries -= 1;
           continue;
         }
+        // Try to get the error message given by the server, but if it doesn't work just use the status code
+        let error_message;
+        try {
+          error_message = (await response.json()).message;
+        } catch (err) {
+          error_message = `Server Error: ${response.status} ${response.statusText}`;
+        }
         return {
           ok: false,
           status: response.status,
-          error: 'Server Error: ' + response.status + ' ' + response.statusText,
+          error: error_message,
         };
       }
 
@@ -107,6 +117,7 @@ export async function getWrapper(url, timeoutDuration = 1000, numRetries = 0) {
 /**
  * @description Makes a DELETE request and processes the response to return a consistent object.
  * @param {string} url - URL to send the HTTP request to.
+ * @param {object} [body] - Body data to be sent with the HTTP request. Don't use JSON.stringify, we do that for you.
  * @param {number} [timeoutDuration] - Number of milliseconds before giving up on the request.
  * @param {number} [numRetries] - Number of times to retry the request when the request does not succeed.
  * @returns { ok: boolean, status: number, data?: json, error?: string} - An object containing:
@@ -117,11 +128,13 @@ export async function getWrapper(url, timeoutDuration = 1000, numRetries = 0) {
  */
 export async function deleteWrapper(
   url,
+  body = {},
   timeoutDuration = 1000,
   numRetries = 0
 ) {
   let options = {
     method: 'DELETE',
+    body: JSON.stringify(body),
   };
   let fetchResponse = await fetchWrapper(
     url,

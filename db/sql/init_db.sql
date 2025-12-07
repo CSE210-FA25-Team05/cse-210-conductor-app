@@ -109,12 +109,12 @@ CREATE TABLE IF NOT EXISTS attendances (
     id SERIAL PRIMARY KEY,
     course_id INTEGER NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
     lecture_id INTEGER NOT NULL REFERENCES lectures(id) ON DELETE CASCADE,
-    student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     updated_by INTEGER REFERENCES users(id) ON DELETE SET NULL, -- TA / professor who last edited
     update_reason TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at TIMESTAMP,
     -- One attendance row per student per lecture
-    UNIQUE (lecture_id, student_id)
+    UNIQUE (lecture_id, user_id)
 );
