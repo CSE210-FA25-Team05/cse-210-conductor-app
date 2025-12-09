@@ -9,7 +9,7 @@ class BlockingModal extends Modal {
   connectedCallback() {
     super.connectedCallback();
 
-    // Remove event listeners to prevent 
+    // Remove event listeners to prevent
     this.dialog.removeEventListener('click', this.handleBackdropClick);
     this.closeBtn.removeEventListener('click', this.handleCloseClick);
     this.closeBtn.removeEventListener('cancel', this.handleDialogCancel);
@@ -18,10 +18,10 @@ class BlockingModal extends Modal {
   }
 
   handleEscape(event) {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        event.preventDefault();
-      }
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      event.preventDefault();
+    }
   }
   open() {
     document.addEventListener('keydown', this.handleEscape, true);
@@ -32,7 +32,6 @@ class BlockingModal extends Modal {
     document.removeEventListener('keydown', this.handleEscape, true);
     super.close();
   }
-
 }
 
 customElements.define('blocking-modal', BlockingModal);
