@@ -18,11 +18,11 @@
 }
 
 .toast.success {
-  background-color: var(--color-success-light)
+  background-color: var(--color-success-light);
 }
 
 .toast.error {
-  background-color: var(--color-error-light)
+  background-color: var(--color-error-light);
 }
 
 .toast.hide {
