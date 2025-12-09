@@ -14,6 +14,7 @@
             <header>
                 <h1>Welcome to Conductor!</h1>
             </header>
+
             <section> 
                 <article>
                     <header>
@@ -21,12 +22,15 @@
                     </header>
                     <join-course-form></join-course-form>
                 </article>
-                <article>
+
+                <!-- Create Course Section - hidden by default -->
+                <article id="create-course-section" style="display: none;">
                     <header>
                         <h2>Create Course</h2>
                     </header>
                     <create-course-form></create-course-form>
                 </article>
+
                 <article>
                     <header>
                         <h2>Your Courses</h2>
@@ -36,11 +40,19 @@
                 </article>
             </section> 
 
-            <script>
-            document
-                .addEventListener("DOMContentLoaded", async () => {
+            <script type="module">
+                import { getUserRole } from '/src/js/utils/cache-utils.js';
+
+                document.addEventListener("DOMContentLoaded", async () => {
                     const listElement = document.getElementById("courses-list");
                     const responseElement = document.getElementById("courses-response");
+                    const createCourseSection = document.getElementById("create-course-section");
+
+                    // Show "Create Course" only if role is Professor
+                    const role = await getUserRole();
+                    if (role === "Professor") {
+                        createCourseSection.style.display = "";
+                    }
 
                     // Clear previous content
                     listElement.innerHTML = "";
@@ -62,8 +74,7 @@
                         }
 
                         if (!Array.isArray(result) || result.length === 0) {
-                            listElement.innerHTML =
-                                "<li>No enrolled courses found.</li>";
+                            listElement.innerHTML = "<li>No enrolled courses found.</li>";
                             return;
                         }
 
@@ -72,10 +83,12 @@
                             const li = document.createElement("li");
                             const a = document.createElement("a");
 
-                            // If your API uses another identifier, adjust 'course.id' accordingly
-                            a.href = `/course/${course.id}/dashboard`;
-                            a.textContent = course.course_name || course.course_code || course.id;
+                            // Show "course_code: course_name"
+                            const code = course.course_code || "";
+                            const name = course.course_name || "";
+                            a.textContent = `${code}: ${name}`;
 
+                            a.href = `/course/${course.id}/dashboard`;
                             li.appendChild(a);
                             listElement.appendChild(li);
                         }
@@ -83,9 +96,7 @@
                         responseElement.textContent = `Error: ${error.message}`;
                     }
                 });
-
-
             </script>
+        </main>
     </body>
-
 </html>
