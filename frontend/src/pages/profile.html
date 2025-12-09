@@ -84,7 +84,7 @@
                 </article>
             </section>
         </main>
-        <aside>
+        <aside id="aside">
             <conductor-nav></conductor-nav>
         </aside>
         <script type="module">
@@ -121,15 +121,20 @@
             const pronounsError = document.getElementById('pronouns-error');
             
             const incompleteNotification = document.getElementById('incomplete-notification');
+            const aside = document.getElementById('aside');
+            let completing_profile = false;
 
             // Load profile on page load
             async function loadProfile() {
                 try {
                     const profile = await getProfile();
                     if (!profile.is_profile_complete) {
+                        aside.style.display = "none";
                         customElements.whenDefined('modal-component').then(() => {
                             incompleteNotification.style.display = 'block';
                             incompleteNotification.open();
+                            completing_profile = true;
+                            console.log('completing_profile', completing_profile)
                         });
                     }
                     
@@ -187,7 +192,13 @@
                     };
                     
                     const updatedProfile = await updateProfile(updateData);
-                    
+                    // If the user is completing their profile for the first time, redirect to /courses
+                    if (updatedProfile.user.is_profile_complete && completing_profile) {
+                        window.location.replace('/courses');
+                    }
+                    // Show the sidebar when not compltint profile for first time
+                    aside.style.display = "block"; 
+
                     // Show success message
                     profileMessage.style.display = 'block';
                     profileMessage.textContent = 'Profile updated successfully!';
