@@ -2,6 +2,7 @@ import {
   getWrapper,
   postWrapper,
   patchWrapper,
+  deleteWrapper,
 } from '/src/js/fetch-wrapper.js';
 
 /**
@@ -99,4 +100,21 @@ export async function getAttendanceStats(courseID, lectureID) {
     throw new Error(response.error);
   }
   return response.data;
+}
+
+/**
+ * @description Delete a specific attendance record from a lecture.
+ * @param { number } courseID - ID of the course.
+ * @param { number } lectureID - ID of the lecture.
+ * @param { number } attendanceID - ID of the attendance record to delete.
+ * @returns { string } Confirmation message from the server.
+ */
+export async function deleteAttendance(courseID, lectureID, attendanceID) {
+  const response = await deleteWrapper(
+    `/api/courses/${courseID}/lectures/${lectureID}/attendances/${attendanceID}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data.message;
 }
