@@ -50,7 +50,7 @@
         </aside>
         
         <script type="module">
-            import { getCourseId } from '/src/js/utils/cache-utils.js';
+            import { getCourseId, getUserRole } from '/src/js/utils/cache-utils.js';
             import { getAllUsersInCourse, getUserInCourse } from '/src/js/api/course.js';
             import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
             
@@ -97,7 +97,9 @@
                 }
             }
 
-            if (addUserButton && addUserModal) {
+            if (addUserButton && getUserRole() !== 'professor') {
+                addUserButton.style.display = 'none';
+            } else if (addUserButton && addUserModal) {
                 addUserButton.addEventListener('click', () => {
                     addUserModal.open();
                 });
