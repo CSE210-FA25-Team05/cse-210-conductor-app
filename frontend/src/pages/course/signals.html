@@ -14,16 +14,12 @@
         <theme-toggle></theme-toggle>
       </header>
       <article id="pulse-content">
-        <p id="pulse-loading">Loading pulse data...</p>
         <zing-grid
           id="pulse-grid"
-          style="display: block;"
-          caption="Course Pulse Records"
           theme="default"
           pager
           page-size="25"
           page-size-options="10,25,50,100"
-          search
         >
         </zing-grid>
         <p
@@ -41,7 +37,6 @@
       import { getPulseRecords } from '/src/js/api/pulse.js';
 
       const pulseContent = document.getElementById('pulse-content');
-      const pulseLoading = document.getElementById('pulse-loading');
       const pulseGrid = document.getElementById('pulse-grid');
       const pulseError = document.getElementById('pulse-error');
 
@@ -54,12 +49,10 @@
           // Fetch all pulse records for this course
           const pulses = await getPulseRecords(courseId);
           if (!pulses || pulses.length === 0) {
-            pulseLoading.textContent = 'No pulse records found for this course.';
             return;
           }
 
           // Map and format pulse data for grid
-          console.log(pulses);
           const gridData = pulses.map((p) => ({
             first_name: p.user_first_name ?? 'N/A',
             last_name: p.user_last_name ?? 'N/A',
@@ -71,10 +64,8 @@
           }));
 
           pulseGrid.data = gridData;
-          pulseLoading.style.display = 'none';
         } catch (error) {
           console.error('Error loading pulse data:', error);
-          pulseLoading.style.display = 'none';
           pulseError.textContent = `Error loading pulse data: ${error.message}`;
           pulseError.style.display = 'block';
         }

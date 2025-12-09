@@ -6,17 +6,24 @@
         <title>Conductor</title>
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
+        
     </head>
     <body>
         <main>
             <h1>Journal</h1>
-            <zing-grid id="journals-grid" 
-                layout="row" 
-                pager 
-                page-size="10" 
-                filter 
-                sort>
-            </zing-grid>
+            <article>
+                <zing-grid id="journals-grid" 
+                    pager 
+                    page-size="10" 
+                    sort
+                >
+                    <zg-colgroup>
+                        <zg-column index="title" header="Title"></zg-column>
+                        <zg-column index="content"  header="Content"></zg-column>
+                        <zg-column index="created" header="Created"></zg-column>
+                    </zg-colgroup>
+                </zing-grid>
+            </article>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
@@ -30,9 +37,9 @@
                     const courseId = getCourseId();
                     const journals = await getJournals(courseId);
                     const rows = (journals || []).map(j => ({
-                      Title: j.title || '',
-                      Content: j.content || '',
-                      Created: j.created_at ? new Date(j.created_at).toLocaleDateString() : '',
+                      title: j.title || '',
+                      content: j.content || '',
+                      created: j.created_at ? new Date(j.created_at).toLocaleDateString() : '',
                     }));
 
                     const gridRef = document.getElementById('journals-grid');
@@ -41,7 +48,10 @@
                     console.error('Error fetching journals:', error);
                 }
             }
-            fetchUserJournals();
+            window.addEventListener('load', () => {
+                fetchUserJournals();
+            });
+
         </script>
     </body>
 </html>
