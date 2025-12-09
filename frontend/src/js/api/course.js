@@ -126,11 +126,11 @@ export async function getAllUsersInCourse(courseID) {
  * @description Enroll a user into a course.
  * @param {*} courseID — ID of the course to add the user to.
  * @param { object } user - An object containing user information
- * @param { string } user.id - User ID
+ * @param { string } user.email - User ID
  */
 export async function addUserInCourse(courseID, user) {
   let response = await postWrapper(`/api/courses/${courseID}/users`, {
-    user_id: user.id,
+    user_email: user.email,
   });
   if (!response.ok) {
     throw new Error(response.error);
