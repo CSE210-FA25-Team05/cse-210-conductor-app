@@ -22,7 +22,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            set -e
             BRANCH="${{ github.ref_name }}"
             echo "Deploying branch: $BRANCH"
             cd ~/conductor || exit 1
