@@ -31,6 +31,7 @@
                     pager
                     page-size="25"
                     page-size-options="10,25,50,100"
+                    search
                     >
                 </zing-grid>
             </article>
@@ -42,6 +43,7 @@
         <script type="module">
             import { getCourseId } from '/src/js/utils/cache-utils.js';
             import { getAllUsersInCourse, getUserInCourse } from '/src/js/api/course.js';
+            import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
             
             const directoryContent = document.getElementById('directory-content');
             const directoryLoading = document.getElementById('directory-loading');
@@ -85,6 +87,10 @@
             }
             
             loadDirectory();
+
+            window.addEventListener('load', () => {
+                linkSearchToGrid('grid-search', 'directory-grid');
+            });
         </script>
     </body>
 </html>
