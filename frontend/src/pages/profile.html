@@ -8,6 +8,10 @@
         <script type="module" async src="/src/js/common.js"></script>
     </head>
     <body>
+        <modal-component style="display: none" id="incomplete-notification"> 
+            <h4 slot="header">Profile Incomplete</h4>
+            <p slot="content">Please complete your profile before preceding.</p>
+        </modal-component>
         <main>
             <header>
                 <h1>Profile</h1>
@@ -116,10 +120,18 @@
             const lastNameError = document.getElementById('last-name-error');
             const pronounsError = document.getElementById('pronouns-error');
             
+            const incompleteNotification = document.getElementById('incomplete-notification');
+
             // Load profile on page load
             async function loadProfile() {
                 try {
                     const profile = await getProfile();
+                    if (!profile.is_profile_complete) {
+                        customElements.whenDefined('modal-component').then(() => {
+                            incompleteNotification.style.display = 'block';
+                            incompleteNotification.open();
+                        });
+                    }
                     
                     document.getElementById('email').value = profile.email || '';
                     document.getElementById('first-name').value = profile.first_name || '';
