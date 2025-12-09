@@ -64,6 +64,7 @@ fastify.register(require('./services/journal'));
 fastify.register(require('./services/attendances'));
 fastify.register(require('./services/teams'));
 fastify.register(require('./services/pulse'));
+fastify.register(require('./services/interactions'));
 
 //health check
 fastify.get('/health', async () => {
