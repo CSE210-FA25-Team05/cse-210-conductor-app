@@ -23,13 +23,12 @@
         </aside>
         <script type="module">
             import { getCourseId, getUserId } from '/src/js/utils/cache-utils.js';
-            import { getJournalsByUser } from '/src/js/api/journal.js';
+            import { getJournals } from '/src/js/api/journal.js';
             
             async function fetchUserJournals() {
                 try {
                     const courseId = getCourseId();
-                    const userId = getUserId();
-                    const journals = await getJournalsByUser(userId, courseId);
+                    const journals = await getJournals(courseId);
                     const rows = (journals || []).map(j => ({
                       Title: j.title || '',
                       Content: j.content || '',
