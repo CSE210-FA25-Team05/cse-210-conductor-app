@@ -6,6 +6,7 @@
         <title>Class Directory - Conductor</title>
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
+        <script type="module" async src="/src/components/forms/add-user-form.js"></script>
     </head>
     <body>
         <main>
@@ -23,6 +24,9 @@
                             placeholder="Search..."
                             aria-label="Search journals"
                         />
+                        <div> <!-- Used to separate buttons from search -->
+                            <button id='add-user-button'>Add User<i>add</i></button>
+                        </div>
                     </div>
                 </header>
                 <p id="directory-loading">Loading directory...</p>
@@ -36,6 +40,10 @@
                     >
                 </zing-grid>
             </article>
+            <modal-component footer="none" id="add-user-modal">
+                <h4 slot="header">Add User</h4>
+                <add-user-form slot="content"></add-user-form>
+            <modal-component>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
@@ -50,6 +58,8 @@
             const directoryLoading = document.getElementById('directory-loading');
             const directoryGrid = document.getElementById('directory-grid');
             const directoryError = document.getElementById('directory-error');
+            const addUserButton = document.getElementById('add-user-button');
+            const addUserModal = document.getElementById('add-user-modal');
             
             async function loadDirectory() {
                 try {
@@ -71,7 +81,7 @@
                         first_name: e.user_first_name ?? 'N/A',
                         last_name: e.user_last_name ?? 'N/A',
                         email: e.user_email ?? 'N/A',
-                        pronouns: e.user_pronouns ?? 'N/A',
+                        pronouns: e.pronouns ?? 'N/A',
                         role: e.role ?? 'N/A',
                         team_id: e.team_id ?? 'N/A',
                     }));
@@ -85,6 +95,12 @@
                     directoryError.textContent = `Error loading directory: ${error.message}`;
                     directoryError.style.display = 'block';
                 }
+            }
+
+            if (addUserButton && addUserModal) {
+                addUserButton.addEventListener('click', () => {
+                    addUserModal.open();
+                });
             }
             
             loadDirectory();
