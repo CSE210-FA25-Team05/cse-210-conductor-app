@@ -2,6 +2,7 @@
 
 const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
 const { CourseRoles } = require('../shared/shared.enums');
+const { generateCode } = require('../../utils/code-generator');
 
 /**
  * Course Repository
@@ -135,7 +136,7 @@ class CourseRepo {
       let uniqueCode;
       let exists;
       do {
-        uniqueCode = await this.generateJoinCode();
+        uniqueCode = generateCode();
         exists = await this.db.courses.findFirst({
           where: { join_code: uniqueCode },
         });
@@ -287,20 +288,6 @@ class CourseRepo {
       },
     });
     return deletedEnrollment;
-  }
-
-  /**
-   * Generate a random 6-character join code.
-   * @returns {Promise<string>} Generated join code
-   */
-  async generateJoinCode() {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let generatedCode = '';
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      generatedCode += characters.charAt(randomIndex);
-    }
-    return generatedCode;
   }
 }
 
