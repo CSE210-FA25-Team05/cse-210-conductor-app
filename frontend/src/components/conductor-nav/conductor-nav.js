@@ -12,9 +12,11 @@ class ConductorNav extends HTMLElement {
       Dashboard: '/course/dashboard',
       Signals: '/course/signals',
       Interactions: '/course/interactions',
+      Lectures: '/course/lecture',
       Atoms: '/course/atoms',
       Journals: '/course/journals',
       ZingGrid: '/course/zinggrid',
+      Directory: '/course/directory',
       Profile: '/profile',
     };
     this.courses = [];

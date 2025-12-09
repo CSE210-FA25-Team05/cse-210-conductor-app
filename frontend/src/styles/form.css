@@ -27,7 +27,7 @@ input {
 
   -webkit-appearance: none;
 }
-! input:has(+ small) {
+input:has(+ small) {
   margin-bottom: 0;
 }
 input + small {
@@ -49,11 +49,13 @@ quick-add-modal form {
 quick-add-modal [role='group'] {
   align-self: center;
 }
-quick-add-modal textarea {
-  resize: none;
-  width: stretch;
-  height: stretch;
-}
 quick-add-modal label:has(textarea) {
-  flex: 1 !important;
+  flex: 1 1 auto !important;
+  display: flex;
+  flex-direction: column;
+}
+
+quick-add-modal label:has(textarea) textarea {
+  flex: 1 1 auto;
+  resize: none;
 }

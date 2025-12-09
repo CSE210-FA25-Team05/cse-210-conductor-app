@@ -6,6 +6,7 @@ function mapUserAndEnrollmentToCourseUser(user, enrollment) {
     user_email: user.email,
     user_first_name: user.first_name,
     user_last_name: user.last_name,
+    pronouns: user.pronouns,
     team_id: enrollment.team_id,
     role: enrollment.role,
     created_at: enrollment.created_at,
