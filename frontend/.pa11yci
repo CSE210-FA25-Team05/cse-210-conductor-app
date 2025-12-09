@@ -1,0 +1,20 @@
+{
+    "defaults": {
+        "timeout": 30000,
+        "wait": 1000,
+        "chromeLaunchArgs": ["--no-sandbox","--headless","--disable-gpu"],
+        "beforeScript": "./pa11y-before.js",
+        "reporters": ["cli"]
+    },
+    "urls": [
+        "http://localhost:8080/src/pages/course/dashboard.html",
+        "http://localhost:8080/src/pages/course/interactions.html",
+        "http://localhost:8080/src/pages/course/journals.html",
+        "http://localhost:8080/src/pages/course/signals.html",
+        "http://localhost:8080/src/pages/course/zinggrid.html",
+        "http://localhost:8080/src/pages/courses.html",
+        "http://localhost:8080/src/pages/login.html",
+        "http://localhost:8080/src/pages/profile.html"
+
+    ]
+}
