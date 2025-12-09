@@ -13,12 +13,12 @@
 }
 
 zing-grid {
-  background: var(--grid-outline-color); 
+  background: var(--grid-outline-color);
   border-color: var(--grid-outline-color);
 }
 
 zg-caption {
-  background-color: var(--grid-header-color); 
+  background-color: var(--grid-header-color);
   color: #ffffff;
   border-bottom-color: var(--grid-header-color);
 }
@@ -30,34 +30,34 @@ zg-head-cell {
 }
 
 zg-cell {
-  background-color: var(--grid-body-cells-color); 
+  background-color: var(--grid-body-cells-color);
   color: #000000;
   border-color: var(--grid-body-cells-color);
 }
 
 zg-row:hover {
-  background-color: var(--grid-row-hover-color); 
+  background-color: var(--grid-row-hover-color);
 }
 
 zg-row[selected] {
-  background-color: var(--grid-selected-row-color); 
+  background-color: var(--grid-selected-row-color);
   color: #ffffff;
 }
 
 zg-pager {
-  background-color: var(--grid-pager-color); 
+  background-color: var(--grid-pager-color);
   color: #000000;
   border-top-color: var(--grid-pager-color);
 }
 
 zg-pager button {
-  background-color: var(--grid-pager-button-color); 
+  background-color: var(--grid-pager-button-color);
   color: #ffffff;
   border-color: var(--grid-pager-button-color);
 }
 
 zg-pager button:hover {
-  background-color: var(--grid-pager-button-hover-color); 
+  background-color: var(--grid-pager-button-hover-color);
 }
 
 zg-pager button:disabled {
@@ -72,6 +72,5 @@ zg-search input {
 }
 
 zg-search input:focus {
-  border-color: var(--grid-search-input-focus-color); 
+  border-color: var(--grid-search-input-focus-color);
 }
-
