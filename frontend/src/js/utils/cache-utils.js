@@ -1,5 +1,5 @@
 import { getProfile } from '/src/js/api/profile.js';
-import { getUserInCourse } from '/src/js/api/course.js';
+import { getCourse } from '/src/js/api/course.js';
 import { getPulseConfigs } from '/src/js/api/pulse.js';
 
 /**
@@ -168,7 +168,7 @@ export async function cacheProfile() {
   try {
     const profile = await getProfile();
     setCache(CACHE_KEYS.PROFILE, profile);
-    // If the user has not yet completed their profile, redirect them to the profile page
+    // If the user has not yet completed their profile, open profile modal
     if (
       !profile.is_profile_complete &&
       window.location.pathname !== '/profile'
@@ -176,21 +176,16 @@ export async function cacheProfile() {
       window.location.replace('/profile');
     }
     // If the user is trying to access the dashboard of a course they're not enrolled in, redirect them to the courses page
-    if (
-      window.location.pathname.includes('/course/') &&
-      window.location.pathname.includes('/dashboard')
-    ) {
-      let course_id = window.location.pathname.slice(
-        window.location.pathname.indexOf('/course/') + 8,
-        window.location.pathname.indexOf('/dashboard')
-      );
+    let course_id = getCourseId();
+    if (course_id) {
       try {
-        // Will throw an error if the user is not in that course
-        await getUserInCourse(Number(course_id), profile.id);
+        // Will throw a 404 error if the user is not in that course
+        await getCourse(course_id);
       } catch (err) {
         window.location.replace('/courses');
       }
     }
+
     return profile;
   } catch (err) {
     console.error('Error fetching profile:', err);
