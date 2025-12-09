@@ -1,0 +1,16 @@
+article:has(zing-grid) {
+    background-color: pink !important;
+    padding: 0;
+}
+
+zing-grid {
+    border-radius: var(--border-radius);
+    border: var(--border);
+}
+zg-watermark,
+zg-head-cell {
+    border-radius: var(--border-radius);
+}
+zg-button.zg-filter-menu {
+    display: none;
+}
