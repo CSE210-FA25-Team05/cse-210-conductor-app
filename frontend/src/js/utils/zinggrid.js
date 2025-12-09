@@ -40,7 +40,6 @@ export function linkSearchToGrid(searchId, gridId) {
     // delay 100 milliseconds to debounce user input
     searchTimeoutId = setTimeout(
       (userInput) => {
-        console.log('here', userInput);
         requestAnimationFrame(() => zgRef.searchGrid(userInput));
       },
       100,

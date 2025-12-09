@@ -30,6 +30,7 @@
           pager
           page-size="25"
           page-size-options="10,25,50,100"
+          search
         >
         </zing-grid>
       </article>
@@ -41,6 +42,7 @@
     <script type="module">
       import { getCourseId } from '/src/js/utils/cache-utils.js';
       import { getPulseRecords } from '/src/js/api/pulse.js';
+      import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
 
       const pulseContent = document.getElementById('pulse-content');
       const pulseGrid = document.getElementById('pulse-grid');
@@ -76,6 +78,10 @@
       }
 
       loadPulseData();
+
+      window.addEventListener('load', () => {
+          linkSearchToGrid('grid-search', 'pulse-grid');
+      });
     </script>
   </body>
 </html>
