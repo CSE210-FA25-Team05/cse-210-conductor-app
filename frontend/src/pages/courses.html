@@ -36,69 +36,7 @@
                 </article>
             </section> 
 
-            <h1>BELOW IS FOR CONVENIENCE</h1>
-            <p>Note: We need to make this page look better</p>
-
-            <h1>Me</h1>
-            <div id="profile" class="profile">Loading...</div>
-            <button id="complete-profile">Complete Profile</button>
-
-            <h1>Courses</h1>
-
-
             <script>
-            document
-                .getElementById("complete-profile")
-                .addEventListener('click', async () => {
-                    const data = {
-                        first_name: "string",
-                        last_name: "string",
-                        pronouns: "string",
-                    }
-                    const response = await fetch("/api/me/profile", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        credentials: 'include',
-                        body: JSON.stringify(data),
-                    });
-                });
-
-
-            async function loadProfile() {
-                const container = document.getElementById("profile");
-
-                try {
-                    const response = await fetch("/api/me/profile");
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-
-                    container.innerHTML = `
-                        <h2>${data.first_name} ${data.last_name}</h2>
-                        <div class="profile-item"><strong>Email:</strong> ${data.email}</div>
-                        <div class="profile-item"><strong>Pronouns:</strong> ${
-                            data.pronouns || "N/A"
-                            }</div>
-                        <div class="profile-item"><strong>Role:</strong> ${
-                            data.global_role
-                            }</div>
-                        <div class="profile-item"><strong>Profile Complete:</strong> ${
-                            data.is_profile_complete ? "Yes" : "No"
-                            }</div>
-                        <div class="profile-item"><small>ID: ${data.id}</small></div>
-                    `;
-                } catch (error) {
-                    console.error("Error fetching profile:", error);
-                    container.innerHTML =
-                        '<div class="error">Failed to load profile information.</div>';
-                }
-            }
-
-            loadProfile();
-
             document
                 .addEventListener("DOMContentLoaded", async () => {
                     const listElement = document.getElementById("courses-list");
