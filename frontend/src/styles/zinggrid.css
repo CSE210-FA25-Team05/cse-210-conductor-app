@@ -1,0 +1,77 @@
+:root {
+  --grid-outline-color: var(--color-border-dark);
+  --grid-header-color: var(--color-secondary-medium);
+  --grid-column-names-color: var(--color-secondary-light);
+  --grid-body-cells-color: var(--color-bg-white);
+  /* --grid-row-hover-color: #ff8800; */
+  /* --grid-selected-row-color: #aa00ff; */
+  --grid-pager-color: var(--color-bg-light);
+  /* --grid-pager-button-color: #ff00ff;
+  --grid-pager-button-hover-color: #ff88ff; */
+  --grid-search-input-color: var(--color-bg-light);
+  --grid-search-input-focus-color: var(--color-secondary-light);
+}
+
+zing-grid {
+  background: var(--grid-outline-color); 
+  border-color: var(--grid-outline-color);
+}
+
+zg-caption {
+  background-color: var(--grid-header-color); 
+  color: #ffffff;
+  border-bottom-color: var(--grid-header-color);
+}
+
+zg-head-cell {
+  background-color: var(--grid-column-names-color);
+  color: #000000;
+  border-color: var(--grid-column-names-color);
+}
+
+zg-cell {
+  background-color: var(--grid-body-cells-color); 
+  color: #000000;
+  border-color: var(--grid-body-cells-color);
+}
+
+zg-row:hover {
+  background-color: var(--grid-row-hover-color); 
+}
+
+zg-row[selected] {
+  background-color: var(--grid-selected-row-color); 
+  color: #ffffff;
+}
+
+zg-pager {
+  background-color: var(--grid-pager-color); 
+  color: #000000;
+  border-top-color: var(--grid-pager-color);
+}
+
+zg-pager button {
+  background-color: var(--grid-pager-button-color); 
+  color: #ffffff;
+  border-color: var(--grid-pager-button-color);
+}
+
+zg-pager button:hover {
+  background-color: var(--grid-pager-button-hover-color); 
+}
+
+zg-pager button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+zg-search input {
+  background-color: var(--grid-search-input-color);
+  border-color: var(--grid-search-input-color);
+  color: #ffffff;
+}
+
+zg-search input:focus {
+  border-color: var(--grid-search-input-focus-color); 
+}
+
