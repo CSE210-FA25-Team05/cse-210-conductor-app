@@ -8,27 +8,55 @@
         <script type="module" async src="/src/js/common.js"></script>
         <script type="module" async src="/src/components/forms/join-course.js"></script>
         <script type="module" async src="/src/components/forms/create-course.js"></script>
+        <style>
+            .courses-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto auto;
+                gap: var(--spacing-large);
+                max-width: 80dvw;
+                margin: 0 auto;
+            }
+            .courses-container article {
+                box-sizing: border-box;
+                width: 100%;   /* ensures horizontal fill */
+                height: 100%;
+            }
+
+            /* Make the third article span the full width */
+            .courses-container article:nth-child(3) {
+                grid-column: 1 / 3;
+            }
+            .welcome-header {
+                text-align: center;
+                margin-bottom: var(--spacing-large);
+            }
+
+            /* At 720px and below, switch to one-column layout */
+            @media (max-width: 720px) {
+                .courses-container {
+                    grid-template-columns: 1fr;
+                }
+
+                .courses-container article:nth-child(3) {
+                    grid-column: auto;
+                }
+            }
+
+        </style>
     </head>
     <body>
         <main>
-            <header>
+            <header class='welcome-header'>
                 <h1>Welcome to Conductor!</h1>
             </header>
 
-            <section> 
+            <section class="courses-container"> 
                 <article>
                     <header>
                         <h2>Join Course</h2>
                     </header>
                     <join-course-form></join-course-form>
-                </article>
-
-                <!-- Create Course Section - hidden by default -->
-                <article id="create-course-section" style="display: none;">
-                    <header>
-                        <h2>Create Course</h2>
-                    </header>
-                    <create-course-form></create-course-form>
                 </article>
 
                 <article>
@@ -37,6 +65,14 @@
                     </header>
                     <ul id="courses-list"></ul>
                     <pre id="courses-response" style="color: red;"></pre>
+                </article>
+
+                <!-- Create Course Section - hidden by default -->
+                <article id="create-course-section" style="">
+                    <header>
+                        <h2>Create Course</h2>
+                    </header>
+                    <create-course-form></create-course-form>
                 </article>
             </section> 
 
