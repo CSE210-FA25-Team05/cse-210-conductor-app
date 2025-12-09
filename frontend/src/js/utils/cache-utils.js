@@ -1,5 +1,5 @@
 import { getProfile } from '/src/js/api/profile.js';
-import { getCourse } from '/src/js/api/course.js';
+import { getCourse, getAllCourses } from '/src/js/api/course.js';
 import { getPulseConfigs } from '/src/js/api/pulse.js';
 
 /**
@@ -224,9 +224,7 @@ export function getUserId() {
  */
 export async function cacheCourses() {
   try {
-    const res = await fetch('/api/courses');
-    if (!res.ok) throw new Error(`Failed to fetch courses: ${res.statusText}`);
-    const courses = await res.json();
+    const courses = await getAllCourses();
     setCache(CACHE_KEYS.COURSES, courses);
     return courses;
   } catch (err) {
