@@ -8,10 +8,10 @@ zing-grid {
   border: var(--border);
 }
 zg-watermark {
-  border-radius: 0 0 var(--border-radius) var(--border-radius) ;
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 zg-head-cell {
-  border-radius: var(--border-radius) var(--border-radius) 0 0 ;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 zg-button.zg-filter-menu {
   display: none;
