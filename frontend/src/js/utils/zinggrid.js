@@ -1,16 +1,16 @@
 /**
  * Links a search input element to a grid component that supports a `searchGrid` method.
- * 
+ *
  * This function sets up event listeners on the specified search input element
- * (`keyup`, `change`, and `search`) so that when the user types a query, the 
+ * (`keyup`, `change`, and `search`) so that when the user types a query, the
  * associated grid is searched using a debounced input value. The debounce prevents
  * excessive calls by waiting 100ms after the user stops typing before triggering
  * the search.
- * 
+ *
  * @param {string} searchId - The ID of the search input element in the DOM.
  * @param {string} gridId - The CSS selector of the grid element that provides a
  * `searchGrid` method to handle the filtering logic.
- * 
+ *
  * @example
  * // Example usage:
  * // HTML:
@@ -38,10 +38,14 @@ export function linkSearchToGrid(searchId, gridId) {
     clearTimeout(searchTimeoutId);
     let targetValue = e.target.value;
     // delay 100 milliseconds to debounce user input
-    searchTimeoutId = setTimeout((userInput) => {
-      console.log('here', userInput)
-      requestAnimationFrame(() => zgRef.searchGrid(userInput));
-    }, 100, targetValue);
+    searchTimeoutId = setTimeout(
+      (userInput) => {
+        console.log('here', userInput);
+        requestAnimationFrame(() => zgRef.searchGrid(userInput));
+      },
+      100,
+      targetValue
+    );
   }
   // add event listeners
   searchGrid.addEventListener('keyup', _searchGrid);
