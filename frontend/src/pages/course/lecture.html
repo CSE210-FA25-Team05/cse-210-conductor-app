@@ -13,25 +13,27 @@
         <h1>Course Lectures</h1>
         <theme-toggle></theme-toggle>
       </header>
+
       <article id="lecture-content">
         <p id="lecture-loading">Loading lecture data...</p>
+
         <zing-grid
           id="lecture-grid"
-          style="display: block;"
           caption="Course Lectures"
           theme="default"
           pager
           page-size="10"
           page-size-options="10,25,50,100"
           search
-        >
-        </zing-grid>
+        ></zing-grid>
+
         <p
           id="lecture-error"
           style="display: none; color: var(--color-error);"
         ></p>
       </article>
     </main>
+
     <aside>
       <conductor-nav></conductor-nav>
     </aside>
@@ -40,64 +42,61 @@
       import { getCourseId } from "/src/js/utils/cache-utils.js";
       import { getLectures } from "/src/js/api/lecture.js";
 
-      const lectureContent = document.getElementById("lecture-content");
       const lectureLoading = document.getElementById("lecture-loading");
       const lectureGrid = document.getElementById("lecture-grid");
       const lectureError = document.getElementById("lecture-error");
 
+      function formatLectureDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      function determineLectureStatus(lectureDate) {
+        const now = new Date();
+        const date = new Date(lectureDate);
+
+        const sameDay =
+          date.getFullYear() === now.getFullYear() &&
+          date.getMonth() === now.getMonth() &&
+          date.getDate() === now.getDate();
+
+        if (sameDay) return "today";
+        if (now < date) return "upcoming";
+        return "finished";
+      }
+
       async function loadLectureData() {
         try {
           const courseId = getCourseId();
-          if (!courseId) throw new Error("Course ID not found in URL");
+          if (!courseId) throw new Error("Course ID not found");
 
           const lectures = await getLectures(courseId);
+
           if (!lectures || lectures.length === 0) {
-            lectureLoading.textContent =
-              "No lectures found for this course.";
+            lectureLoading.textContent = "No lectures found for this course.";
             return;
           }
 
-          const now = new Date();
+          const processedLectures = lectures.map((lec) => ({
+            lecture_date: formatLectureDate(lec.lecture_date),
+            status: determineLectureStatus(lec.lecture_date),
+          }));
 
-          // Determine lecture status
-          const lecturesWithStatus = lectures.map((lec) => {
-            const start = new Date(lec.lecture_date);
-
-            // Normalize year, month, day to compare dates
-            const sameDay =
-              start.getFullYear() === now.getFullYear() &&
-              start.getMonth() === now.getMonth() &&
-              start.getDate() === now.getDate();
-
-            let status;
-
-            if (sameDay) {
-              status = "today";
-            } else if (now < start) {
-              status = "upcoming";
-            } else {
-              status = "finished";
-            }
-
-            return {
-              lecture_date: start.toLocaleString(),
-              status,
-            };
-          });
-
-          // Sort order: today → upcoming → finished
-          const statusOrder = { today: 1, upcoming: 2, finished: 3 };
-          const sortedLectures = lecturesWithStatus.sort(
-            (a, b) => statusOrder[a.status] - statusOrder[b.status]
+          // Sort: today → upcoming → finished
+          const order = { today: 1, upcoming: 2, finished: 3 };
+          processedLectures.sort(
+            (a, b) => order[a.status] - order[b.status]
           );
 
-          // Populate ZingGrid
-          lectureGrid.data = sortedLectures;
+          lectureGrid.data = processedLectures;
           lectureLoading.style.display = "none";
-        } catch (error) {
-          console.error("Error loading lecture data:", error);
+        } catch (err) {
           lectureLoading.style.display = "none";
-          lectureError.textContent = `Error loading lecture data: ${error.message}`;
+          lectureError.textContent = `Error loading lecture data: ${err.message}`;
           lectureError.style.display = "block";
         }
       }
