@@ -14,6 +14,16 @@
         <theme-toggle></theme-toggle>
       </header>
       <article id="pulse-content">
+        <header>
+            <div class="grid-menu" role="menu">
+                <input
+                    id="grid-search"
+                    type="search"
+                    placeholder="Search..."
+                    aria-label="Search your pulses"
+                />
+            </div>
+        </header>
         <zing-grid
           id="pulse-grid"
           theme="default"
@@ -22,10 +32,6 @@
           page-size-options="10,25,50,100"
         >
         </zing-grid>
-        <p
-          id="pulse-error"
-          style="display: none; color: var(--color-error);"
-        ></p>
       </article>
     </main>
     <aside>
@@ -54,8 +60,6 @@
 
           // Map and format pulse data for grid
           const gridData = pulses.map((p) => ({
-            first_name: p.user_first_name ?? 'N/A',
-            last_name: p.user_last_name ?? 'N/A',
             value: p.value ?? 'N/A',
             description: p.description ?? 'N/A',
             created_at: p.created_at
