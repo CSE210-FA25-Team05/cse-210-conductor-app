@@ -5,6 +5,7 @@ import {
   DateType,
   ErrorSchema,
 } from '../shared/shared.schemas.js';
+import { CourseRoles } from '../shared/shared.enums.js';
 
 export const JoinCodeType = { type: 'string', minLength: 6, maxLength: 6 };
 
@@ -221,8 +222,8 @@ export const AddUserInCourseSchema = {
       email: { type: 'string', format: 'email' },
       role: {
         type: 'string',
-        enum: ['student', 'ta', 'professor'],
-        default: 'student',
+        enum: Object.values(CourseRoles),
+        default: CourseRoles.STUDENT,
       },
     },
     required: ['email'],

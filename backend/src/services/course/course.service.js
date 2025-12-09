@@ -53,16 +53,6 @@ class CourseService {
   }
 
   /**
-   * Validate role value.
-   * @param {string} role - Role to validate
-   * @returns {boolean} True if role is valid
-   */
-  isValidRole(role) {
-    const validRoles = ['student', 'ta', 'professor'];
-    return validRoles.includes(role);
-  }
-
-  /**
    * Add a user to a course by email.
    * If user exists, add enrollment. If user doesn't exist, create user stub and add enrollment.
    * @param {number} courseId - ID of the course
@@ -70,17 +60,17 @@ class CourseService {
    * @param {string} role - Role for the enrollment (default: 'student')
    * @returns {Promise<Object>} Created enrollment object
    */
-  async addUserToCourseByEmail(courseId, email, role = 'student') {
+  async addUserToCourseByEmail(courseId, email, role = CourseRoles.STUDENT) {
     // Validate role if provided
-    if (role && !this.isValidRole(role)) {
+    if (role && !isValidEnumValue(CourseRoles, role)) {
       const e = new Error(
-        `Invalid role: ${role}. Valid roles are: student, ta, professor`
+        `Invalid role: ${role}. Valid roles are: ${Object.values(CourseRoles).join(', ')}`
       );
       e.code = 'BAD_REQUEST';
       throw e;
     }
 
-    if (role === 'professor') {
+    if (role === CourseRoles.PROFESSOR) {
       const e = new Error(
         `Professor role is not allowed to be added to a course`
       );

@@ -80,16 +80,6 @@ class CoursePermissions {
     const role = await this.getEnrollmentRole(userId, courseId);
     return role === CourseRoles.STUDENT;
   }
-
-  /**
-   * Validate role value.
-   * @param {string} role - Role to validate
-   * @returns {boolean} True if role is valid
-   */
-  isValidRole(role) {
-    const validRoles = ['student', 'ta', 'professor'];
-    return validRoles.includes(role);
-  }
 }
 
 module.exports = CoursePermissions;
