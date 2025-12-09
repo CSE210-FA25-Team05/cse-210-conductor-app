@@ -23,9 +23,16 @@ jobs:
           port: 22
           script: |
             BRANCH="${{ github.ref_name }}"
-            cd ~/conductor    
+            echo "Deploying branch: $BRANCH"
+            cd ~/conductor || exit 1
             git fetch origin
             git checkout $BRANCH
-            git pull origin $BRANCH
-            npm install
-            pm2 restart conductor || pm2 start backend/src/server.js --name conductor
+            git reset --hard origin/$BRANCH
+            npm install --production
+            if pm2 describe conductor > /dev/null 2>&1; then
+              pm2 restart conductor --update-env
+            else
+              pm2 start backend/src/server.js --name conductor
+            fi
+            pm2 save
+            echo "Deployment completed successfully"

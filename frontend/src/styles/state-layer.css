@@ -44,6 +44,7 @@ button:not([disabled]):after,
   left: 0%;
   right: 0%;
   transform: scale(0);
+  will-change: transform, opacity;
 }
 
 details > summary:hover:before,

@@ -1,5 +1,7 @@
 'use strict';
 
+const { GlobalRoles } = require('../shared/shared.enums');
+
 /**
  * Auth Permissions
  *
@@ -39,7 +41,7 @@ class AuthPermissions {
    * @returns {Promise<boolean>} true if user is a professor, false otherwise
    */
   async isProfessor(userId) {
-    return this.isGlobalRole(userId, 'professor');
+    return this.isGlobalRole(userId, GlobalRoles.PROFESSOR);
   }
 
   /**
@@ -49,7 +51,7 @@ class AuthPermissions {
    * @returns {Promise<boolean>} true if user is a student, false otherwise
    */
   async isStudent(userId) {
-    return this.isGlobalRole(userId, 'student');
+    return this.isGlobalRole(userId, GlobalRoles.STUDENT);
   }
 }
 

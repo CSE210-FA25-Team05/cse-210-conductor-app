@@ -44,6 +44,9 @@ fastify.register(cookie);
 fastify.register(sensible);
 fastify.register(require('./plugins/error-handler'));
 
+//add open telemetry tracing
+require('../tracing.js');
+
 //db connection
 fastify.register(require('./prisma'));
 

@@ -2,6 +2,7 @@ import {
   getCourseId,
   cacheProfile,
   cacheCourses,
+  cacheAllPulseConfigs,
 } from '/src/js/utils/cache-utils.js';
 
 /**
@@ -22,6 +23,9 @@ export async function initializeCache() {
 
     // Fetch and cache all courses the user is in
     await cacheCourses();
+
+    // Fetch and cache the pulse config for each course the user is in
+    await cacheAllPulseConfigs();
   } catch (err) {
     console.error('failed to initialize cache:', err);
   }
