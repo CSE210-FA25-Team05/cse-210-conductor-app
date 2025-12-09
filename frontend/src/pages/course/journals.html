@@ -28,6 +28,7 @@
                     pager 
                     page-size="10" 
                     sort
+                    search
                 >
                     <zg-colgroup>
                         <zg-column index="title" header="Title"></zg-column>
@@ -43,6 +44,7 @@
         <script type="module">
             import { getCourseId, getUserId } from '/src/js/utils/cache-utils.js';
             import { getJournals } from '/src/js/api/journal.js';
+            import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
             
             async function fetchUserJournals() {
                 try {
@@ -62,7 +64,9 @@
             }
             window.addEventListener('load', () => {
                 fetchUserJournals();
+                linkSearchToGrid('grid-search', 'journals-grid');
             });
+
 
         </script>
     </body>
