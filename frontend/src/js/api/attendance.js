@@ -41,6 +41,24 @@ export async function getAllAttendances(courseID, lectureID) {
 }
 
 /**
+ * @description Create a new attendance record for a user in a lecture (simplified).
+ * @param { number } courseID - ID of the course.
+ * @param { object } codeInfo - Code information.
+ * @param { string } codeInfo.code - Attendance code or identifier.
+ * @returns { Attendance } Created attendance record.
+ */
+export async function createAttendanceSimplified(courseID, codeInfo) {
+  const response = await postWrapper(
+    `/api/courses/${courseID}/attendances`,
+    codeInfo
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
  * @description Create a new attendance record for a user in a lecture.
  * @param { number } courseID - ID of the course.
  * @param { number } lectureID - ID of the lecture.
@@ -87,12 +105,45 @@ export async function updateAttendance(
 }
 
 /**
+ * @description Get attendance statistics for a user.
+ * @param {number} courseID - ID of the course.
+ * @param {string|null} start_time - Start time of a specific lecture.
+ * @param {string|null} end_time - End time of a specific lecture.
+ * @returns {object} { AttendanceStats, Attendance[] }
+ */
+export async function getAttendanceStats(
+  courseID,
+  start_time = null,
+  end_time = null
+) {
+  const url = new URL(
+    `/api/courses/${courseID}/attendances/stats`,
+    window.location.origin
+  );
+
+  if (start_time) {
+    url.searchParams.set('start_time', encodeURIComponent(start_time));
+  }
+  if (end_time) {
+    url.searchParams.set('end_time', encodeURIComponent(end_time));
+  }
+
+  const response = await getWrapper(url.toString());
+
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+
+  return response.data;
+}
+
+/**
  * @description Get attendance statistics for a lecture (total enrolled, present, attendance percentage).
  * @param { number } courseID - ID of the course.
  * @param { number } lectureID - ID of the lecture.
  * @returns { AttendanceStats } Attendance statistics for that lecture.
  */
-export async function getAttendanceStats(courseID, lectureID) {
+export async function getAttendanceStatsForLecture(courseID, lectureID) {
   const response = await getWrapper(
     `/api/courses/${courseID}/lectures/${lectureID}/attendances/stats`
   );
