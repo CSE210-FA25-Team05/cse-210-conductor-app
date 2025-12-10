@@ -1,24 +1,14 @@
-import Chart from 'chart.js/auto';
-
-//API Call - Hardcoded for testing, will need to be integrated correctly.
-const course_id = '3';
-const apiURL = `http://localhost:3001/courses/${course_id}/pulses/stats?entire_class=true`;
+import { getCourseId } from '/src/js/utils/cache-utils.js';
+import { getPulseStats } from '/src/js/api/pulse.js';
 
 //Fetch API Data
-async function fetchPulseData(apiEndPoint) {
+async function fetchPulseData() {
   try {
-    const response = await fetch(apiEndPoint, {
-      credentials: 'include',
-    });
-
-    //Check response
-    if (!response.ok) {
-      throw new Error(`API Error. Status: ${response.status}`);
-    }
-
-    //Parse JSON Data
-    const data = await response.json();
-    return data;
+    const params = {
+      entire_class: 'true',
+    };
+    const pulses = getPulseStats(getCourseId(), params);
+    return pulses;
   } catch (error) {
     console.error('Error fetching Pulse data', error);
 
@@ -78,6 +68,9 @@ function createChart(chartData) {
   const chartContext = canvasElement.getContext('2d');
 
   //Create new chart object
+  // The below tag tells our linter to ignore 'Chart not defined'
+  // Chart is defined globally when adding CDN scropt in <head>
+  /* global Chart */
   const chart = new Chart(chartContext, {
     type: 'line',
     data: {
@@ -106,13 +99,13 @@ function createChart(chartData) {
 async function initializeChart() {
   try {
     //Fetch raw data
-    const rawData = await fetchPulseData(apiURL);
+    const rawData = await fetchPulseData();
 
     //Transform Data
-    const chartData = await transformPulseData(rawData);
+    const chartData = transformPulseData(rawData);
 
     //Create Chart
-    const chart = createChart(chartData);
+    createChart(chartData);
 
     console.log('Chart created successfully');
   } catch (error) {
