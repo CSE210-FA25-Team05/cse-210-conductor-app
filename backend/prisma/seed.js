@@ -508,7 +508,7 @@ async function main() {
   const teamsMap = {
     [john.id]: team1,
     [jane.id]: team2,
-  }
+  };
   const courseStartDate = new Date('2025-09-23');
   const courseEndDate = new Date('2025-12-12');
   const daysDiff =
