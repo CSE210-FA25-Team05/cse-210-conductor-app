@@ -29,12 +29,10 @@ class InteractionRepo {
     });
   }
 
-  async createInteraction(interactionData, db = this.db) {
+  async createInteraction(courseId, interactionData, db = this.db) {
     const {
-      courseId,
       configId,
       userId,
-      teamId = null,
       value,
       description = null,
       participants = [],
@@ -65,11 +63,41 @@ class InteractionRepo {
     });
   }
 
+  async updateInteraction(courseId, interactionId, updateData, db = this.db) {
+    return db.interactions.update({
+      where: { id: interactionId, course_id: courseId },
+      data: updateData,
+      include: {
+        authors: {
+          select: { first_name: true, last_name: true },
+        },
+        participants: {
+          include: {
+            users: {
+              select: { id: true, first_name: true, last_name: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async deleteInteraction(courseId, interactionId, db = this.db) {
+    return db.interactions.delete({
+      where: { id: interactionId, course_id: courseId },
+    });
+  }
+
   async lockConfigIfEditable(courseId, db = this.db) {
     return db.interaction_configs.updateMany({
       where: { course_id: courseId, is_editable: true },
       data: { is_editable: false },
     });
+  }
+
+  async getInteractionById(courseId, interactionId, db = this.db) {
+    const interactions = await this.getInteractions(courseId, { id: interactionId }, db);
+    return interactions.length > 0 ? interactions[0] : null;
   }
 
   async getInteractions(courseId, filters = {}, db = this.db) {

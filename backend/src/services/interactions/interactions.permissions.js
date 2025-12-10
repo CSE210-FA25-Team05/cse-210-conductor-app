@@ -14,12 +14,27 @@ class InteractionPermissions {
       return true;
     }
 
-    // Team leads can view interactions of their team members
-    // Note: interactions don't have team_id, so this would need participant filtering
-
     // Anyone can only view their own interactions
     if (filters.author_id != null) {
       return filters.author_id === user.id;
+    }
+
+    return false;
+  }
+
+  canUpdateInteraction(user, _enrollment, interaction) {
+    // Authors can update their own interactions
+    if (interaction.author_id === user.id) {
+      return true;
+    }
+
+    return false;
+  }
+
+  canDeleteInteraction(user, _enrollment, interaction) {
+    // Authors can delete their own interactions
+    if (interaction.author_id === user.id) {
+      return true;
     }
 
     return false;

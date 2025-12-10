@@ -146,8 +146,65 @@ const CreateInteractionSchema = {
     401: ErrorSchema,
     403: ErrorSchema,
     404: ErrorSchema,
+    422: ErrorSchema,
   },
 };
+
+const UpdateInteractionBody = {
+  type: 'object',
+  properties: {
+    option: { type: 'string' },
+    description: { type: 'string' },
+    participants: {
+      type: 'array',
+      items: { type: 'integer' },
+      minItems: 1,
+      uniqueItems: true,
+    },
+  },
+};
+
+const UpdateInteractionSchema = {
+  summary: 'Update Interaction Record for Course',
+  tags: ['Interaction'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      interaction_id: { type: 'integer' },
+    },
+    required: ['course_id', 'interaction_id'],
+  },
+  body: UpdateInteractionBody,
+  response: {
+    200: InteractionSchema,
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+    422: ErrorSchema,
+  },
+}
+
+const DeleteInteractionSchema = {
+  summary: 'Delete Interaction Record for Course',
+  tags: ['Interaction'],
+  params: {
+    type: 'object',
+    properties: {
+      course_id: { type: 'integer' },
+      interaction_id: { type: 'integer' },
+    },
+    required: ['course_id', 'interaction_id'],
+  },
+  response: {
+    204: { type: 'null' },
+    400: ErrorSchema,
+    401: ErrorSchema,
+    403: ErrorSchema,
+    404: ErrorSchema,
+  },
+}
 
 const InteractionFiltersSchema = {
   type: 'object',
@@ -163,13 +220,7 @@ const InteractionFiltersSchema = {
 const GetInteractionsSchema = {
   summary: 'Get Interaction Records',
   tags: ['Interaction'],
-  params: {
-    type: 'object',
-    properties: {
-      course_id: { type: 'integer' },
-    },
-    required: ['course_id'],
-  },
+  params: CourseParams,
   querystring: InteractionFiltersSchema,
   response: {
     200: {
@@ -201,13 +252,7 @@ const InteractionStatsQuerySchema = {
 const GetInteractionStatsSchema = {
   summary: 'Get Interaction Stats',
   tags: ['Interaction'],
-  params: {
-    type: 'object',
-    properties: {
-      course_id: { type: 'integer' },
-    },
-    required: ['course_id'],
-  },
+  params: CourseParams,
   querystring: InteractionStatsQuerySchema,
   response: {
     200: {
@@ -238,4 +283,6 @@ module.exports = {
   CreateInteractionSchema,
   GetInteractionsSchema,
   GetInteractionStatsSchema,
+  UpdateInteractionSchema,
+  DeleteInteractionSchema,
 };

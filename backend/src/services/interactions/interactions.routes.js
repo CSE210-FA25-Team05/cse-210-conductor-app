@@ -142,6 +142,102 @@ async function routes(fastify) {
     }
   );
 
+  fastify.patch(
+    '/courses/:course_id/interactions/:interaction_id',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      schema: interactionSchemas.UpdateInteractionSchema,
+    },
+    async (req, reply) => {
+      try {
+        const course = req.course;
+        const user = req.user;
+        const enrollment = req.enrollment;
+        const interactionId = parseInt(req.params.interaction_id, 10);
+        const updateData = req.body;
+
+        const interaction = await interactionRepo.getInteractionById(
+          course.id,
+          interactionId
+        );
+
+        if (!interaction) {
+          const e = new Error('Interaction not found');
+          e.code = 'NOT_FOUND';
+          throw e;
+        }
+
+        if (
+          !interactionPermissions.canUpdateInteraction(
+            user,
+            enrollment,
+            interaction
+          )
+        ) {
+          return reply.forbidden(
+            'You do not have permission to update this interaction'
+          );
+        }
+
+        const updatedInteraction =
+          await interactionService.updateInteraction(
+            course,
+            interaction,
+            updateData
+          );
+
+        return reply.send(updatedInteraction);
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
+  fastify.delete(
+    '/courses/:course_id/interactions/:interaction_id',
+    {
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      schema: interactionSchemas.DeleteInteractionSchema,
+    },
+    async (req, reply) => {
+      try {
+        const course = req.course;
+        const user = req.user;
+        const enrollment = req.enrollment;
+        const interactionId = parseInt(req.params.interaction_id, 10);
+
+        const interaction = await interactionRepo.getInteractionById(
+          course.id,
+          interactionId
+        );
+
+        if (!interaction) {
+          const e = new Error('Interaction not found');
+          e.code = 'NOT_FOUND';
+          throw e;
+        }
+
+        if (
+          !interactionPermissions.canDeleteInteraction(
+            user,
+            enrollment,
+            interaction
+          )
+        ) {
+          return reply.forbidden(
+            'You do not have permission to delete this interaction'
+          );
+        }
+
+        await interactionService.deleteInteraction(course, interaction);
+
+        return reply.code(204).send();
+      } catch (error) {
+        return mapAndReply(error, reply);
+      }
+    }
+  );
+
   fastify.get(
     '/courses/:course_id/interactions/stats',
     {

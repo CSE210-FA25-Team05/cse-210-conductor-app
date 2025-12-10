@@ -148,6 +148,103 @@ class InteractionService {
     return created;
   }
 
+  async updateInteraction(course, interaction, data) {
+    const created = await this.interactionRepo.db.$transaction(async (tx) => {
+      const { option: selectedOption = null, description = null, participants = [] } = data;
+      const updateData = {};
+      let updatesPresent = false;
+      
+      if (selectedOption) {
+        const cfg = await this.interactionRepo.getConfig(course.id, tx);
+        if (!cfg) {
+          const e = new Error('Interaction configuration not found for course');
+          e.code = 'NOT_FOUND';
+          throw e;
+        }
+
+        // Resolve options array in multiple possible shapes
+        let opts = cfg.config.options;
+        
+        const option = opts.find((o) => o.value === selectedOption);
+        
+        if (!option) {
+          const e = new Error('Invalid interaction option');
+          e.code = 'BAD_REQUEST';
+          throw e;
+        }
+
+        updateData.value = option.value;
+        updatesPresent = true;
+      }
+
+      if (description !== null) {
+        updateData.description = description;
+        updatesPresent = true;
+      }
+      
+      if (participants.length > 0) {
+        const originalParticipants = interaction.participants.map((p) => p.user_id);
+        
+        // Ensure participants are enrolled in the course
+        const participantEnrollmentCount =
+          await this.courseRepo.getEnrollmentCount(
+            course.id,
+            { userIds: participants },
+            tx
+          );
+  
+        if (participantEnrollmentCount !== participants.length) {
+          const e = new Error(
+            'One or more participants are not enrolled in the course'
+          );
+          e.code = 'BAD_REQUEST';
+          throw e;
+        }
+
+        const toDelete = originalParticipants.filter(
+          (pid) => !participants.includes(pid)
+        );
+        const toAdd = participants.filter(
+          (pid) =>
+            !originalParticipants.includes(pid)
+        );
+
+        const currentTime = new Date();
+
+        // Update participants list
+        const participantsUpdate = { };
+
+        if (toDelete.length > 0) {
+          participantsUpdate.deleteMany = { user_id: { in: toDelete } };
+        }
+        if (toAdd.length > 0) {
+          participantsUpdate.create = toAdd.map((pid) => ({ user_id: pid }));
+        }
+        updateData.participants = participantsUpdate;
+        updatesPresent = true;
+      }
+
+      if (!updatesPresent) {
+        return interaction;
+      }
+
+      const createdInteraction = await this.interactionRepo.updateInteraction(
+        course.id,
+        interaction.id,
+        updateData,
+        tx
+      );
+
+      return createdInteraction;
+    });
+
+    return this.mapInteractionToResponse(created);
+  }
+
+  async deleteInteraction(course, interaction) {
+    await this.interactionRepo.deleteInteraction(course.id, interaction.id);
+  }
+
   async getInteractions(course, filters = {}) {
     const interactions = await this.interactionRepo.getInteractions(
       course.id,
