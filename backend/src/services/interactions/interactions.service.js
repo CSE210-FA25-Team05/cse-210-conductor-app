@@ -109,11 +109,12 @@ class InteractionService {
       const optionKeyResolved = option.value;
 
       // Ensure participants are enrolled in the course
-      const participantEnrollmentCount = await this.courseRepo.getEnrollmentCount(
-        course.id,
-        { userIds: participants },
-        tx
-      );
+      const participantEnrollmentCount =
+        await this.courseRepo.getEnrollmentCount(
+          course.id,
+          { userIds: participants },
+          tx
+        );
 
       if (participantEnrollmentCount !== participants.length) {
         const e = new Error(

@@ -108,7 +108,7 @@ class CourseRepo {
     const where = {
       course_id: courseId,
       deleted_at: null,
-    }
+    };
 
     const { userIds = [] } = filters;
     if (userIds.length > 0) {

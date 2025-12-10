@@ -20,7 +20,10 @@ async function routes(fastify) {
   const courseRepo = new CourseRepo(fastify.db);
   const interactionRepo = new InteractionRepo(fastify.db);
   const interactionPermissions = new InteractionPermissions(interactionRepo);
-  const interactionService = new InteractionService(interactionRepo, courseRepo);
+  const interactionService = new InteractionService(
+    interactionRepo,
+    courseRepo
+  );
 
   // Get interaction config for a course
   fastify.get(
