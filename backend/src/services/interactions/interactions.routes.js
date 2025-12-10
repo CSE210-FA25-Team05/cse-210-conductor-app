@@ -78,6 +78,7 @@ async function routes(fastify) {
 
         const option = req.body.option.trim();
         const description = req.body.description?.trim() || null;
+        const participants = req.body.participants;
 
         const created = await interactionService.submitInteraction(
           course,
@@ -86,6 +87,7 @@ async function routes(fastify) {
           {
             selectedOption: option,
             description,
+            participants,
           }
         );
 

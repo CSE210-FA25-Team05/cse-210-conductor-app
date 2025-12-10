@@ -84,8 +84,24 @@ const CreateInteractionBody = {
   properties: {
     option: { type: 'string' },
     description: { type: 'string' },
+    participants: {
+      type: 'array',
+      items: { type: 'integer' },
+      minItems: 1,
+      uniqueItems: true,
+    },
   },
-  required: ['option'],
+  required: ['option', 'participants'],
+};
+
+const InteractionParticipantSchema = {
+  type: 'object',
+  properties: {
+    user_id: { type: 'integer' },
+    first_name: { type: 'string', nullable: true },
+    last_name: { type: 'string', nullable: true },
+  },
+  required: ['user_id', 'first_name', 'last_name'],
 };
 
 const InteractionSchema = {
@@ -99,6 +115,10 @@ const InteractionSchema = {
     interaction_config_id: { type: 'integer' },
     value: { type: 'string' },
     description: { type: 'string', nullable: true },
+    participants: {
+      type: 'array',
+      items: InteractionParticipantSchema,
+    },
     created_at: DateTimeType,
   },
   required: [
@@ -110,6 +130,7 @@ const InteractionSchema = {
     'interaction_config_id',
     'value',
     'description',
+    'participants',
     'created_at',
   ],
 };

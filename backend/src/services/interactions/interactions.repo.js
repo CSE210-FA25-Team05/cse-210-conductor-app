@@ -37,6 +37,7 @@ class InteractionRepo {
       teamId = null,
       value,
       description = null,
+      participants = [],
     } = interactionData;
     return db.interactions.create({
       data: {
@@ -45,10 +46,20 @@ class InteractionRepo {
         interaction_config_id: configId,
         value,
         description,
+        participants: {
+          create: participants.map((pid) => ({ user_id: pid })),
+        },
       },
       include: {
         authors: {
           select: { first_name: true, last_name: true },
+        },
+        participants: {
+          include: {
+            users: {
+              select: { id: true, first_name: true, last_name: true },
+            },
+          },
         },
       },
     });
@@ -68,6 +79,13 @@ class InteractionRepo {
       include: {
         authors: {
           select: { first_name: true, last_name: true },
+        },
+        participants: {
+          include: {
+            users: {
+              select: { id: true, first_name: true, last_name: true },
+            },
+          },
         },
       },
     });

@@ -84,7 +84,7 @@ class InteractionService {
     course,
     user,
     enrollment,
-    { selectedOption, description = null }
+    { selectedOption, description = null, participants = [] }
   ) {
     const created = await this.interactionRepo.db.$transaction(async (tx) => {
       const cfg = await this.interactionRepo.getConfig(course.id, tx);
@@ -107,6 +107,23 @@ class InteractionService {
 
       const optionKeyResolved = option.value;
 
+      // Ensure participants are enrolled in the course
+      const participantEnrollmentCount = await tx.enrollments.count({
+        where: {
+          course_id: course.id,
+          user_id: { in: participants },
+          deleted_at: null,
+        },
+      });
+
+      if (participantEnrollmentCount !== participants.length) {
+        const e = new Error(
+          'One or more participants are not enrolled in the course'
+        );
+        e.code = 'BAD_REQUEST';
+        throw e;
+      }
+
       const interactionData = {
         courseId: course.id,
         configId: cfg.id,
@@ -114,6 +131,7 @@ class InteractionService {
         teamId: enrollment.team_id,
         value: optionKeyResolved,
         description,
+        participants,
       };
       const createdInteraction = await this.interactionRepo.createInteraction(
         interactionData,
@@ -261,6 +279,12 @@ class InteractionService {
       author_last_name: interaction.authors?.last_name || null,
       interaction_config_id: interaction.interaction_config_id,
       value: interaction.value,
+      participants:
+        interaction.participants?.map((p) => ({
+          user_id: p.users.id,
+          first_name: p.users.first_name,
+          last_name: p.users.last_name,
+        })) || [],
       description: interaction.description,
       created_at: interaction.created_at,
     };
