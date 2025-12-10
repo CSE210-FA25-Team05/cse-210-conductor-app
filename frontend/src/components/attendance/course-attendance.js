@@ -199,7 +199,9 @@ export class CourseAttendance extends HTMLElement {
     `;
     this.appendChild(this.studentView);
     this.codeInput = this.studentView.querySelector('#code-input');
-    this.attendanceForm = this.studentView.querySelector('#attendance-code-form');
+    this.attendanceForm = this.studentView.querySelector(
+      '#attendance-code-form'
+    );
     this.submitBtn = this.studentView.querySelector('#submit-btn');
     this.studentState = this.studentView.querySelector('#student-state');
     this.studentTimerRow = this.studentView.querySelector('#student-timer-row');
