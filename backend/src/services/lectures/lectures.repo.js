@@ -57,6 +57,45 @@ class LecturesRepo {
   }
 
   /**
+   * Get a lecture by its attendance code (only active codes).
+   * Only returns lectures with active (non-expired) codes.
+   *
+   * @param {number} courseId - ID of the course
+   * @param {string} code - Attendance code
+   * @returns {Promise<Object|null>} Lecture object or null if not found
+   */
+  async getLectureByCode(courseId, code) {
+    return this.db.lectures.findFirst({
+      where: {
+        course_id: courseId,
+        code: code,
+        deleted_at: null,
+        code_expires_at: {
+          gte: new Date(), // Only active (non-expired) codes
+        },
+      },
+    });
+  }
+
+  /**
+   * Get a lecture by code regardless of expiration status.
+   * Used to check if code exists but expired (for better error messages).
+   *
+   * @param {number} courseId - ID of the course
+   * @param {string} code - Attendance code
+   * @returns {Promise<Object|null>} Lecture object or null if not found
+   */
+  async getLectureByCodeAnyStatus(courseId, code) {
+    return this.db.lectures.findFirst({
+      where: {
+        course_id: courseId,
+        code: code,
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
    * Generate a unique code for a course.
    * Ensures the code doesn't already exist in the course.
    * Uses the same pattern as course join code generation.
@@ -146,39 +185,15 @@ class LecturesRepo {
   }
 
   /**
-   * Activate attendance for a lecture by generating a code and starting the 5-minute timer.
-   * This should be called when the professor/TA clicks "Start Attendance" button.
-   * If a code already exists and is still valid, returns the existing lecture without generating a new code.
-   * Once attendance has been activated for a lecture, it cannot be reactivated (one activation per lecture).
+   * Generate and set attendance code for a lecture.
+   * This is a simple data access method - business logic should be in the service layer.
    *
    * @param {number} lectureId - ID of the lecture
    * @param {number} courseId - ID of the course (for generating unique code and validation)
    * @returns {Promise<Object>} Updated lecture object with code and expiration timestamps
    */
   async activateAttendance(lectureId, courseId) {
-    // First, check if lecture exists and belongs to the course
-    const existingLecture = await this.getLectureById(lectureId, courseId);
-    if (!existingLecture) {
-      const error = new Error('Lecture not found');
-      error.code = 'NOT_FOUND';
-      throw error;
-    }
-
-    // If code already exists and is still valid, return existing lecture
-    if (this.isCodeValid(existingLecture)) {
-      return existingLecture;
-    }
-
-    // If attendance was already activated (code_expires_at was set), prevent reactivation
-    if (existingLecture.code_expires_at !== null) {
-      const error = new Error(
-        'Attendance has already been activated for this lecture and cannot be reactivated'
-      );
-      error.code = 'BAD_REQUEST';
-      throw error;
-    }
-
-    // Generate new code (first activation only)
+    // Generate new code
     const code = await this.generateUniqueCode(courseId);
     const codeGeneratedAt = new Date();
     const codeExpiresAt = new Date(codeGeneratedAt.getTime() + 5 * 60 * 1000); // 5 minutes

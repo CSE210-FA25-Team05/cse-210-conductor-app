@@ -6,6 +6,7 @@
         <title>Class Directory - Conductor</title>
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
+        <script type="module" async src="/src/components/forms/add-user-form.js"></script>
     </head>
     <body>
         <main>
@@ -14,32 +15,51 @@
                 <theme-toggle></theme-toggle>
             </header>
             <article id="directory-content">
+
+                <header>
+                    <div class="grid-menu" role="menu">
+                        <input
+                            id="grid-search"
+                            type="search"
+                            placeholder="Search..."
+                            aria-label="Search journals"
+                        />
+                        <div> <!-- Used to separate buttons from search -->
+                            <button id='add-user-button'>Add User<i>add</i></button>
+                        </div>
+                    </div>
+                </header>
                 <p id="directory-loading">Loading directory...</p>
                 <zing-grid
                     id="directory-grid"
-                    style="display: block;"
-                    caption="Class Directory"
-                    theme="default"
                     pager
                     page-size="25"
                     page-size-options="10,25,50,100"
-                    search>
+                    search
+                    sort
+                    >
                 </zing-grid>
-                <p id="directory-error" style="display: none; color: var(--color-error);"></p>
             </article>
+            <modal-component footer="none" id="add-user-modal">
+                <h4 slot="header">Add User</h4>
+                <add-user-form slot="content"></add-user-form>
+            <modal-component>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
         
         <script type="module">
-            import { getCourseId } from '/src/js/utils/cache-utils.js';
+            import { getCourseId, getUserRole } from '/src/js/utils/cache-utils.js';
             import { getAllUsersInCourse, getUserInCourse } from '/src/js/api/course.js';
+            import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
             
             const directoryContent = document.getElementById('directory-content');
             const directoryLoading = document.getElementById('directory-loading');
             const directoryGrid = document.getElementById('directory-grid');
             const directoryError = document.getElementById('directory-error');
+            const addUserButton = document.getElementById('add-user-button');
+            const addUserModal = document.getElementById('add-user-modal');
             
             async function loadDirectory() {
                 try {
@@ -61,7 +81,7 @@
                         first_name: e.user_first_name ?? 'N/A',
                         last_name: e.user_last_name ?? 'N/A',
                         email: e.user_email ?? 'N/A',
-                        pronouns: e.user_pronouns ?? 'N/A',
+                        pronouns: e.pronouns ?? 'N/A',
                         role: e.role ?? 'N/A',
                         team_id: e.team_id ?? 'N/A',
                     }));
@@ -76,8 +96,20 @@
                     directoryError.style.display = 'block';
                 }
             }
+
+            if (addUserButton && getUserRole() !== 'professor') {
+                addUserButton.style.display = 'none';
+            } else if (addUserButton && addUserModal) {
+                addUserButton.addEventListener('click', () => {
+                    addUserModal.open();
+                });
+            }
             
             loadDirectory();
+
+            window.addEventListener('load', () => {
+                linkSearchToGrid('grid-search', 'directory-grid');
+            });
         </script>
     </body>
 </html>

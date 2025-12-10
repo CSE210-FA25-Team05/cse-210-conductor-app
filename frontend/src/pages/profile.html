@@ -8,6 +8,10 @@
         <script type="module" async src="/src/js/common.js"></script>
     </head>
     <body>
+        <modal-component style="display: none" id="incomplete-notification"> 
+            <h4 slot="header">Profile Incomplete</h4>
+            <p slot="content">Please complete your profile before preceding.</p>
+        </modal-component>
         <main>
             <header>
                 <h1>Profile</h1>
@@ -80,7 +84,7 @@
                 </article>
             </section>
         </main>
-        <aside>
+        <aside id="aside">
             <conductor-nav></conductor-nav>
         </aside>
         <script type="module">
@@ -116,10 +120,23 @@
             const lastNameError = document.getElementById('last-name-error');
             const pronounsError = document.getElementById('pronouns-error');
             
+            const incompleteNotification = document.getElementById('incomplete-notification');
+            const aside = document.getElementById('aside');
+            let completing_profile = false;
+
             // Load profile on page load
             async function loadProfile() {
                 try {
                     const profile = await getProfile();
+                    if (!profile.is_profile_complete) {
+                        aside.style.display = "none";
+                        customElements.whenDefined('modal-component').then(() => {
+                            incompleteNotification.style.display = 'block';
+                            incompleteNotification.open();
+                            completing_profile = true;
+                            console.log('completing_profile', completing_profile)
+                        });
+                    }
                     
                     document.getElementById('email').value = profile.email || '';
                     document.getElementById('first-name').value = profile.first_name || '';
@@ -175,7 +192,13 @@
                     };
                     
                     const updatedProfile = await updateProfile(updateData);
-                    
+                    // If the user is completing their profile for the first time, redirect to /courses
+                    if (updatedProfile.user.is_profile_complete && completing_profile) {
+                        window.location.replace('/courses');
+                    }
+                    // Show the sidebar when not compltint profile for first time
+                    aside.style.display = "block"; 
+
                     // Show success message
                     profileMessage.style.display = 'block';
                     profileMessage.textContent = 'Profile updated successfully!';

@@ -1,0 +1,30 @@
+zing-grid {
+  border-radius: var(--border-radius);
+  border: var(--border);
+}
+zg-watermark {
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+zg-head-cell {
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+zg-caption,
+zg-button.zg-filter-menu {
+  display: none;
+}
+.grid-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.grid-menu input {
+  margin-bottom: 0;
+}
+
+@media (max-width: 978px) {
+  .grid-menu {
+    flex-direction: column;
+  }
+}
