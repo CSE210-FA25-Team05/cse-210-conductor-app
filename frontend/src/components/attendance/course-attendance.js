@@ -59,7 +59,8 @@ export class CourseAttendance extends HTMLElement {
     // more saftey checks
     if (!attendance) {
       this.errorMsg.style = 'display:block; color:red;';
-      this.errorMsg.textContent = 'Error activating attendance: activateAttendance API failed.';
+      this.errorMsg.textContent =
+        'Error activating attendance: activateAttendance API failed.';
       return;
     }
 
