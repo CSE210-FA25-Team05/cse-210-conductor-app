@@ -19,7 +19,7 @@ import { ConductorForm } from '/src/components/forms/conductor-form.js';
  *  1. POST /api/courses with the collected form data
  *  2. Redirects to /course/:id/dashboard on success
  *
- * @extends BaseForm
+ * @extends ConductorForm
  *
  * @example
  * <create-course-form></create-course-form>

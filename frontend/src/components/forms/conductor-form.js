@@ -35,17 +35,21 @@ export class ConductorForm extends HTMLElement {
   }
 
   connectedCallback() {
-    this.form = document.createElement('form');
-    this.renderFields();
-    this.renderErrorCard();
-    this.renderSubmit();
-    this.appendChild(this.form);
-
-    this.form.addEventListener('submit', this.handleSubmit);
+    queueMicrotask(() => {
+      if (this.form) return;
+      this.form = document.createElement('form');
+      this.renderFields();
+      this.renderErrorCard();
+      this.renderSubmit();
+      this.appendChild(this.form);
+      this.form.addEventListener('submit', this.handleSubmit);
+    });
   }
 
   disconnectedCallback() {
-    this.form.removeEventListener('submit', this.handleSubmit);
+    if (this.form) {
+      this.form.removeEventListener('submit', this.handleSubmit);
+    }
   }
 
   // OVERRIDE BELOW
@@ -60,22 +64,74 @@ export class ConductorForm extends HTMLElement {
 
   renderFields() {
     this.fields.forEach((field) => {
-      const label = document.createElement('label');
-      label.innerText = field.label;
-      label.setAttribute('for', field.id);
-
-      const input = document.createElement('input');
-      input.id = field.id;
-      input.name = field.name;
-      input.type = field.type || 'text';
-      if (field.min_length) input.minLength = field.min_length;
-      if (field.max_length) input.maxLength = field.max_length;
-      if (field.value) input.value = field.value;
-      input.required = field.required !== false;
-
-      label.appendChild(input);
-      this.form.appendChild(label);
+      switch (field.type) {
+        case 'radio-group':
+          this.renderRadioGroup(field);
+          break;
+        case 'textarea':
+          this.renderTextarea(field);
+          break;
+        default:
+          this.renderInput(field);
+      }
     });
+  }
+
+  renderInput(field) {
+    const label = document.createElement('label');
+    label.innerText = field.label;
+    label.setAttribute('for', field.id);
+
+    const input = document.createElement('input');
+    input.id = field.id;
+    input.name = field.name;
+    input.type = field.type || 'text';
+    if (field.value) input.value = field.value;
+    input.required = field.required !== false;
+    label.appendChild(input);
+
+    this.form.appendChild(label);
+  }
+
+  renderTextarea(field) {
+    const label = document.createElement('label');
+    label.innerText = field.label;
+    label.setAttribute('for', field.id);
+
+    const input = document.createElement('textarea');
+    input.id = field.id;
+    input.name = field.name;
+    input.required = field.required !== false;
+    label.appendChild(input);
+
+    this.form.appendChild(label);
+  }
+
+  // Radio group
+  renderRadioGroup(field) {
+    const wrapper = document.createElement('div');
+    wrapper.role = 'group';
+
+    for (const opt of field.options || []) {
+      const label = document.createElement('label');
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.id = opt.id;
+      radio.name = field.name;
+      radio.value = opt.value;
+
+      // Store option color for later, only apply when selected
+      if (opt.color) {
+        label.dataset.color = opt.color;
+      }
+
+      label.appendChild(radio);
+      label.appendChild(document.createTextNode(opt.label || opt.value));
+      wrapper.appendChild(label);
+    }
+
+    this.form.appendChild(wrapper);
   }
 
   renderErrorCard() {
@@ -100,9 +156,21 @@ export class ConductorForm extends HTMLElement {
 
   getFormValues() {
     const values = {};
-    this.form.querySelectorAll('input').forEach((i) => {
-      values[i.name] = i.value;
-    });
+    for (const field of this.fields) {
+      switch (field.type) {
+        case 'radio-group': {
+          const selected = this.form.querySelector(
+            `input[name="${field.name}"]:checked`
+          );
+          values[field.name] = selected ? selected.value : null;
+          break;
+        }
+        default: {
+          const input = this.form.querySelector(`[name="${field.name}"]`);
+          if (input) values[field.name] = input.value;
+        }
+      }
+    }
     return values;
   }
 

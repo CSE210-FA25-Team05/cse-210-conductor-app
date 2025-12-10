@@ -1,5 +1,7 @@
 'use strict';
 
+const { CourseRoles } = require('../shared/shared.enums');
+
 /**
  * Lectures Permissions
  *
@@ -55,11 +57,14 @@ class LecturesPermissions {
   async canModifyLectures(user, course, enrollment) {
     // If enrollment is provided, use it directly
     if (enrollment !== null) {
-      return enrollment.role === 'professor' || enrollment.role === 'ta';
+      return (
+        enrollment.role === CourseRoles.PROFESSOR ||
+        enrollment.role === CourseRoles.TA
+      );
     }
     // Otherwise, query for enrollment role
     const role = await this.getUserCourseRole(user.id, course.id);
-    return role === 'professor' || role === 'ta';
+    return role === CourseRoles.PROFESSOR || role === CourseRoles.TA;
   }
 }
 

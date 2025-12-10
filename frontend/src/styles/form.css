@@ -8,6 +8,12 @@ label {
   flex-direction: column;
 }
 
+form > [role='group'] {
+  padding: var(--button-padding);
+  font-size: var(--button-fs);
+  margin-bottom: var(--spacing-medium);
+}
+
 textarea,
 input {
   background-color: var(--color-bg-white);
@@ -21,7 +27,6 @@ input {
 
   -webkit-appearance: none;
 }
-
 input:has(+ small) {
   margin-bottom: 0;
 }
@@ -35,7 +40,22 @@ input:focus {
   border: var(--border-selected);
 }
 
-input:disabled,
-textarea:disabled {
-  color: var(--color-text-disabled);
+quick-add-modal form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 50dvh;
+}
+quick-add-modal [role='group'] {
+  align-self: center;
+}
+quick-add-modal label:has(textarea) {
+  flex: 1 1 auto !important;
+  display: flex;
+  flex-direction: column;
+}
+
+quick-add-modal label:has(textarea) textarea {
+  flex: 1 1 auto;
+  resize: none;
 }

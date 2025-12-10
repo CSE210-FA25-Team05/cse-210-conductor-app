@@ -1,6 +1,8 @@
 // backend/src/services/teams/teams.permissions.js
 'use strict';
 
+const { CourseRoles } = require('../shared/shared.enums');
+
 /**
  * Teams Permissions
  *
@@ -32,7 +34,10 @@ class TeamsPermissions {
    */
   canModifyTeams(enrollment) {
     if (!enrollment) return false;
-    return enrollment.role === 'professor' || enrollment.role === 'ta';
+    return (
+      enrollment.role === CourseRoles.PROFESSOR ||
+      enrollment.role === CourseRoles.TA
+    );
   }
 }
 

@@ -1,6 +1,8 @@
 'use strict';
 
 const { DEFAULT_PULSE_CONFIG } = require('../shared/shared.constants');
+const { CourseRoles } = require('../shared/shared.enums');
+const { generateCode } = require('../../utils/code-generator');
 
 /**
  * Course Repository
@@ -69,6 +71,7 @@ class CourseRepo {
             first_name: true,
             last_name: true,
             email: true,
+            pronouns: true,
           },
         },
       },
@@ -133,7 +136,7 @@ class CourseRepo {
       let uniqueCode;
       let exists;
       do {
-        uniqueCode = await this.generateJoinCode();
+        uniqueCode = generateCode();
         exists = await this.db.courses.findFirst({
           where: { join_code: uniqueCode },
         });
@@ -153,7 +156,7 @@ class CourseRepo {
         enrollments: {
           create: {
             user_id: user.id,
-            role: 'professor',
+            role: CourseRoles.PROFESSOR,
           },
         },
         pulse_configs: {
@@ -194,29 +197,34 @@ class CourseRepo {
   }
 
   /**
-   * Get the join code for a course.
-   * @param {number} courseId - ID of the course
-   * @returns {Promise<string|null>} Join code of the course or null if not found
+   * Enroll a user by join code.
+   * @param {string} joinCode - Join code to enroll by
+   * @param {number} userId - ID of the user to enroll
+   * @returns {Promise<Object>} Enrollment object
    */
-  async getCourseJoinCode(courseId) {
-    const course = await this.db.courses.findUnique({
-      where: { id: courseId },
-      select: { join_code: true },
+  async enrollByJoinCode(joinCode, userId) {
+    const course = await this.db.courses.findFirst({
+      where: { join_code: joinCode },
     });
-    return course ? course.join_code : null;
+    if (!course) {
+      return null;
+    }
+    return this.addEnrollment(course.id, userId);
   }
 
   /**
    * Add an enrollment of a user into a course.
    * @param {number} courseId - ID of the course
    * @param {number} userId - ID of the user
+   * @param {string} role - Role for the enrollment (default: 'student')
    * @returns {Promise<Object>} Created enrollment object
    */
-  async addEnrollment(courseId, userId) {
+  async addEnrollment(courseId, userId, role = 'student') {
     const enrollment = await this.db.enrollments.create({
       data: {
         course_id: courseId,
         user_id: userId,
+        role: role,
       },
       include: {
         users: {
@@ -225,6 +233,7 @@ class CourseRepo {
             first_name: true,
             last_name: true,
             email: true,
+            pronouns: true,
           },
         },
       },
@@ -242,8 +251,10 @@ class CourseRepo {
   async updateEnrollmentRole(courseId, userId, role) {
     const updatedEnrollment = await this.db.enrollments.update({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
       data: {
         role: role,
@@ -255,6 +266,7 @@ class CourseRepo {
             first_name: true,
             last_name: true,
             email: true,
+            pronouns: true,
           },
         },
       },
@@ -271,26 +283,13 @@ class CourseRepo {
   async deleteEnrollment(courseId, userId) {
     const deletedEnrollment = await this.db.enrollments.delete({
       where: {
-        course_id: courseId,
-        user_id: userId,
+        user_id_course_id: {
+          user_id: userId,
+          course_id: courseId,
+        },
       },
     });
     return deletedEnrollment;
-  }
-
-  /**
-   * Generate a random 6-character join code.
-   * @returns {Promise<string>} Generated join code
-   */
-  async generateJoinCode() {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let generatedCode = '';
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      generatedCode += characters.charAt(randomIndex);
-    }
-    return generatedCode;
   }
 }
 
