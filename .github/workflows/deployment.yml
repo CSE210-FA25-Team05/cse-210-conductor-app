@@ -29,10 +29,7 @@ jobs:
             git checkout $BRANCH
             git reset --hard origin/$BRANCH
             npm install --production
-            if pm2 describe conductor > /dev/null 2>&1; then
-              pm2 restart conductor --update-env
-            else
-              pm2 start backend/src/server.js --name conductor
-            fi
+            pm2 restart conductor --update-env
+            pm2 start backend/src/server.js --name conductor
             pm2 save
             echo "Deployment completed successfully"
