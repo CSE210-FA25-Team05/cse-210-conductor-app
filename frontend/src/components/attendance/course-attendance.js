@@ -78,21 +78,27 @@ export class CourseAttendance extends HTMLElement {
     this.profView = document.createElement('div');
     if (this.profView.innerHTML.trim() !== null) {
       this.profView.innerHTML = `
-        <h3>Professor Attendance Control</h3>
-        <div>
-          <button id="start-btn">Start Attendance</button>
-          <button id="stop-btn" style="display:none;">Stop Attendance</button>
-        </div>
-        <div id="code-row" style="display:none;">
-          <strong>Attendance Code: </strong><span id="code-val"></span>
-        </div>
-        <div>
-          <strong>Status: </strong><span id="code-state">Not active</span>
-        </div>
-        <div id="timer-row" style="display:none;">
-          <strong>Expires At: </strong><span id="expiration">00:00</span>
-        </div>
-        <p id="error-msg" style="display:none, color: red;"></div>
+        <article>
+            <header>
+                <h3>Professor Attendance Control</h3>
+            </header>
+            <div>
+              <button id="start-btn">Start Attendance</button>
+              <button id="stop-btn" style="display:none;">Stop Attendance</button>
+            </div>
+            <div id="code-row" style="display:none;">
+              <strong>Attendance Code: </strong><span id="code-val"></span>
+            </div>
+            <div id="timer-row" style="display:none;">
+              <strong>Expires At: </strong><span id="expiration">00:00</span>
+            </div>
+            <p id="error-msg" style="display:none, color: red;"></div>
+            <footer>
+                <div>
+                    <strong>Status: </strong><span id="code-state">Not active</span>
+                </div>
+            </footer>
+        </article>
       `;
     }
     this.appendChild(this.profView);
@@ -142,19 +148,6 @@ export class CourseAttendance extends HTMLElement {
         return;
       }
 
-      // --> bugged right now when user tries to input the attendance code multiple times before attendance closes
-      // const userAttendance = await getAttendanceStats(this.courseId);
-      // console.log(userAttendance);
-      // if (userAttendance) {
-      //   for (const att of userAttendance.lectures) {
-      //     if (att.lecture_id === todaysLecture.id) {
-      //       this.studentMsg.style = "display:block; color:green;";
-      //       this.studentMsg.textContent = "You have already gotten credit for attendance today.";
-      //       return;
-      //     }
-      //   }
-      // }
-
       if (todaysLecture.code === inputCode) {
         const now = new Date();
         const d = new Date(todaysLecture.code_expires_at);
@@ -183,22 +176,30 @@ export class CourseAttendance extends HTMLElement {
   async createStudentView() {
     this.studentView = document.createElement('div');
     this.studentView.innerHTML = `
-      <h3>Student Attendance Submission</h3>
-      <div>
-        <label for="code-input">Enter Attendance Code: </label>
-        <input type="text" id="code-input" maxlength="6" />
-        <button id="submit-btn">Submit</button>
-      </div>
-      <div>
-        <strong>Status: </strong><span id="student-state">No active code</span>
-      </div>
-      <div id="student-timer-row" style="display:none;">
-        <strong>Expires At: </strong><span id="student-expiration">00:00</span>
-      </div>
-      <p id="student-msg" style="display:none;"></p>
+      <article>
+          <header>
+              <h3>Student Attendance Submission</h3>
+          </header>
+          <form id="attendance-code-form">
+            <label for="code-input">Enter Attendance Code: 
+                <input type="text" id="code-input" maxlength="6" />
+            </label>
+            <button id="submit-btn">Submit</button>
+          </form>
+          <div id="student-timer-row" style="display:none;">
+            <strong>Expires At: </strong><span id="student-expiration">00:00</span>
+          </div>
+          <p id="student-msg" style="display:none;"></p>
+          <footer>
+              <div>
+                  <strong>Status: </strong><span id="student-state">No active code</span>
+              </div>
+          </footer>
+      </article>
     `;
     this.appendChild(this.studentView);
     this.codeInput = this.studentView.querySelector('#code-input');
+    this.attendanceForm = this.studentView.querySelector('#attendance-code-form');
     this.submitBtn = this.studentView.querySelector('#submit-btn');
     this.studentState = this.studentView.querySelector('#student-state');
     this.studentTimerRow = this.studentView.querySelector('#student-timer-row');
@@ -230,6 +231,7 @@ export class CourseAttendance extends HTMLElement {
       if (userAttendance.lectures) {
         for (const att of userAttendance.lectures) {
           if (att.lecture_id == todaysLecture.id) {
+            this.attendanceForm.style.display = 'none';
             this.studentMsg.style = 'display:block; color:green;';
             this.studentMsg.textContent =
               'You have already gotten credit for attendance today.';
