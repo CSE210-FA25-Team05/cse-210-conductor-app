@@ -121,10 +121,32 @@ export class ConductorForm extends HTMLElement {
       radio.name = field.name;
       radio.value = opt.value;
 
+      // Store option color for later, only apply when selected
+      if (opt.color) {
+        label.dataset.color = opt.color;
+      }
+
       label.appendChild(radio);
       label.appendChild(document.createTextNode(opt.label || opt.value));
       wrapper.appendChild(label);
     }
+
+    // Apply color only to the selected option; others remain unstyled
+    const applyColors = () => {
+      const radios = wrapper.querySelectorAll('input[type="radio"]');
+      radios.forEach((r) => {
+        const lbl = r.parentElement;
+        if (!lbl) return;
+        const c = lbl.dataset.color;
+        lbl.style.backgroundColor = '';
+        if (r.checked && c) {
+          lbl.style.backgroundColor = c;
+        }
+      });
+    };
+
+    wrapper.addEventListener('change', applyColors);
+    applyColors();
 
     this.form.appendChild(wrapper);
   }
