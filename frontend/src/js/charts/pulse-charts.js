@@ -1,3 +1,5 @@
+import Chart from 'chart.js/auto';
+
 //API Call - Hardcoded for testing, will need to be integrated correctly.
 const course_id = '3';
 const apiURL = `http://localhost:3001/courses/${course_id}/pulses/stats?entire_class=true`;
