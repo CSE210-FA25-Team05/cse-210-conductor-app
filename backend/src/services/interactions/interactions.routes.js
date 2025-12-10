@@ -29,7 +29,7 @@ async function routes(fastify) {
   fastify.get(
     '/courses/:course_id/interactions/config',
     {
-      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
       schema: interactionSchemas.GetInteractionConfigSchema,
     },
     async (req, reply) => {
@@ -72,7 +72,7 @@ async function routes(fastify) {
   fastify.post(
     '/courses/:course_id/interactions',
     {
-      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
       schema: interactionSchemas.CreateInteractionSchema,
     },
     async (req, reply) => {

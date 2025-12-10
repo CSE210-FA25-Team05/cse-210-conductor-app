@@ -149,7 +149,7 @@ class InteractionService {
   }
 
   async updateInteraction(course, interaction, data) {
-    const created = await this.interactionRepo.db.$transaction(async (tx) => {
+    const updated = await this.interactionRepo.db.$transaction(async (tx) => {
       const {
         option: selectedOption = null,
         description = null,
@@ -187,10 +187,6 @@ class InteractionService {
       }
 
       if (participants.length > 0) {
-        const originalParticipants = interaction.participants.map(
-          (p) => p.user_id
-        );
-
         // Ensure participants are enrolled in the course
         const participantEnrollmentCount =
           await this.courseRepo.getEnrollmentCount(
@@ -207,14 +203,16 @@ class InteractionService {
           throw e;
         }
 
+        const originalParticipants = interaction.participants.map(
+          (p) => p.user_id
+        );
+
         const toDelete = originalParticipants.filter(
           (pid) => !participants.includes(pid)
         );
         const toAdd = participants.filter(
           (pid) => !originalParticipants.includes(pid)
         );
-
-        const currentTime = new Date();
 
         // Update participants list
         const participantsUpdate = {};
@@ -233,17 +231,17 @@ class InteractionService {
         return interaction;
       }
 
-      const createdInteraction = await this.interactionRepo.updateInteraction(
+      const updatedInteraction = await this.interactionRepo.updateInteraction(
         course.id,
         interaction.id,
         updateData,
         tx
       );
 
-      return createdInteraction;
+      return updatedInteraction;
     });
 
-    return this.mapInteractionToResponse(created);
+    return this.mapInteractionToResponse(updated);
   }
 
   async deleteInteraction(course, interaction) {
