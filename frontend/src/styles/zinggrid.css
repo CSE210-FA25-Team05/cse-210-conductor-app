@@ -1,13 +1,9 @@
 :root {
-  --grid-outline-color: var(--color-border-dark);
+  --grid-outline-color: var(--color-bg-medium);
   --grid-header-color: var(--color-secondary-medium);
   --grid-column-names-color: var(--color-secondary-light);
   --grid-body-cells-color: var(--color-bg-white);
-  /* --grid-row-hover-color: #ff8800; */
-  /* --grid-selected-row-color: #aa00ff; */
   --grid-pager-color: var(--color-bg-light);
-  /* --grid-pager-button-color: #ff00ff;
-  --grid-pager-button-hover-color: #ff88ff; */
   --grid-search-input-color: var(--color-bg-light);
   --grid-search-input-focus-color: var(--color-secondary-light);
 }
@@ -25,13 +21,13 @@ zg-caption {
 
 zg-head-cell {
   background-color: var(--grid-column-names-color);
-  color: #000000;
+  color: var(--color-text-primary);
   border-color: var(--grid-column-names-color);
 }
 
 zg-cell {
   background-color: var(--grid-body-cells-color);
-  color: #000000;
+  color: var(--color-text-primary);
   border-color: var(--grid-body-cells-color);
 }
 
@@ -41,18 +37,20 @@ zg-row:hover {
 
 zg-row[selected] {
   background-color: var(--grid-selected-row-color);
-  color: #ffffff;
+  color: var(--color-bg-white);
 }
 
 zg-pager {
   background-color: var(--grid-pager-color);
-  color: #000000;
+  color: var(--color-text-primary);
   border-top-color: var(--grid-pager-color);
+  font-size: 0.7em;
+  color: var(--color-text-primary);
 }
 
 zg-pager button {
   background-color: var(--grid-pager-button-color);
-  color: #ffffff;
+  color: var(--color-bg-white);
   border-color: var(--grid-pager-button-color);
 }
 
@@ -68,7 +66,7 @@ zg-pager button:disabled {
 zg-search input {
   background-color: var(--grid-search-input-color);
   border-color: var(--grid-search-input-color);
-  color: #ffffff;
+  color: var(--color-bg-white);
 }
 
 zg-search input:focus {
