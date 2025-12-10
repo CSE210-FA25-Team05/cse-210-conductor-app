@@ -4,3 +4,5 @@ backend/.env
 *.log
 .DS_Store
 temp.js
+docker-compose.prob.yml
+docker-compose.yml

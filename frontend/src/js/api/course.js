@@ -126,11 +126,11 @@ export async function getAllUsersInCourse(courseID) {
  * @description Enroll a user into a course.
  * @param {*} courseID — ID of the course to add the user to.
  * @param { object } user - An object containing user information
- * @param { string } user.id - User ID
+ * @param { string } user.email - User ID
  */
 export async function addUserInCourse(courseID, user) {
   let response = await postWrapper(`/api/courses/${courseID}/users`, {
-    user_id: user.id,
+    user_email: user.email,
   });
   if (!response.ok) {
     throw new Error(response.error);
@@ -189,8 +189,9 @@ export async function removeUserFromCourse(courseID, userID) {
  * @param { string } joinAndUser.user_id - User ID of the user joining the course.
  * @param { string } joinAndUser.join_code - Code for enrolling in the course.
  */
-export async function joinCourseWithCode(courseID, joinAndUser) {
-  let response = await postWrapper(`/api/courses/${courseID}/join`, {
+export async function joinCourseWithCode(joinAndUser) {
+  console.log(joinAndUser);
+  let response = await postWrapper(`/api/courses/join`, {
     join_code: joinAndUser.join_code,
     user_id: joinAndUser.user_id,
   });

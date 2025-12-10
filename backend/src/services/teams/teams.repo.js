@@ -65,6 +65,7 @@ class TeamsRepo {
             first_name: true,
             last_name: true,
             email: true,
+            pronouns: true,
           },
         },
       },

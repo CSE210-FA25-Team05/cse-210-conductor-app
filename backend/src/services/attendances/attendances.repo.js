@@ -174,11 +174,13 @@ class AttendancesRepo {
    * @returns {Promise<Object>} Statistics object with total_enrolled, total_present, attendance_percentage
    */
   async getAttendanceStats(lectureId, courseId) {
-    // Get total enrolled students in the course
+    // Get total enrolled students in the course (including team_lead)
     const totalEnrolled = await this.db.enrollments.count({
       where: {
         course_id: courseId,
-        role: 'student',
+        role: {
+          in: ['student', 'team_lead'], // Include both student and team_lead roles
+        },
         deleted_at: null,
       },
     });
@@ -201,6 +203,130 @@ class AttendancesRepo {
       total_present: totalPresent,
       attendance_percentage: Math.round(attendancePercentage * 100) / 100, // Round to 2 decimal places
     };
+  }
+
+  /**
+   * Get completed lectures for a course (where attendance was activated and window has closed).
+   * Only includes lectures where:
+   * - Attendance was activated (code_expires_at is not null)
+   * - Attendance window has closed (code_expires_at is in the past)
+   *
+   * @param {number} courseId - ID of the course
+   * @param {Date|null} startTime - Optional start date filter for lecture_date
+   * @param {Date|null} endTime - Optional end date filter for lecture_date
+   * @returns {Promise<Array>} List of completed lectures
+   */
+  async getCompletedLectures(courseId, startTime = null, endTime = null) {
+    const now = new Date();
+    const where = {
+      course_id: courseId,
+      deleted_at: null,
+      // Only include lectures where attendance was activated
+      code_expires_at: {
+        not: null,
+        // And attendance window has closed (expired)
+        lt: now,
+      },
+    };
+
+    // Optional: Filter by lecture_date range
+    if (startTime || endTime) {
+      where.lecture_date = {};
+      if (startTime) {
+        where.lecture_date.gte = startTime;
+      }
+      if (endTime) {
+        where.lecture_date.lte = endTime;
+      }
+    }
+
+    return this.db.lectures.findMany({
+      where,
+      orderBy: {
+        lecture_date: 'desc', // Newest first
+      },
+    });
+  }
+
+  /**
+   * Get user's attendances for specific lectures.
+   *
+   * @param {number} userId - ID of the user
+   * @param {Array<number>} lectureIds - Array of lecture IDs
+   * @returns {Promise<Array>} List of attendances
+   */
+  async getUserAttendancesForLectures(userId, lectureIds) {
+    if (!lectureIds || lectureIds.length === 0) {
+      return [];
+    }
+
+    return this.db.attendances.findMany({
+      where: {
+        user_id: userId,
+        lecture_id: {
+          in: lectureIds,
+        },
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
+   * Get total enrolled students in a course (including team_lead).
+   *
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<number>} Total enrolled students
+   */
+  async getTotalEnrolledStudents(courseId) {
+    return this.db.enrollments.count({
+      where: {
+        course_id: courseId,
+        role: {
+          in: ['student', 'team_lead'],
+        },
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
+   * Get all attendances for specific lectures (class-wide).
+   *
+   * @param {Array<number>} lectureIds - Array of lecture IDs
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<Array>} List of all attendances
+   */
+  async getAttendancesForLectures(lectureIds, courseId) {
+    if (!lectureIds || lectureIds.length === 0) {
+      return [];
+    }
+
+    return this.db.attendances.findMany({
+      where: {
+        lecture_id: {
+          in: lectureIds,
+        },
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
+  }
+
+  /**
+   * Get attendance count for a specific lecture.
+   *
+   * @param {number} lectureId - ID of the lecture
+   * @param {number} courseId - ID of the course
+   * @returns {Promise<number>} Count of attendances
+   */
+  async getAttendanceCountForLecture(lectureId, courseId) {
+    return this.db.attendances.count({
+      where: {
+        lecture_id: lectureId,
+        course_id: courseId,
+        deleted_at: null,
+      },
+    });
   }
 }
 

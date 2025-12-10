@@ -6,34 +6,54 @@
         <title>Conductor</title>
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
+        
     </head>
     <body>
         <main>
             <h1>Journal</h1>
-            <zing-grid id="journals-grid" 
-                layout="row" 
-                pager 
-                page-size="10" 
-                filter 
-                sort>
-            </zing-grid>
+            <article>
+
+                <header>
+                    <div class="grid-menu" role="menu">
+                        <input
+                            id="grid-search"
+                            type="search"
+                            placeholder="Search..."
+                            aria-label="Search journals"
+                        />
+                    </div>
+                </header>
+
+                <zing-grid id="journals-grid" 
+                    pager 
+                    page-size="10" 
+                    sort
+                    search
+                >
+                    <zg-colgroup>
+                        <zg-column index="title" header="Title"></zg-column>
+                        <zg-column index="content"  header="Content"></zg-column>
+                        <zg-column index="created" header="Created"></zg-column>
+                    </zg-colgroup>
+                </zing-grid>
+            </article>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
         <script type="module">
             import { getCourseId, getUserId } from '/src/js/utils/cache-utils.js';
-            import { getJournalsByUser } from '/src/js/api/journal.js';
+            import { getJournals } from '/src/js/api/journal.js';
+            import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
             
             async function fetchUserJournals() {
                 try {
                     const courseId = getCourseId();
-                    const userId = getUserId();
-                    const journals = await getJournalsByUser(userId, courseId);
+                    const journals = await getJournals(courseId);
                     const rows = (journals || []).map(j => ({
-                      Title: j.title || '',
-                      Content: j.content || '',
-                      Created: j.created_at ? new Date(j.created_at).toLocaleDateString() : '',
+                      title: j.title || '',
+                      content: j.content || '',
+                      created: j.created_at ? new Date(j.created_at).toLocaleDateString() : '',
                     }));
 
                     const gridRef = document.getElementById('journals-grid');
@@ -42,7 +62,12 @@
                     console.error('Error fetching journals:', error);
                 }
             }
-            fetchUserJournals();
+            window.addEventListener('load', () => {
+                fetchUserJournals();
+                linkSearchToGrid('grid-search', 'journals-grid');
+            });
+
+
         </script>
     </body>
 </html>
