@@ -184,7 +184,7 @@ const UpdateInteractionSchema = {
     404: ErrorSchema,
     422: ErrorSchema,
   },
-}
+};
 
 const DeleteInteractionSchema = {
   summary: 'Delete Interaction Record for Course',
@@ -204,7 +204,7 @@ const DeleteInteractionSchema = {
     403: ErrorSchema,
     404: ErrorSchema,
   },
-}
+};
 
 const InteractionFiltersSchema = {
   type: 'object',

@@ -179,12 +179,11 @@ async function routes(fastify) {
           );
         }
 
-        const updatedInteraction =
-          await interactionService.updateInteraction(
-            course,
-            interaction,
-            updateData
-          );
+        const updatedInteraction = await interactionService.updateInteraction(
+          course,
+          interaction,
+          updateData
+        );
 
         return reply.send(updatedInteraction);
       } catch (error) {

@@ -96,7 +96,11 @@ class InteractionRepo {
   }
 
   async getInteractionById(courseId, interactionId, db = this.db) {
-    const interactions = await this.getInteractions(courseId, { id: interactionId }, db);
+    const interactions = await this.getInteractions(
+      courseId,
+      { id: interactionId },
+      db
+    );
     return interactions.length > 0 ? interactions[0] : null;
   }
 

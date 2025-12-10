@@ -150,10 +150,14 @@ class InteractionService {
 
   async updateInteraction(course, interaction, data) {
     const created = await this.interactionRepo.db.$transaction(async (tx) => {
-      const { option: selectedOption = null, description = null, participants = [] } = data;
+      const {
+        option: selectedOption = null,
+        description = null,
+        participants = [],
+      } = data;
       const updateData = {};
       let updatesPresent = false;
-      
+
       if (selectedOption) {
         const cfg = await this.interactionRepo.getConfig(course.id, tx);
         if (!cfg) {
@@ -164,9 +168,9 @@ class InteractionService {
 
         // Resolve options array in multiple possible shapes
         let opts = cfg.config.options;
-        
+
         const option = opts.find((o) => o.value === selectedOption);
-        
+
         if (!option) {
           const e = new Error('Invalid interaction option');
           e.code = 'BAD_REQUEST';
@@ -181,10 +185,12 @@ class InteractionService {
         updateData.description = description;
         updatesPresent = true;
       }
-      
+
       if (participants.length > 0) {
-        const originalParticipants = interaction.participants.map((p) => p.user_id);
-        
+        const originalParticipants = interaction.participants.map(
+          (p) => p.user_id
+        );
+
         // Ensure participants are enrolled in the course
         const participantEnrollmentCount =
           await this.courseRepo.getEnrollmentCount(
@@ -192,7 +198,7 @@ class InteractionService {
             { userIds: participants },
             tx
           );
-  
+
         if (participantEnrollmentCount !== participants.length) {
           const e = new Error(
             'One or more participants are not enrolled in the course'
@@ -205,14 +211,13 @@ class InteractionService {
           (pid) => !participants.includes(pid)
         );
         const toAdd = participants.filter(
-          (pid) =>
-            !originalParticipants.includes(pid)
+          (pid) => !originalParticipants.includes(pid)
         );
 
         const currentTime = new Date();
 
         // Update participants list
-        const participantsUpdate = { };
+        const participantsUpdate = {};
 
         if (toDelete.length > 0) {
           participantsUpdate.deleteMany = { user_id: { in: toDelete } };
