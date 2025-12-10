@@ -216,13 +216,15 @@ class CourseRepo {
    * Add an enrollment of a user into a course.
    * @param {number} courseId - ID of the course
    * @param {number} userId - ID of the user
+   * @param {string} role - Role for the enrollment (default: 'student')
    * @returns {Promise<Object>} Created enrollment object
    */
-  async addEnrollment(courseId, userId) {
+  async addEnrollment(courseId, userId, role = 'student') {
     const enrollment = await this.db.enrollments.create({
       data: {
         course_id: courseId,
         user_id: userId,
+        role: role,
       },
       include: {
         users: {
