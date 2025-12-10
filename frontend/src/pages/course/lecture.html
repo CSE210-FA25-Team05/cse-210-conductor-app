@@ -15,16 +15,25 @@
       </header>
 
       <article id="lecture-content">
-        <p id="lecture-loading">Loading lecture data...</p>
+
+        <header>
+            <div class="grid-menu" role="menu">
+                <input
+                    id="grid-search"
+                    type="search"
+                    placeholder="Search..."
+                    aria-label="Search your pulses"
+                />
+            </div>
+        </header>
 
         <zing-grid
           id="lecture-grid"
-          caption="Course Lectures"
-          theme="default"
           pager
           page-size="10"
           page-size-options="10,25,50,100"
           search
+          sort
         ></zing-grid>
 
         <p
@@ -44,6 +53,7 @@
     <script type="module">
       import { getCourseId } from "/src/js/utils/cache-utils.js";
       import { getLectures } from "/src/js/api/lecture.js";
+      import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
 
       const lectureLoading = document.getElementById("lecture-loading");
       const lectureGrid = document.getElementById("lecture-grid");
@@ -105,6 +115,10 @@
       }
 
       loadLectureData();
+
+      window.addEventListener('load', () => {
+          linkSearchToGrid('grid-search', 'lecture-grid');
+      });
     </script>
   </body>
 </html>

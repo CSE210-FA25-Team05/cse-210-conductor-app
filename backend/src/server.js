@@ -1,6 +1,8 @@
 'use strict';
 
 require('dotenv').config();
+//add open telemetry tracing
+require('../tracing.js');
 
 const fastify = require('fastify')({ logger: true });
 const cors = require('@fastify/cors');
@@ -43,9 +45,6 @@ fastify.register(cors, {
 fastify.register(cookie);
 fastify.register(sensible);
 fastify.register(require('./plugins/error-handler'));
-
-//add open telemetry tracing
-require('../tracing.js');
 
 //db connection
 fastify.register(require('./prisma'));
