@@ -107,7 +107,7 @@ async function routes(fastify) {
   fastify.get(
     '/courses/:course_id/interactions',
     {
-      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
       schema: interactionSchemas.GetInteractionsSchema,
     },
     async (req, reply) => {
@@ -145,7 +145,7 @@ async function routes(fastify) {
   fastify.patch(
     '/courses/:course_id/interactions/:interaction_id',
     {
-      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
       schema: interactionSchemas.UpdateInteractionSchema,
     },
     async (req, reply) => {
@@ -195,7 +195,7 @@ async function routes(fastify) {
   fastify.delete(
     '/courses/:course_id/interactions/:interaction_id',
     {
-      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
+      preHandler: [fastify.loadCourse, fastify.requireTAOrProfessorInCourse],
       schema: interactionSchemas.DeleteInteractionSchema,
     },
     async (req, reply) => {
