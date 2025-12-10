@@ -14,11 +14,13 @@ const InteractionRepo = require('./interactions.repo');
 const InteractionService = require('./interactions.service');
 const interactionSchemas = require('./interactions.schemas');
 const InteractionPermissions = require('./interactions.permissions');
+const CourseRepo = require('../course/course.repo');
 
 async function routes(fastify) {
+  const courseRepo = new CourseRepo(fastify.db);
   const interactionRepo = new InteractionRepo(fastify.db);
   const interactionPermissions = new InteractionPermissions(interactionRepo);
-  const interactionService = new InteractionService(interactionRepo);
+  const interactionService = new InteractionService(interactionRepo, courseRepo);
 
   // Get interaction config for a course
   fastify.get(

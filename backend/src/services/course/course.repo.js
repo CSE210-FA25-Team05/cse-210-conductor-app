@@ -104,6 +104,22 @@ class CourseRepo {
     return enrollment;
   }
 
+  async getEnrollmentCount(courseId, filters = {}, db = this.db) {
+    const where = {
+      course_id: courseId,
+      deleted_at: null,
+    }
+
+    const { userIds = [] } = filters;
+    if (userIds.length > 0) {
+      where.user_id = { in: userIds };
+    }
+
+    return db.enrollments.count({
+      where,
+    });
+  }
+
   /**
    * Add a new course.
    * @param {Object} courseData - Data for the new course

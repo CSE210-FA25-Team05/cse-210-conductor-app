@@ -2,8 +2,9 @@
 
 const { Prisma } = require('@prisma/client');
 class InteractionService {
-  constructor(interactionRepo) {
+  constructor(interactionRepo, courseRepo) {
     this.interactionRepo = interactionRepo;
+    this.courseRepo = courseRepo;
   }
 
   // Get the interaction config for a course (may be null)
@@ -108,13 +109,11 @@ class InteractionService {
       const optionKeyResolved = option.value;
 
       // Ensure participants are enrolled in the course
-      const participantEnrollmentCount = await tx.enrollments.count({
-        where: {
-          course_id: course.id,
-          user_id: { in: participants },
-          deleted_at: null,
-        },
-      });
+      const participantEnrollmentCount = await this.courseRepo.getEnrollmentCount(
+        course.id,
+        { userIds: participants },
+        tx
+      );
 
       if (participantEnrollmentCount !== participants.length) {
         const e = new Error(
