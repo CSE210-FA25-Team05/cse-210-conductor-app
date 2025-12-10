@@ -43,6 +43,7 @@ class ConductorNav extends HTMLElement {
       a.textContent = displayName;
 
       li.appendChild(a);
+      li.classList.add("state-layer");
       ul.appendChild(li);
     }
 
