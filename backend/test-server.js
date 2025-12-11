@@ -632,9 +632,7 @@ async function getPulseConfigTest(courseId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Fetched pulse config for course id=${courseId} successfully`
-    );
+    console.log(`Fetched pulse config for course id=${courseId} successfully`);
   } else {
     console.error(`Failed to fetch pulse config for course id=${courseId}`);
     process.exit(1);
@@ -660,9 +658,7 @@ async function upsertPulseConfigTest(courseId, configObj) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Upserted pulse config for course id=${courseId} successfully`
-    );
+    console.log(`Upserted pulse config for course id=${courseId} successfully`);
   } else {
     console.error(`Failed to upsert pulse config for course id=${courseId}`);
     process.exit(1);
@@ -743,9 +739,7 @@ async function getPulseStatsTest(courseId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(
-      `Fetched pulse stats for course id=${courseId} successfully`
-    );
+    console.log(`Fetched pulse stats for course id=${courseId} successfully`);
   } else {
     console.error(`Failed to fetch pulse stats for course id=${courseId}`);
     process.exit(1);
