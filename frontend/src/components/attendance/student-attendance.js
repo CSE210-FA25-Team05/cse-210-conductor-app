@@ -25,16 +25,24 @@ export class StudentAttendance extends HTMLElement {
     } catch (e) {
       console.log(e);
     }
-    if (this.role !== 'professor' && this.role !== 'ta' && status) {
+    if (this.role !== 'professor' && this.role !== 'ta' && status === 1) {
       this.createForm();
+    } else if (this.role !== 'professor' && this.role !== 'ta' && this.staus === 0) {
+      this.displayStatusSuccess();
     } else {
-      this.displayStatus();
+      this.displayStatusNotAvailable();
     }
   }
 
-  displayStatus() {
+  displayStatusNotAvailable() {
     this.status = document.createElement('p');
-    this.status.innerText = 'Not Availabile';
+    this.status.innerText = 'Not Available';
+    this.appendChild(this.status);
+  }
+
+  displayStatusSuccess() {
+    this.status = document.createElement('p');
+    this.status.innerText = 'Attended';
     this.appendChild(this.status);
   }
 
@@ -76,13 +84,17 @@ export class StudentAttendance extends HTMLElement {
       this.lectureId,
       this.userId
     );
-    console.log('ATTENDANCE: ', attendance);
-    console.log('stats: ', attendance, this.userId);
     const now = new Date();
     const start = new Date(this.lecture.code_generated_at);
     const end = new Date(this.lecture.code_expires_at);
 
-    return now >= start && now <= end;
+    if (attendance !== null) { // already did attendance
+      return 0
+    } if (now >= start && now <= end) { // attendance code open
+      return 1
+    } else {
+      return -1
+    }
   }
 
   async submitHandler(event) {
