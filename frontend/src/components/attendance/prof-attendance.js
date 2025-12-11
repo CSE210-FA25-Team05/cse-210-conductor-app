@@ -72,10 +72,10 @@ export class ProfAttendance extends HTMLElement {
         this.courseId,
         this.lectureId
       );
-      console.log(attendance);
       if (attendance?.code) {
         this.startButton.style.display = 'none';
         this.status.innerText = attendance.code;
+        this.status.style.color = 'blue';
       }
     } catch (e) {
       return;
