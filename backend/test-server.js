@@ -221,7 +221,7 @@ async function addUserToCourseTest(courseId, userId) {
     return true;
   } else {
     console.warn(
-      `⚠️ Failed to add user to course id=${courseId}. Continuing tests anyway.`
+      `Failed to add user to course id=${courseId}. Continuing tests anyway.`
     );
     return false; // don’t exit; just report and move on
   }
@@ -510,10 +510,10 @@ async function createJournalEntryTest(courseId, journalData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Journal entry created successfully (id=${data.id})`);
+    console.log(`Journal entry created successfully (id=${data.id})`);
     return data;
   } else {
-    console.error('❌ Journal entry creation failed');
+    console.error('Journal entry creation failed');
     process.exit(1);
   }
 }
@@ -540,9 +540,9 @@ async function updateJournalEntryTest(courseId, journalId, updateData) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Journal entry id=${journalId} updated successfully`);
+    console.log(`Journal entry id=${journalId} updated successfully`);
   } else {
-    console.error(`❌ Failed to update journal entry id=${journalId}`);
+    console.error(`Failed to update journal entry id=${journalId}`);
     process.exit(1);
   }
 }
@@ -569,9 +569,9 @@ async function deleteJournalEntryTest(courseId, journalId) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Journal entry id=${journalId} deleted successfully`);
+    console.log(`Journal entry id=${journalId} deleted successfully`);
   } else {
-    console.error(`❌ Failed to delete journal entry id=${journalId}`);
+    console.error(`Failed to delete journal entry id=${journalId}`);
     process.exit(1);
   }
 }
@@ -600,11 +600,11 @@ async function getJournalEntriesTest(courseId, userId) {
 
   if (res.ok) {
     console.log(
-      `✅ Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`
+      `Fetched ${data.length} journal entries for user id=${userId} in course id=${courseId} successfully`
     );
   } else {
     console.error(
-      `❌ Failed to fetch journal entries for user id=${userId} in course id=${courseId}`
+      `Failed to fetch journal entries for user id=${userId} in course id=${courseId}`
     );
     process.exit(1);
   }
@@ -633,10 +633,10 @@ async function getPulseConfigTest(courseId) {
 
   if (res.ok) {
     console.log(
-      `✅ Fetched pulse config for course id=${courseId} successfully`
+      `Fetched pulse config for course id=${courseId} successfully`
     );
   } else {
-    console.error(`❌ Failed to fetch pulse config for course id=${courseId}`);
+    console.error(`Failed to fetch pulse config for course id=${courseId}`);
     process.exit(1);
   }
 }
@@ -661,10 +661,10 @@ async function upsertPulseConfigTest(courseId, configObj) {
 
   if (res.ok) {
     console.log(
-      `✅ Upserted pulse config for course id=${courseId} successfully`
+      `Upserted pulse config for course id=${courseId} successfully`
     );
   } else {
-    console.error(`❌ Failed to upsert pulse config for course id=${courseId}`);
+    console.error(`Failed to upsert pulse config for course id=${courseId}`);
     process.exit(1);
   }
 }
@@ -688,10 +688,10 @@ async function getPulsesTest(courseId) {
 
   if (res.ok) {
     console.log(
-      `✅ Fetched ${data.length} pulses for course id=${courseId} successfully`
+      `Fetched ${data.length} pulses for course id=${courseId} successfully`
     );
   } else {
-    console.error(`❌ Failed to fetch pulses for course id=${courseId}`);
+    console.error(`Failed to fetch pulses for course id=${courseId}`);
     process.exit(1);
   }
 }
@@ -718,9 +718,9 @@ async function submitPulseTest(courseId, option, description = null) {
   console.log('Response:', data);
 
   if (res.ok) {
-    console.log(`✅ Submitted pulse for course id=${courseId} successfully`);
+    console.log(`Submitted pulse for course id=${courseId} successfully`);
   } else {
-    console.error(`❌ Failed to submit pulse for course id=${courseId}`);
+    console.error(`Failed to submit pulse for course id=${courseId}`);
     process.exit(1);
   }
 }
@@ -744,10 +744,10 @@ async function getPulseStatsTest(courseId) {
 
   if (res.ok) {
     console.log(
-      `✅ Fetched pulse stats for course id=${courseId} successfully`
+      `Fetched pulse stats for course id=${courseId} successfully`
     );
   } else {
-    console.error(`❌ Failed to fetch pulse stats for course id=${courseId}`);
+    console.error(`Failed to fetch pulse stats for course id=${courseId}`);
     process.exit(1);
   }
 }
@@ -1147,7 +1147,7 @@ async function runTeamsTaAssignmentTests() {
     process.exit(1);
   }
 
-  console.log('\n✅ TEAMS TA ASSIGNMENT TESTS COMPLETED SUCCESSFULLY\n');
+  console.log('\nTEAMS TA ASSIGNMENT TESTS COMPLETED SUCCESSFULLY\n');
 }
 
 // Run both test suites in order
@@ -1189,7 +1189,7 @@ await runTeamsTaAssignmentTests();
 // console.log('Status:', res.status, 'Response:', createdTeam);
 
 // if (!res.ok) {
-//   console.error('❌ Team creation failed');
+//   console.error('Team creation failed');
 //   process.exit(1);
 // }
 
@@ -1318,4 +1318,4 @@ await runTeamsTaAssignmentTests();
 // }
 // console.log('Status:', res.status, 'Response:', deleteResponse);
 
-// console.log('\n✅ TEAMS CRUD TESTS COMPLETED SUCCESSFULLY\n');
+// console.log('\nTEAMS CRUD TESTS COMPLETED SUCCESSFULLY\n');
