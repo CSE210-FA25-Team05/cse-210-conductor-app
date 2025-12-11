@@ -1063,10 +1063,10 @@ if (require.main === module) {
       // Run attendance stats tests
       await runAttendanceStatsTests();
 
-      console.log('\n✅ All attendance tests completed!');
+      console.log('\nAll attendance tests completed!');
       process.exit(0);
     } catch (error) {
-      console.error('\n❌ Test execution failed:', error);
+      console.error('\nTest execution failed:', error);
       process.exit(1);
     }
   })();
