@@ -1,11 +1,43 @@
 :root {
   --grid-outline-color: var(--color-bg-medium);
   --grid-header-color: var(--color-secondary-medium);
+  --grid-footer-color: var(--color-secondary-light);
   --grid-column-names-color: var(--color-secondary-light);
   --grid-body-cells-color: var(--color-bg-white);
   --grid-pager-color: var(--color-bg-light);
   --grid-search-input-color: var(--color-bg-light);
   --grid-search-input-focus-color: var(--color-secondary-light);
+}
+
+zing-grid {
+  border-radius: var(--border-radius);
+  border: var(--border);
+}
+zg-watermark {
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+zg-head-cell {
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+zg-caption,
+zg-button.zg-filter-menu {
+  display: none;
+}
+.grid-menu {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.grid-menu input {
+  margin-bottom: 0;
+}
+
+@media (max-width: 978px) {
+  .grid-menu {
+    flex-direction: column;
+  }
 }
 
 zing-grid {
@@ -28,13 +60,11 @@ zg-head-cell {
 zg-cell {
   background-color: var(--grid-body-cells-color);
   color: var(--color-text-primary);
-  border-color: var(--grid-body-cells-color);
 }
 
 zg-pager {
   background-color: var(--grid-pager-color);
   color: var(--color-text-primary);
-  border-top-color: var(--grid-pager-color);
   font-size: 0.7em;
 }
 
@@ -45,18 +75,15 @@ zg-pager button:disabled {
 
 zg-search input {
   background-color: var(--grid-search-input-color);
-  border-color: var(--grid-search-input-color);
   color: var(--color-bg-white);
 }
 
 zg-search input:focus {
-  border-color: var(--grid-search-input-focus-color);
 }
 
 zg-pager zg-button {
   padding: 0.25em 0.3em !important;
   margin: 0 0.1em !important;
-  border: none !important;
   border-radius: 0 !important;
   background-color: transparent !important;
   color: var(--color-text-primary) !important;
@@ -74,7 +101,6 @@ zg-pager input[type='text'] {
   cursor: text !important;
   background-color: var(--color-bg-white) !important;
   color: var(--color-text-primary) !important;
-  border: 1px solid var(--color-border-light) !important;
   padding: 0.15em 0.3em !important;
   min-width: 2.5em !important;
   text-align: center !important;
@@ -85,5 +111,4 @@ zg-pager input.zg-input-input:focus,
 zg-pager input[type='number']:focus,
 zg-pager input[type='text']:focus {
   outline: 1px solid var(--color-primary-dark) !important;
-  border-color: var(--color-primary-dark) !important;
 }

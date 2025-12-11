@@ -1,454 +1,394 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Class Directory - Conductor</title>
-        <link rel="stylesheet" href="/src/styles/styles.css">
-        <script type="module" async src="/src/js/common.js"></script>
-        <script type="module" async src="/src/components/forms/add-user-form.js"></script>
-        <script type="module" async src="/src/components/forms/create-team-form.js"></script>
-        <script type="module" async src="/src/components/forms/assign-members-form.js"></script>
-    </head>
-    <body>
-        <main>
-            <header>
-                <h1>Class Directory</h1>
-            </header>
-            <article id="directory-content">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Directory - Conductor</title>
+    <link rel="stylesheet" href="/src/styles/styles.css" />
+    <script type="module" async src="/src/js/common.js"></script>
+    <script type="module" async src="/src/components/forms/add-user-form.js"></script>
+    <script
+      type="module"
+      async
+      src="/src/components/forms/create-team-form.js"
+    ></script>
+    <script
+      type="module"
+      async
+      src="/src/components/forms/assign-members-form.js"
+    ></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Class Directory</h1>
+      </header>
 
-                <header>
-                    <div class="grid-menu" role="menu">
-                        <input
-                            id="grid-search"
-                            type="search"
-                            placeholder="Search..."
-                            aria-label="Search journals"
-                        />
-                        <div> <!-- Used to separate buttons from search -->
-                            <button id='add-user-button'>Add User<i>add</i></button>
-                            <button id='team-view-button' style="display: none;">Team View<i>group</i></button>
-                            <button id='directory-view-button' style="display: none;">Directory View<i>people</i></button>
-                        </div>
-                    </div>
-                </header>
-                <p id="directory-loading">Loading directory...</p>
-                <zing-grid
-                    id="directory-grid"
-                    pager
-                    page-size="25"
-                    page-size-options="10,25,50,100"
-                    search
-                    sort
-                    >
-                </zing-grid>
-            </article>
-            <article id="teams-content" style="display: none;">
-                <header>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2>Teams</h2>
-                        <button id="create-team-button" type="button" style="display: none;">Create Team<i>add</i></button>
-                    </div>
-                </header>
-                <p id="teams-loading">Loading teams...</p>
-                <p id="teams-empty" style="display: none; color: var(--color-text-secondary);">No teams in this course.</p>
-                <zing-grid
-                    id="teams-grid"
-                    pager
-                    page-size="10"
-                    page-size-options="5,10,20,50"
-                    search
-                    sort
-                >
-                    <zg-column index="name" header="Team"></zg-column>
-                    <zg-column index="description" header="Description"></zg-column>
-                    <zg-column index="member_count" header="Members"></zg-column>
-                    <zg-column index="members" header="Member List" type="html"></zg-column>
-                    <zg-column index="actions" header="Actions" type="html"></zg-column>
-                </zing-grid>
-            </article>
-            <modal-component footer="none" id="create-team-modal">
-                <h4 slot="header">Create Team</h4>
-                <div slot="content" style="max-width: 600px; margin: 0 auto; padding: var(--spacing-medium);">
-                    <create-team-form></create-team-form>
-                </div>
-            </modal-component>
-            <modal-component footer="none" id="assign-members-modal">
-                <h4 slot="header">Assign Members to Team</h4>
-                <div slot="content" style="max-width: 700px; margin: 0 auto; padding: var(--spacing-medium);">
-                    <assign-members-form id="assign-members-form"></assign-members-form>
-                </div>
-            </modal-component>
-            <style>
-                #create-team-modal dialog > article,
-                #assign-members-modal dialog > article {
-                    max-width: 700px;
-                    width: 90vw;
-                }
-                #create-team-modal dialog > article {
-                    max-width: 600px;
-                }
-            </style>
-            <modal-component footer="none" id="add-user-modal">
-                <h4 slot="header">Add User</h4>
-                <add-user-form slot="content"></add-user-form>
-            <modal-component>
-        </main>
-        <aside>
-            <conductor-nav></conductor-nav>
-        </aside>
-        
-        <script type="module">
-            import { getCourseId, getUserRole, getUserId } from '/src/js/utils/cache-utils.js';
-            import { getAllUsersInCourse, getUserInCourse } from '/src/js/api/course.js';
-            import { getAllTeams, getTeamMembers } from '/src/js/api/team.js';
-            import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
-            
-            const directoryContent = document.getElementById('directory-content');
-            const teamsContent = document.getElementById('teams-content');
-            const directoryLoading = document.getElementById('directory-loading');
-            const teamsLoading = document.getElementById('teams-loading');
-            const teamsEmpty = document.getElementById('teams-empty');
-            const teamsGrid = document.getElementById('teams-grid');
-            const directoryGrid = document.getElementById('directory-grid');
-            const directoryError = document.getElementById('directory-error');
-            const addUserButton = document.getElementById('add-user-button');
-            const teamViewButton = document.getElementById('team-view-button');
-            const directoryViewButton = document.getElementById('directory-view-button');
-            const addUserModal = document.getElementById('add-user-modal');
-            const createTeamButton = document.getElementById('create-team-button');
-            const createTeamModal = document.getElementById('create-team-modal');
-            const assignMembersModal = document.getElementById('assign-members-modal');
-            const assignMembersForm = document.getElementById('assign-members-form');
-            
-            let currentView = 'directory'; // 'directory' or 'teams'
-            let teams = [];
-            let userCourseRole = null; // Store user's role in this course
-            
-            // Show/hide views
-            function showDirectoryView() {
-                directoryContent.style.display = 'block';
-                teamsContent.style.display = 'none';
-                teamViewButton.style.display = 'inline-block';
-                directoryViewButton.style.display = 'none';
-                currentView = 'directory';
-            }
-            
-            function showTeamView() {
-                console.log('🔄 Switching to Team View...');
-                directoryContent.style.display = 'none';
-                teamsContent.style.display = 'block';
-                teamViewButton.style.display = 'none';
-                directoryViewButton.style.display = 'inline-block';
-                currentView = 'teams';
-                console.log('✅ Team View shown. Create Team button should be visible now.');
-                loadTeams();
-            }
-            
-            async function loadDirectory() {
-                try {
-                    // Get course ID from URL
-                    const courseId = getCourseId();
-                    if (!courseId) {
-                        throw new Error('Course ID not found in URL');
-                    }
+      <!-- DIRECTORY VIEW -->
+      <article id="directory-content">
+        <header>
+          <div class="grid-menu" role="menu">
+            <input
+              id="grid-search"
+              type="search"
+              placeholder="Search..."
+              aria-label="Search journals"
+            />
+            <div>
+              <button id="add-user-button">Add User<i>add</i></button>
+              <button id="team-view-button" style="display: none">
+                Team View<i>group</i>
+              </button>
+              <!-- This button toggles to show when Team View is active -->
+            </div>
+          </div>
+        </header>
+        <p id="directory-loading">Loading directory...</p>
+        <zing-grid
+          id="directory-grid"
+          pager
+          page-size="25"
+          page-size-options="10,25,50,100"
+          search
+          sort
+        ></zing-grid>
+      </article>
 
-                    // Fetch all enrollments to get list of user_ids
-                    const enrollments = await getAllUsersInCourse(courseId);
-                    
-                    if (!enrollments || enrollments.length === 0) {
-                        directoryLoading.textContent = 'No participants found in this course.';
-                        return;
-                    }
+      <!-- TEAM VIEW -->
+      <article id="teams-content" style="display: none">
+        <header>
+          <div class="grid-menu">
+            <h2>Teams</h2>
+            <div>
+              <button
+                id="create-team-button"
+                type="button"
+                style="display: none"
+              >
+                Create Team<i>add</i>
+              </button>
+              <button
+                id="directory-view-button"
+                type="button"
+                style="display: none"
+              >
+                Back to Directory<i>arrow_back</i>
+              </button>
+            </div>
+          </div>
+        </header>
+        <p id="teams-loading">Loading teams...</p>
+        <p
+          id="teams-empty"
+          style="display: none; color: var(--color-text-secondary)"
+        >
+          No teams in this course.
+        </p>
+        <zing-grid
+          id="teams-grid"
+          pager
+          page-size="10"
+          page-size-options="5,10,20,50"
+          search
+          sort
+        >
+          <zg-column index="name" header="Team"></zg-column>
+          <zg-column index="description" header="Description"></zg-column>
+          <zg-column index="member_count" header="Members"></zg-column>
+          <zg-column index="members" header="Member List" type="html"></zg-column>
+          <zg-column index="actions" header="Actions" type="html"></zg-column>
+        </zing-grid>
+      </article>
 
-                    const gridData = enrollments.map(e => ({
-                        first_name: e.user_first_name ?? 'N/A',
-                        last_name: e.user_last_name ?? 'N/A',
-                        email: e.user_email ?? 'N/A',
-                        pronouns: e.pronouns ?? 'N/A',
-                        role: e.role ?? 'N/A',
-                        team_id: e.team_id ?? 'N/A',
-                    }));
+      <!-- CREATE TEAM MODAL -->
+      <modal-component footer="none" id="create-team-modal">
+        <h4 slot="header">Create Team</h4>
+        <div
+          slot="content"
+          style="max-width: 600px; margin: 0 auto; padding: var(--spacing-medium)"
+        >
+          <create-team-form></create-team-form>
+        </div>
+      </modal-component>
 
-                    directoryGrid.data = gridData;
-                    directoryLoading.style.display = 'none';
-                    
-                } catch (error) {
-                    console.error('Error loading directory:', error);
-                    directoryLoading.style.display = 'none';
-                    directoryError.textContent = `Error loading directory: ${error.message}`;
-                    directoryError.style.display = 'block';
-                }
-            }
+      <!-- ASSIGN MEMBERS MODAL -->
+      <modal-component footer="none" id="assign-members-modal">
+        <h4 slot="header">Assign Members to Team</h4>
+        <div
+          slot="content"
+          style="max-width: 700px; margin: 0 auto; padding: var(--spacing-medium)"
+        >
+          <assign-members-form id="assign-members-form"></assign-members-form>
+        </div>
+      </modal-component>
 
-            async function loadTeams() {
-                try {
-                    const courseId = getCourseId();
-                    if (!courseId) {
-                        throw new Error('Course ID not found in URL');
-                    }
-                    
-                    teamsLoading.style.display = 'block';
-                    teamsEmpty.style.display = 'none';
-                    
-                    teams = await getAllTeams(courseId);
-                    
-                    teamsLoading.style.display = 'none';
-                    
-                    if (!teams || teams.length === 0) {
-                        teamsEmpty.style.display = 'block';
-                        if (teamsGrid) teamsGrid.data = [];
-                    } else {
-                        // Update assign members form with teams
-                        if (assignMembersForm) {
-                            assignMembersForm.setTeams(teams);
-                        }
-                        
-                        // Build grid data with members and actions
-                        const gridData = await Promise.all(
-                            teams.map(async (team) => {
-                                try {
-                                    const members = await getTeamMembers(courseId, team.id);
-                                    const memberList =
-                                        members.length > 0
-                                            ? members
-                                                .map(
-                                                    (m) =>
-                                                        `${m.user_first_name ?? ''} ${m.user_last_name ?? ''} (${m.user_email ?? ''})`
-                                                )
-                                                .join('<br>')
-                                            : 'No members assigned';
-                                    
-                                    const actions =
-                                        (userCourseRole?.toLowerCase() === 'professor' || userCourseRole?.toLowerCase() === 'ta')
-                                            ? `<button class="assign-members-btn" data-team-id="${team.id}" data-team-name="${team.name}">Assign Members<i>group_add</i></button>`
-                                            : '';
-                                    
-                                    return {
-                                        team_id: team.id,
-                                        name: team.name,
-                                        description: team.description ?? '—',
-                                        member_count: members.length,
-                                        members: memberList,
-                                        actions,
-                                    };
-                                } catch (err) {
-                                    const actions =
-                                        (userCourseRole?.toLowerCase() === 'professor' || userCourseRole?.toLowerCase() === 'ta')
-                                            ? `<button class="assign-members-btn" data-team-id="${team.id}" data-team-name="${team.name}">Assign Members<i>group_add</i></button>`
-                                            : '';
-                                    
-                                    return {
-                                        team_id: team.id,
-                                        name: team.name,
-                                        description: team.description ?? '—',
-                                        member_count: 'Error',
-                                        members: `<span style="color: var(--color-error);">Error loading members</span>`,
-                                        actions,
-                                    };
-                                }
-                            })
-                        );
-                        
-                        if (teamsGrid) {
-                            teamsGrid.data = gridData;
-                        }
-                        
-                        // Delegate click handling for assign buttons
-                        if (teamsGrid && !teamsGrid.hasAttribute('data-assign-handler')) {
-                            teamsGrid.addEventListener('click', (e) => {
-                                const btn = e.target.closest('.assign-members-btn');
-                                if (!btn) return;
-                                const teamId = parseInt(btn.dataset.teamId);
-                                const teamName = btn.dataset.teamName;
-                                openAssignMembersModal(teamId, teamName);
-                            });
-                            teamsGrid.setAttribute('data-assign-handler', 'true');
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error loading teams:', error);
-                    teamsLoading.style.display = 'none';
-                    if (teamsGrid) {
-                        teamsGrid.data = [
-                            {
-                                name: 'Error',
-                                description: `Error loading teams: ${error.message}`,
-                                member_count: '',
-                                members: '',
-                                actions: '',
-                            },
-                        ];
-                    }
-                }
-            }
+      <!-- ADD USER MODAL -->
+      <modal-component footer="none" id="add-user-modal">
+        <h4 slot="header">Add User</h4>
+        <add-user-form slot="content"></add-user-form>
+      </modal-component>
 
-            // Function to open assign members modal for a specific team
-            function openAssignMembersModal(teamId, teamName) {
-                if (assignMembersForm && assignMembersModal) {
-                    // Ensure teams are loaded in the form
-                    if (teams && teams.length > 0) {
-                        assignMembersForm.setTeams(teams);
-                    }
-                    // Set the team in the form
-                    assignMembersForm.setTeamId(teamId);
-                    assignMembersForm.setTeamName(teamName);
-                    assignMembersModal.open();
-                }
-            }
-            
-            // Button visibility and event handlers - check course-specific role
-            async function checkCourseRoleAndSetupButtons() {
-                console.log('🔍 Starting role check...');
-                const courseId = getCourseId();
-                const userId = getUserId();
-                
-                console.log('📋 Course ID:', courseId, 'User ID:', userId);
-                
-                if (!courseId || !userId) {
-                    console.warn('⚠️ Missing courseId or userId - hiding buttons');
-                    // Hide buttons if we can't get course/user info
-                    if (teamViewButton) teamViewButton.style.display = 'none';
-                    if (createTeamButton) createTeamButton.style.display = 'none';
-                    return;
-                }
-                
-                try {
-                    console.log('📡 Fetching all users in course...');
-                    // Get all users in course and find current user (avoids pronouns validation issue)
-                    const enrollments = await getAllUsersInCourse(courseId);
-                    console.log('✅ Got enrollments:', enrollments.length, 'users');
-                    
-                    const userEnrollment = enrollments.find(e => e.user_id === parseInt(userId));
-                    console.log('👤 Found user enrollment:', userEnrollment);
-                    console.log('👤 All enrollments:', enrollments.map(e => ({ user_id: e.user_id, role: e.role })));
-                    
-                    const courseRole = userEnrollment?.role;
-                    console.log('🎭 User course role (raw):', courseRole, 'Type:', typeof courseRole);
-                    console.log('🎭 Role comparison:', {
-                        'professor': courseRole === 'professor',
-                        'Professor': courseRole === 'Professor',
-                        'ta': courseRole === 'ta',
-                        'TA': courseRole === 'TA',
-                        'lowercase professor': courseRole?.toLowerCase() === 'professor',
-                        'lowercase ta': courseRole?.toLowerCase() === 'ta'
-                    });
-                    
-                    // Store course role for use in other functions
-                    userCourseRole = courseRole;
-                    
-                    // Only professors and TAs can create teams (per backend) - make case-insensitive
-                    const roleLower = courseRole?.toLowerCase();
-                    console.log('🔍 Checking role:', { courseRole, roleLower });
-                    if (roleLower === 'professor' || roleLower === 'ta') {
-                        console.log('✅ User is professor or TA - showing buttons (role:', courseRole, '->', roleLower, ')');
-                        if (teamViewButton) {
-                            teamViewButton.style.display = 'inline-block';
-                            console.log('✅ Team View button set to visible');
-                            // Only add listener if not already added
-                            if (!teamViewButton.hasAttribute('data-listener-added')) {
-                                teamViewButton.addEventListener('click', () => {
-                                    console.log('🖱️ Team View button clicked!');
-                                    showTeamView();
-                                });
-                                teamViewButton.setAttribute('data-listener-added', 'true');
-                            }
-                        } else {
-                            console.error('❌ Team View button not found in DOM!');
-                        }
-                        // Show create team button (it's inside teams-content, so will be visible when Team View is shown)
-                        if (createTeamButton) {
-                            createTeamButton.style.display = 'inline-block';
-                            console.log('✅ Create Team button set to visible');
-                            // Only add listener if not already added
-                            if (!createTeamButton.hasAttribute('data-listener-added')) {
-                                createTeamButton.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    console.log('🖱️ Create Team button clicked!');
-                                    if (createTeamModal && typeof createTeamModal.open === 'function') {
-                                        createTeamModal.open();
-                                    } else {
-                                        console.error('❌ Modal open method not available');
-                                    }
-                                });
-                                createTeamButton.setAttribute('data-listener-added', 'true');
-                            }
-                        } else {
-                            console.error('❌ Create Team button not found in DOM!');
-                        }
-                    } else {
-                        console.log('❌ User is NOT professor or TA. Role:', courseRole, '- hiding buttons');
-                        // Hide buttons for non-professors/TAs
-                        if (teamViewButton) {
-                            teamViewButton.style.display = 'none';
-                        }
-                        if (createTeamButton) {
-                            createTeamButton.style.display = 'none';
-                        }
-                    }
-                } catch (error) {
-                    console.error('❌ Error checking course role:', error);
-                    // Hide buttons on error
-                    if (teamViewButton) teamViewButton.style.display = 'none';
-                    if (createTeamButton) createTeamButton.style.display = 'none';
-                }
-            }
-            
-            // Check role and setup buttons
-            checkCourseRoleAndSetupButtons().catch(err => {
-                console.error('Failed to check course role:', err);
+      <style>
+        #create-team-modal dialog > article,
+        #assign-members-modal dialog > article {
+          max-width: 700px;
+          width: 90vw;
+        }
+        #create-team-modal dialog > article {
+          max-width: 600px;
+        }
+      </style>
+    </main>
+
+    <aside>
+      <conductor-nav></conductor-nav>
+    </aside>
+
+    <script type="module">
+      import { getCourseId, getUserRole, getUserId } from '/src/js/utils/cache-utils.js';
+      import { getAllUsersInCourse } from '/src/js/api/course.js';
+      import { getAllTeams, getTeamMembers } from '/src/js/api/team.js';
+      import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
+
+      const directoryContent = document.getElementById('directory-content');
+      const teamsContent = document.getElementById('teams-content');
+      const directoryLoading = document.getElementById('directory-loading');
+      const teamsLoading = document.getElementById('teams-loading');
+      const teamsEmpty = document.getElementById('teams-empty');
+      const teamsGrid = document.getElementById('teams-grid');
+      const directoryGrid = document.getElementById('directory-grid');
+      const addUserButton = document.getElementById('add-user-button');
+      const teamViewButton = document.getElementById('team-view-button');
+      const directoryViewButton = document.getElementById('directory-view-button');
+      const addUserModal = document.getElementById('add-user-modal');
+      const createTeamButton = document.getElementById('create-team-button');
+      const createTeamModal = document.getElementById('create-team-modal');
+      const assignMembersModal = document.getElementById('assign-members-modal');
+      const assignMembersForm = document.getElementById('assign-members-form');
+
+      let currentView = 'directory'; // 'directory' or 'teams'
+      let teams = [];
+      let userCourseRole = null;
+
+      // View switching
+      function showDirectoryView() {
+        directoryContent.style.display = 'block';
+        teamsContent.style.display = 'none';
+        teamViewButton.style.display = 'inline-flex';
+        directoryViewButton.style.display = 'none';
+        currentView = 'directory';
+      }
+
+      function showTeamView() {
+        directoryContent.style.display = 'none';
+        teamsContent.style.display = 'block';
+        teamViewButton.style.display = 'none';
+        directoryViewButton.style.display = 'inline-flex';
+        currentView = 'teams';
+        loadTeams();
+      }
+
+      async function loadDirectory() {
+        try {
+          const courseId = getCourseId();
+          if (!courseId) throw new Error('Course ID not found in URL');
+
+          const enrollments = await getAllUsersInCourse(courseId);
+
+          if (!enrollments || enrollments.length === 0) {
+            directoryLoading.textContent = 'No participants found in this course.';
+            return;
+          }
+
+          const gridData = enrollments.map((e) => ({
+            first_name: e.user_first_name ?? 'N/A',
+            last_name: e.user_last_name ?? 'N/A',
+            email: e.user_email ?? 'N/A',
+            pronouns: e.pronouns ?? 'N/A',
+            role: e.role ?? 'N/A',
+            team_id: e.team_id ?? 'N/A',
+          }));
+
+          directoryGrid.data = gridData;
+          directoryLoading.style.display = 'none';
+        } catch (error) {
+          directoryLoading.textContent = `Error loading directory: ${error.message}`;
+        }
+      }
+
+      async function loadTeams() {
+        try {
+          const courseId = getCourseId();
+          if (!courseId) throw new Error('Course ID not found in URL');
+
+          teamsLoading.style.display = 'block';
+          teamsEmpty.style.display = 'none';
+
+          teams = await getAllTeams(courseId);
+          teamsLoading.style.display = 'none';
+
+          if (!teams || teams.length === 0) {
+            teamsEmpty.style.display = 'block';
+            if (teamsGrid) teamsGrid.data = [];
+            return;
+          }
+
+          if (assignMembersForm) assignMembersForm.setTeams(teams);
+
+          const gridData = await Promise.all(
+            teams.map(async (team) => {
+              try {
+                const members = await getTeamMembers(courseId, team.id);
+                const memberList =
+                  members.length > 0
+                    ? members.map(
+                        (m) =>
+                          `${m.user_first_name ?? ''} ${m.user_last_name ?? ''} (${m.user_email ?? ''})`
+                      ).join('<br>')
+                    : 'No members assigned';
+
+                const canAssign =
+                  userCourseRole?.toLowerCase() === 'professor' ||
+                  userCourseRole?.toLowerCase() === 'ta';
+
+                const actions = canAssign
+                  ? `<button class="assign-members-btn" data-team-id="${team.id}" data-team-name="${team.name}">
+                        Assign Members<i>group_add</i></button>`
+                  : '';
+
+                return {
+                  team_id: team.id,
+                  name: team.name,
+                  description: team.description ?? '—',
+                  member_count: members.length,
+                  members: memberList,
+                  actions,
+                };
+              } catch (err) {
+                return {
+                  team_id: team.id,
+                  name: team.name,
+                  description: team.description ?? '—',
+                  member_count: 'Error',
+                  members:
+                    '<span style="color: var(--color-error);">Error loading members</span>',
+                  actions: '',
+                };
+              }
+            })
+          );
+
+          if (teamsGrid) teamsGrid.data = gridData;
+
+          if (!teamsGrid.hasAttribute('data-assign-handler')) {
+            teamsGrid.addEventListener('click', (e) => {
+              const btn = e.target.closest('.assign-members-btn');
+              if (!btn) return;
+              openAssignMembersModal(parseInt(btn.dataset.teamId), btn.dataset.teamName);
             });
-            
-            if (directoryViewButton) {
-                directoryViewButton.addEventListener('click', showDirectoryView);
-            }
-            
-            // Add User button - also check course role (use same method as team buttons)
-            async function setupAddUserButton() {
-                const courseId = getCourseId();
-                const userId = getUserId();
-                
-                if (!courseId || !userId || !addUserButton) return;
-                
-                try {
-                    // Get all users in course and find current user (avoids pronouns validation issue)
-                    const enrollments = await getAllUsersInCourse(courseId);
-                    const userEnrollment = enrollments.find(e => e.user_id === parseInt(userId));
-                    const courseRole = userEnrollment?.role;
-                    
-                    if (courseRole === 'professor') {
-                        if (addUserModal) {
-                addUserButton.addEventListener('click', () => {
-                    addUserModal.open();
-                });
-            }
-                    } else {
-                        addUserButton.style.display = 'none';
-                    }
-                } catch (error) {
-                    console.error('Error checking course role for add user:', error);
-                    addUserButton.style.display = 'none';
-                }
-            }
-            
-            setupAddUserButton();
-            
-            // Listen for team-created and members-assigned events
-            document.addEventListener('team-created', () => {
-                loadTeams();
-            });
-            
-            document.addEventListener('members-assigned', () => {
-                loadTeams();
-            });
-            
-            loadDirectory();
+            teamsGrid.setAttribute('data-assign-handler', 'true');
+          }
+        } catch (error) {
+          teamsLoading.style.display = 'none';
+          teamsGrid.data = [
+            {
+              name: 'Error',
+              description: `Error loading teams: ${error.message}`,
+              member_count: '',
+              members: '',
+              actions: '',
+            },
+          ];
+        }
+      }
 
-            window.addEventListener('load', () => {
-                linkSearchToGrid('grid-search', 'directory-grid');
+      function openAssignMembersModal(teamId, teamName) {
+        if (assignMembersForm && assignMembersModal) {
+          if (teams && teams.length > 0) assignMembersForm.setTeams(teams);
+          assignMembersForm.setTeamId(teamId);
+          assignMembersForm.setTeamName(teamName);
+          assignMembersModal.open();
+        }
+      }
+
+      async function checkCourseRoleAndSetupButtons() {
+        const courseId = getCourseId();
+        const userId = getUserId();
+        if (!courseId || !userId) return;
+
+        try {
+          const enrollments = await getAllUsersInCourse(courseId);
+          const userEnrollment = enrollments.find((e) => e.user_id === parseInt(userId));
+          const courseRole = userEnrollment?.role;
+          userCourseRole = courseRole;
+
+          const roleLower = courseRole?.toLowerCase();
+          const isStaff = roleLower === 'professor' || roleLower === 'ta';
+
+          if (isStaff) {
+            teamViewButton.style.display = 'inline-flex';
+            if (!teamViewButton.hasAttribute('data-listener-added')) {
+              teamViewButton.addEventListener('click', showTeamView);
+              teamViewButton.setAttribute('data-listener-added', 'true');
+            }
+
+            createTeamButton.style.display = 'inline-flex';
+            if (!createTeamButton.hasAttribute('data-listener-added')) {
+              createTeamButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                createTeamModal.open();
+              });
+              createTeamButton.setAttribute('data-listener-added', 'true');
+            }
+          } else {
+            teamViewButton.style.display = 'none';
+            createTeamButton.style.display = 'none';
+          }
+        } catch (err) {
+          console.error('Error checking course role:', err);
+        }
+      }
+
+      checkCourseRoleAndSetupButtons();
+
+      if (directoryViewButton)
+        directoryViewButton.addEventListener('click', showDirectoryView);
+
+      async function setupAddUserButton() {
+        const courseId = getCourseId();
+        const userId = getUserId();
+        if (!courseId || !userId || !addUserButton) return;
+
+        try {
+          const enrollments = await getAllUsersInCourse(courseId);
+          const userEnrollment = enrollments.find((e) => e.user_id === parseInt(userId));
+          const courseRole = userEnrollment?.role;
+
+          if (courseRole === 'professor') {
+            addUserButton.addEventListener('click', () => {
+              addUserModal.open();
             });
-        </script>
+          } else {
+            addUserButton.style.display = 'none';
+          }
+        } catch (error) {
+          console.error('Error checking course role for add user:', error);
+          addUserButton.style.display = 'none';
+        }
+      }
+
+      setupAddUserButton();
+
+      document.addEventListener('team-created', loadTeams);
+      document.addEventListener('members-assigned', loadTeams);
+
+      loadDirectory();
+
+      window.addEventListener('load', () => {
+        linkSearchToGrid('grid-search', 'directory-grid');
+      });
+    </script>
         <conductor-footer></conductor-footer>
-    </body>
+  </body>
 </html>

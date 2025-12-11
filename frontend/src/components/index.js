@@ -1,3 +1,10 @@
+/**
+ * Central import file for all web components used in the application.
+ * Imports custom elements for navigation, modals, dropdowns, theme management,
+ * notifications, and attendance functionality. This file ensures all components
+ * are registered before they are used in the application.
+ */
+
 //Import web components
 import '/src/components/conductor-nav/conductor-nav.js';
 import '/src/components/modal/modal.js';
