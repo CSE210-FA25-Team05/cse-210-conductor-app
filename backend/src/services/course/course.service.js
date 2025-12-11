@@ -1,6 +1,11 @@
 'use strict';
 
-const { isValidEnumValue, CourseRoles } = require('../shared/shared.enums');
+const {
+  isValidEnumValue,
+  CourseRoles,
+  hasHigherOrEqualPrivilege,
+  hasStrictlyHigherPrivilege,
+} = require('../shared/shared.enums');
 
 /**
  * Course Service
@@ -35,13 +40,64 @@ class CourseService {
     return this.courseRepo.enrollByJoinCode(joinCode, userId);
   }
 
-  async updateUserInCourse(courseId, userId, updateData) {
+  /**
+   * Update a user's role in a course.
+   * Only Prof/TA can update roles, and they can only update to lower-level roles.
+   * @param {number} courseId - ID of the course
+   * @param {number} userId - ID of the user whose role is being updated
+   * @param {object} updateData - Update data containing the new role
+   * @param {number} currentUserId - ID of the user performing the update
+   * @returns {Promise<Object>} Updated enrollment object
+   */
+  async updateUserInCourse(courseId, userId, updateData, currentUserId) {
     const updatedRole = updateData.role;
     if (!isValidEnumValue(CourseRoles, updatedRole)) {
       const e = new Error(
         `Invalid course role: ${updatedRole}. Must be one of ${Object.values(CourseRoles).join(', ')}`
       );
       e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    // Get current user's role in the course
+    const currentUserEnrollment =
+      await this.courseRepo.getEnrollmentByUserAndCourse(
+        currentUserId,
+        courseId
+      );
+    if (!currentUserEnrollment) {
+      const e = new Error('You are not enrolled in this course');
+      e.code = 'FORBIDDEN';
+      throw e;
+    }
+
+    const currentUserRole = currentUserEnrollment.role;
+
+    // Get target user's current enrollment
+    const targetUserEnrollment =
+      await this.courseRepo.getEnrollmentByUserAndCourse(userId, courseId);
+    if (!targetUserEnrollment) {
+      const e = new Error('Target user is not enrolled in this course');
+      e.code = 'NOT_FOUND';
+      throw e;
+    }
+
+    // Check if the new role is strictly higher than the current user's role
+    // Users can only update to roles that are strictly higher in hierarchy than their own
+    if (!hasStrictlyHigherPrivilege(currentUserRole, updatedRole)) {
+      const e = new Error(
+        `You cannot assign a role (${updatedRole}) that is higher than or equal to your own role (${currentUserRole})`
+      );
+      e.code = 'FORBIDDEN';
+      throw e;
+    }
+
+    // Prevent assigning professor role (only global professors can be professors)
+    if (updatedRole === CourseRoles.PROFESSOR) {
+      const e = new Error(
+        'Professor role cannot be assigned through this endpoint'
+      );
+      e.code = 'FORBIDDEN';
       throw e;
     }
 
