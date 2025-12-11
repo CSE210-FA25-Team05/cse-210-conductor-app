@@ -5,7 +5,7 @@ class ProfileButton extends HTMLElement {
 
   connectedCallback() {
     this.innerHTML = `
-        <button style="width: 100%"> 
+        <button style="width: 100%; margin-top: var(--spacing-extra-small); margin-bottom: var(--spacing-extra-small);"> 
             <i>account_circle</i> Profile
         </button>
         `;
