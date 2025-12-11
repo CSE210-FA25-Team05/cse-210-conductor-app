@@ -32,6 +32,33 @@
                 margin-bottom: var(--spacing-large);
             }
 
+            /* Course list styling */
+            #courses-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-small, 0.5rem);
+            }
+
+            #courses-list a {
+                display: block;
+                padding: var(--spacing-medium, 1rem);
+                border: 1px solid var(--color-border, #ddd);
+                border-radius: var(--radius-medium, 8px);
+                text-decoration: none;
+                color: inherit;
+                background: var(--color-surface, #fff);
+                transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+            }
+
+            #courses-list a:hover {
+                background: var(--color-surface-hover, #f7f7f7);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transform: translateY(-1px);
+            }
+
             /* At 720px and below, switch to one-column layout */
             @media (max-width: 720px) {
                 .courses-container {
@@ -67,8 +94,8 @@
                     <pre id="courses-response" style="color: red;"></pre>
                 </article>
 
-                <!-- Create Course Section - hidden by default -->
-                <article id="create-course-section" style="">
+                <!-- Create Course Section - hidden by default for non-professors -->
+                <article id="create-course-section" style="display: none;">
                     <header>
                         <h2>Create Course</h2>
                     </header>
@@ -84,9 +111,9 @@
                     const responseElement = document.getElementById("courses-response");
                     const createCourseSection = document.getElementById("create-course-section");
 
-                    // Show "Create Course" only if role is Professor
-                    const role = await getUserRole();
-                    if (role === "Professor") {
+                    // Show "Create Course" only if role is Professor (case-insensitive)
+                    const role = getUserRole();
+                    if ((role || "").toLowerCase() === "professor") {
                         createCourseSection.style.display = "";
                     }
 
@@ -134,5 +161,6 @@
                 });
             </script>
         </main>
+        <conductor-footer></conductor-footer>
     </body>
 </html>

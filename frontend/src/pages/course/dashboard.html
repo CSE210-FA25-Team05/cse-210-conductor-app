@@ -5,14 +5,49 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Conductor</title>
         <link rel="stylesheet" href="/src/styles/styles.css">
+        <style>
+            /* Smaller chart sizes */
+            interaction-chart,
+            attendance-chart {
+                display: block;
+                max-width: 500px;
+                height: 250px;
+            }
+            
+            /* Ensure canvas elements resize properly */
+            interaction-chart canvas,
+            attendance-chart canvas {
+                max-width: 100% !important;
+                height: auto !important;
+            }
+            
+            /* Optional: Adjust heading sizes */
+            main h2 {
+                font-size: 1.2rem;
+                margin-bottom: 0.5rem;
+            }
+        </style>
         <script type="module" async src="/src/js/common.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="module" src="/src/components/charts/interaction-chart.js"></script>
+        <script type="module" src="/src/components/charts/attendance-chart.js"></script>
     </head>
     <body>
         <main>
             <h1>Dashboard</h1>
+            <h2>Interactions</h2>
+            <interaction-chart></interaction-chart>
+             <article id="attendance-content">
+            <header>
+                <h2>Latest Lecture Attendance</h2>
+            </header>
+            <attendance-chart lecture-id="62"></attendance-chart>
+
+
         </main>
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
+        <conductor-footer></conductor-footer>
     </body>
 </html>

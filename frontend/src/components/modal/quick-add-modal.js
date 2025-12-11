@@ -3,6 +3,7 @@ import '/src/components/forms/pulse-form.js';
 import '/src/components/forms/interaction-form.js';
 import '/src/components/forms/create-lecture-form.js';
 import '/src/components/forms/journal-form.js';
+import { getUserRole } from '/src/js/utils/cache-utils.js';
 
 /**
  * QuickAddModal Web Component
@@ -29,7 +30,10 @@ class QuickAddModal extends FormModal {
   }
 
   connectedCallback() {
-    //Lectures
+    const role = (getUserRole() || '').toLowerCase();
+    const isStudent = role === 'student';
+
+    // Lectures (hide for students)
     const lectureSection = document.createElement('form-section');
     const lectureForm = document.createElement('create-lecture-form');
     lectureSection.setAttribute('tag', 'New Lecture');
@@ -53,7 +57,9 @@ class QuickAddModal extends FormModal {
     journalSection.setAttribute('tag', 'New Journal');
     journalSection.appendChild(journalForm);
 
-    this.appendChild(lectureSection);
+    if (!isStudent) {
+      this.appendChild(lectureSection);
+    }
     this.appendChild(pulseSection);
     this.appendChild(interactionSection);
     this.appendChild(journalSection);
