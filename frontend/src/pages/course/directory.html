@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
         <script type="module" async src="/src/components/forms/add-user-form.js"></script>
+        <script type="module" async src="/src/components/forms/edit-user-form.js"></script>
     </head>
     <body>
         <main>
@@ -25,6 +26,7 @@
                         />
                         <div> <!-- Used to separate buttons from search -->
                             <button id='add-user-button'>Add User<i>add</i></button>
+                            <button id='edit-user-button'>Edit Role<i>edit</i></button>
                         </div>
                     </div>
                 </header>
@@ -42,7 +44,11 @@
             <modal-component footer="none" id="add-user-modal">
                 <h4 slot="header">Add User</h4>
                 <add-user-form slot="content"></add-user-form>
-            <modal-component>
+            </modal-component>
+            <modal-component footer="none" id="edit-user-modal">
+                <h4 slot="header">Edit User</h4>
+                <edit-user-form slot="content"></edit-user-form>
+            </modal-component>
         </main>
         <aside>
             <conductor-nav></conductor-nav>
@@ -101,6 +107,16 @@
             } else if (addUserButton && addUserModal) {
                 addUserButton.addEventListener('click', () => {
                     addUserModal.open();
+                });
+            }
+            
+            const editUserButton = document.getElementById('edit-user-button');
+            const editUserModal = document.getElementById('edit-user-modal');
+            if (editUserButton && getUserRole() !== 'professor') {
+                editUserButton.style.display = 'none';
+            } else if (editUserButton && editUserModal) {
+                editUserButton.addEventListener('click', () => {
+                    editUserModal.open();
                 });
             }
             
