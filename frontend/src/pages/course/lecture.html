@@ -55,7 +55,8 @@
       const lectureError = document.getElementById("lecture-error");
 
       function formatLectureDate(dateString) {
-        const date = new Date(dateString);
+        const [year, month, day] = dateString.split("-");
+        const date = new Date(year, month - 1, day);
         return date.toLocaleDateString(undefined, {
           year: "numeric",
           month: "short",
@@ -65,7 +66,8 @@
 
       function determineLectureStatus(lectureDate) {
         const now = new Date();
-        const date = new Date(lectureDate);
+        const [year, month, day] = lectureDate.split("-");
+        const date = new Date(year, month - 1, day);
 
         const sameDay =
           date.getFullYear() === now.getFullYear() &&
