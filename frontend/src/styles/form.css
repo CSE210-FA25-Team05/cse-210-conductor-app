@@ -59,3 +59,103 @@ quick-add-modal label:has(textarea) textarea {
   flex: 1 1 auto;
   resize: none;
 }
+/* === Modal: Assign Members List === */
+
+#assign-members-modal #members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: var(--color-bg-secondary, #f9f9fb);
+  border: 1px solid var(--color-border, #e1e1e1);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+/* Each label becomes a selectable row */
+#assign-members-modal #members-list label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  background-color: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #dcdfe3);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  color: var(--color-text-primary, #222);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Hide the native checkbox */
+#assign-members-modal #members-list input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Visual indicator: small custom circle on left side */
+#assign-members-modal #members-list label::before {
+  content: '';
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-border, #bbb);
+  margin-right: 0.75rem;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+/* Hover and focus states */
+#assign-members-modal #members-list label:hover {
+  background-color: var(--color-surface-hover, #f5f8ff);
+  border-color: var(--color-accent, #2196f3);
+}
+
+#assign-members-modal #members-list label:focus-within {
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+
+/* When checked: filled circle and highlighted row */
+#assign-members-modal #members-list input[type='checkbox']:checked + span,
+#assign-members-modal
+  #members-list
+  label:has(input[type='checkbox']:checked)::before {
+  background-color: var(--color-accent, #2196f3);
+  border-color: var(--color-accent, #2196f3);
+}
+
+#assign-members-modal #members-list label:has(input[type='checkbox']:checked) {
+  background-color: #eaf3ff;
+  border-color: #2196f3;
+}
+
+/* Dimmed / unavailable users */
+#assign-members-modal #members-list label.disabled,
+#assign-members-modal #members-list label[style*='Already assigned'] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Text spacing inside labels */
+#assign-members-modal #members-list label span {
+  color: var(--color-text-secondary, #555);
+}
+
+#assign-members-modal #members-list label strong {
+  color: var(--color-text-primary, #222);
+}
+
+/* Optional scrollbar styling */
+#assign-members-modal #members-list::-webkit-scrollbar {
+  width: 8px;
+}
+#assign-members-modal #members-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
