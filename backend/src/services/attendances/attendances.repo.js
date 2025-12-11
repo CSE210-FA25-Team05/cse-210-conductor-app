@@ -208,23 +208,21 @@ class AttendancesRepo {
   /**
    * Get completed lectures for a course (where attendance was activated and window has closed).
    * Only includes lectures where:
-   * - Attendance was activated (code_expires_at is not null)
-   * - Attendance window has closed (code_expires_at is in the past)
+   * - Attendance was activated (code_generated_at is not null and in the past)
    *
    * @param {number} courseId - ID of the course
    * @param {Date|null} startTime - Optional start date filter for lecture_date
    * @param {Date|null} endTime - Optional end date filter for lecture_date
    * @returns {Promise<Array>} List of completed lectures
    */
-  async getCompletedLectures(courseId, startTime = null, endTime = null) {
+  async getActivatedLectures(courseId, startTime = null, endTime = null) {
     const now = new Date();
     const where = {
       course_id: courseId,
       deleted_at: null,
       // Only include lectures where attendance was activated
-      code_expires_at: {
+      code_generated_at: {
         not: null,
-        // And attendance window has closed (expired)
         lt: now,
       },
     };
