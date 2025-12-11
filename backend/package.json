@@ -12,6 +12,7 @@
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:rebuild": "prisma migrate reset",
     "prisma:seed": "node prisma/seed.js",
     "test:prisma": "node test-prisma.js",
     "test:watch": "jest --watch",

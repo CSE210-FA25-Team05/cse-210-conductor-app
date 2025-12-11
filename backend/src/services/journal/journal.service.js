@@ -8,8 +8,73 @@
  */
 
 class JournalService {
-  constructor(journalRepo) {
+  constructor(journalRepo, journalPermissions) {
     this.journalRepo = journalRepo;
+    this.journalPermissions = journalPermissions;
+  }
+
+  buildFiltersFromQuery(query, loggedInUser) {
+    const filters = {};
+
+    // Journal Ownership Filtering
+    let useDefaultUserFilter = true;
+    if (query.entire_class === true || query.entire_class === 'true') {
+      useDefaultUserFilter = false;
+    } else if (query.team_id != null) {
+      const teamId = parseInt(query.team_id, 10);
+      if (!isNaN(teamId)) {
+        filters.team_id = teamId;
+        useDefaultUserFilter = false;
+      }
+    } else if (query.user_id != null) {
+      const userId = parseInt(query.user_id, 10);
+      if (!isNaN(userId)) {
+        filters.user_id = userId;
+        useDefaultUserFilter = false;
+      }
+    }
+    // Filter by logged in user's id by default if no ownership filters provided
+    if (useDefaultUserFilter) {
+      filters.user_id = loggedInUser.id;
+    }
+
+    if (query.start_date) {
+      const startDate = new Date(query.start_date);
+      if (!isNaN(startDate.getTime())) {
+        filters.start_date = startDate;
+      }
+    }
+
+    if (query.end_date) {
+      const endDate = new Date(query.end_date);
+      if (!isNaN(endDate.getTime())) {
+        filters.end_date = endDate;
+      }
+    }
+
+    return filters;
+  }
+
+  mapFiltersToWhereClause(filters = {}) {
+    const where = {};
+
+    if (filters.user_id != null) {
+      where.user_id = filters.user_id;
+    }
+
+    if (filters.start_date != null || filters.end_date != null) {
+      where.created_at = {};
+
+      if (filters.start_date != null) {
+        where.created_at = { gte: filters.start_date };
+      }
+
+      if (filters.end_date != null) {
+        where.created_at = { lte: filters.end_date };
+      }
+    }
+
+    return where;
   }
 
   /**
@@ -17,8 +82,27 @@ class JournalService {
    * @param {number} courseId
    * @returns {Promise<Array>} list of journal entries
    */
-  async getJournalsByCourseId(courseId) {
-    return await this.journalRepo.getJournalsByCourseId(courseId);
+  async getJournals(course, user, enrollment, query) {
+    const filters = this.buildFiltersFromQuery(query, user);
+
+    if (
+      !(await this.journalPermissions.canViewJournals(
+        user,
+        enrollment,
+        filters
+      ))
+    ) {
+      const e = new Error(
+        'User does not have permission to view these journals'
+      );
+      e.code = 'FORBIDDEN';
+      throw e;
+    }
+
+    return await this.journalRepo.getJournals(
+      course.id,
+      this.mapFiltersToWhereClause(filters)
+    );
   }
 
   /**
