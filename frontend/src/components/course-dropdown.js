@@ -9,7 +9,20 @@ import '/src/components/dropdown.js';
 import '/src/components/forms/create-course.js';
 import '/src/components/forms/join-course.js';
 
+/**
+ * Custom element for a course selection dropdown with course management actions.
+ * Displays a list of user's courses and provides modals for creating and joining courses.
+ * Shows different options based on user role (professors can create courses, all users can join).
+ * @extends HTMLElement
+ *
+ * @example
+ * <course-dropdown></course-dropdown>
+ */
 class CourseDropdown extends HTMLElement {
+  /**
+   * Creates an instance of CourseDropdown.
+   * Binds event handler methods to the instance context.
+   */
   constructor() {
     super();
 
@@ -17,6 +30,12 @@ class CourseDropdown extends HTMLElement {
     this.boundedHandleJoinCourseOpen = this.handleJoinCourseOpen.bind(this);
   }
 
+  /**
+   * Lifecycle callback invoked when the element is connected to the DOM.
+   * Initializes the dropdown with user's courses, creates modals for course creation
+   * and joining, and sets up the dropdown structure with appropriate buttons based on user role.
+   * @returns {void}
+   */
   connectedCallback() {
     this.role = getUserRole();
     this.courseId = parseInt(getCourseId());
@@ -78,14 +97,29 @@ class CourseDropdown extends HTMLElement {
     this.renderCourseDropdown();
   }
 
+  /**
+   * Handles the join course button click event.
+   * Opens the join course modal.
+   * @returns {void}
+   */
   handleJoinCourseOpen() {
     this.joinCourseModal.open();
   }
 
+  /**
+   * Handles the new course button click event.
+   * Opens the create course modal.
+   * @returns {void}
+   */
   handleNewCourseOpen() {
     this.newCourseModal.open();
   }
 
+  /**
+   * Updates the dropdown label to display the current course code.
+   * Shows the first 7 characters of the current course code, or "Course" if no course is selected.
+   * @returns {void}
+   */
   updateCourseDropdownLabel() {
     if (!this.label) return;
 
@@ -102,6 +136,13 @@ class CourseDropdown extends HTMLElement {
     this.label.textContent = 'Course';
   }
 
+  /**
+   * Renders the course dropdown list with all available courses.
+   * Displays course links, a separator, and action buttons (Create/Join Course).
+   * Professors see the "Create Course" button, while all users see "Join Course".
+   * Shows "No courses found" message if the user has no courses.
+   * @returns {void}
+   */
   renderCourseDropdown() {
     if (!this.ul) return;
 
