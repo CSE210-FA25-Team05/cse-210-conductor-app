@@ -297,73 +297,153 @@ async function main() {
 
   console.log(`Created enrollments for ${courses.length} courses.`);
 
-  // Seed teams
-  console.log('Creating teams...');
-  const team1 = await prisma.teams.create({
-    data: {
-      course_id: cse210.id,
-      name: 'Team 1',
-      description: 'Project Team 1 for CSE210',
+  // Seed teams (create teams in 60% of courses)
+  console.log('Creating teams in selected courses...');
+  const teamNames = [
+    'Team Alpha',
+    'Team Beta',
+    'Team Gamma',
+    'Team Delta',
+    'Team Epsilon',
+    'Lab Group A',
+    'Lab Group B',
+    'Lab Group C',
+    'Project Team 1',
+    'Project Team 2',
+  ];
+
+  const teamsData = [];
+  const courseTeamsMap = {}; // Map course ID to list of teams
+
+  for (const course of courses) {
+    // 60% chance a course will have teams
+    if (Math.random() < 0.6) {
+      // Create 2-4 teams per course
+      const numTeams = Math.floor(Math.random() * 3) + 2;
+      courseTeamsMap[course.id] = [];
+
+      for (let i = 0; i < numTeams; i++) {
+        teamsData.push({
+          course_id: course.id,
+          name: `${teamNames[i % teamNames.length]} ${i + 1}`,
+          description: `Project team for ${course.course_code}`,
+        });
+      }
+    }
+  }
+
+  // Batch create all teams
+  const createdTeams = await prisma.teams.createMany({
+    data: teamsData,
+  });
+
+  // Fetch created teams grouped by course
+  const allTeams = await prisma.teams.findMany({
+    where: {
+      course_id: {
+        in: courses.map((c) => c.id),
+      },
     },
   });
 
-  const team2 = await prisma.teams.create({
-    data: {
-      course_id: cse210.id,
-      name: 'Team 2',
-      description: 'Project Team 2 for CSE210',
-    },
-  });
-
-  const team3 = await prisma.teams.create({
-    data: {
-      course_id: cse210.id,
-      name: 'Team 3',
-      description: 'Project Team 3 for CSE210',
-    },
-  });
-
-  const team4 = await prisma.teams.create({
-    data: {
-      course_id: cse110.id,
-      name: 'Lab Team A',
-      description: 'Lab team A for CSE110',
-    },
-  });
-
-  const team5 = await prisma.teams.create({
-    data: {
-      course_id: cse110.id,
-      name: 'Lab Team B',
-      description: 'Lab team B for CSE110',
-    },
-  });
+  // Group teams by course ID
+  for (const team of allTeams) {
+    if (!courseTeamsMap[team.course_id]) {
+      courseTeamsMap[team.course_id] = [];
+    }
+    courseTeamsMap[team.course_id].push(team);
+  }
 
   // Seed TA team assignments
-  console.log('Creating TA team assignments...');
-  await prisma.ta_teams.create({
-    data: {
-      ta_user_id: ta.id,
-      course_id: cse210.id,
-      team_id: team1.id,
-    },
-  });
+  console.log('Assigning TAs to teams...');
+  const tATeamAssignments = [];
 
-  await prisma.ta_teams.create({
-    data: {
-      ta_user_id: ta.id,
-      course_id: cse210.id,
-      team_id: team2.id,
-    },
-  });
+  // For each course with teams, assign TAs to teams
+  for (const course of courses) {
+    if (courseTeamsMap[course.id] && courseTeamsMap[course.id].length > 0) {
+      // Get all TAs enrolled in this course
+      const taEnrollments = await prisma.enrollments.findMany({
+        where: {
+          course_id: course.id,
+          role: CourseRoles.TA,
+        },
+      });
 
-  await prisma.ta_teams.create({
-    data: {
-      ta_user_id: ta.id,
-      course_id: cse110.id,
-      team_id: team4.id,
-    },
-  });
+      // Distribute TAs across teams
+      const teams = courseTeamsMap[course.id];
+      for (const team of teams) {
+        const taToAssign = Math.floor(Math.random() * taEnrollments.length);
+        tATeamAssignments.push({
+          ta_user_id: taEnrollments[taToAssign].user_id,
+          course_id: course.id,
+          team_id: team.id,
+        });
+      }
+    }
+  }
+
+  // Batch create all TA team assignments
+  if (tATeamAssignments.length > 0) {
+    await prisma.ta_teams.createMany({
+      data: tATeamAssignments,
+      skipDuplicates: true,
+    });
+  }
+
+  console.log(
+    `Created teams in ${Object.keys(courseTeamsMap).length} courses and assigned TAs.`
+  );
+
+  // Reference teams from CSE210 for remaining seeding tasks
+  const team1 = courseTeamsMap[cse210.id]?.[0];
+  const team2 = courseTeamsMap[cse210.id]?.[1];
+  const team3 = courseTeamsMap[cse210.id]?.[2];
+  const team4 = courseTeamsMap[cse110.id]?.[0];
+  const team5 = courseTeamsMap[cse110.id]?.[1];
+
+  // Update student enrollments to assign them to teams
+  console.log('Assigning students to teams...');
+  
+  for (const course of courses) {
+    if (courseTeamsMap[course.id] && courseTeamsMap[course.id].length > 0) {
+      // Get all student enrollments in this course
+      const studentEnrollments = await prisma.enrollments.findMany({
+        where: {
+          course_id: course.id,
+          role: CourseRoles.STUDENT,
+        },
+      });
+
+      // Distribute students across teams
+      const teams = courseTeamsMap[course.id];
+      const teamLeads = [];
+      const numLeads = Math.random() < 0.25 ? 1 : 2;
+      for (const studentEnrollment of studentEnrollments) {
+        // Each student can be on 1 team (or no team if we wanted to randomize)
+        const randomTeamIndex = Math.floor(Math.random() * teams.length);
+        const teamId = teams[randomTeamIndex].id;
+
+        // Randomly assign some students as team leads
+        if (teamLeads.length < numLeads && Math.random() < 0.2) {
+          teamLeads.push(studentEnrollment.user_id);
+          // Update the enrollment to set is_team_lead
+          await prisma.enrollments.update({
+            where: { id: studentEnrollment.id },
+            data: { role: CourseRoles.TEAM_LEAD, team_id: teamId },
+          });
+        } else{
+          // Update the enrollment to assign the student to a team
+          await prisma.enrollments.update({
+            where: { id: studentEnrollment.id },
+            data: { team_id: teamId },
+          });
+        }
+
+      }
+    }
+  }
+
+  console.log('Student team assignments completed.');
 
   // Seed lectures
   console.log('Creating lectures...');
