@@ -1,15 +1,19 @@
 import { ConductorForm } from '/src/components/forms/conductor-form.js';
 import { updateUserEnrollmentInCourse } from '/src/js/api/course.js';
-import { getCachedCourseId } from '/src/js/utils/cache-utils.js';
+import {
+  getCachedCourseId,
+  getCachedUsers,
+  cacheUsersInCourse,
+} from '/src/js/utils/cache-utils.js';
 
 class EditUserForm extends ConductorForm {
   get fields() {
     return [
       {
-        label: 'User ID',
-        name: 'user_id',
-        id: 'user_id',
-        type: 'number',
+        label: 'Email',
+        name: 'email',
+        id: 'email',
+        type: 'email',
       },
       {
         label: 'Role',
@@ -21,12 +25,20 @@ class EditUserForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-    updateUserEnrollmentInCourse(
-      getCachedCourseId(),
-      parseInt(values.user_id),
-      { role: values.role }
-    );
+    let students = await cacheUsersInCourse(getCachedCourseId());
+    let user_id;
+    for (let i = 0; i < students.length; i++) {
+      if (students[i].user_email === values.email) {
+        user_id = students[i].user_id;
+        break;
+      }
+    }
+
+    updateUserEnrollmentInCourse(getCachedCourseId(), user_id, {
+      role: values.role.trim().toLowerCase(),
+    });
     this.form.reset();
+    window.location.reload();
   }
 }
 
