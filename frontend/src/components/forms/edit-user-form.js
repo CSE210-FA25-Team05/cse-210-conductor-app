@@ -19,7 +19,12 @@ class EditUserForm extends ConductorForm {
         label: 'Role',
         name: 'role',
         id: 'role',
-        type: 'text',
+        type: 'select',
+        options: [
+          { label: 'TA', value: 'ta' },
+          { label: 'Team Lead', value: 'team_lead' },
+          { label: 'Student', value: 'student' },
+        ],
       },
     ];
   }
@@ -33,9 +38,8 @@ class EditUserForm extends ConductorForm {
         break;
       }
     }
-
     await updateUserEnrollmentInCourse(getCachedCourseId(), user_id, {
-      role: values.role.trim().toLowerCase(),
+      role: values.role,
     });
     this.form.reset();
     window.location.reload();
