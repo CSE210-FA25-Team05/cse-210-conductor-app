@@ -30,7 +30,7 @@ export class StudentAttendance extends HTMLElement {
     } else if (
       this.role !== 'professor' &&
       this.role !== 'ta' &&
-      this.staus === 0
+      status === 0
     ) {
       this.displayStatusSuccess();
     } else {
@@ -45,8 +45,12 @@ export class StudentAttendance extends HTMLElement {
   }
 
   displayStatusSuccess() {
+    if (this.form) {
+      this.form.style.display = 'none';
+    }
     this.status = document.createElement('p');
     this.status.innerText = 'Attended';
+    this.status.style.color = 'green';
     this.appendChild(this.status);
   }
 
@@ -92,7 +96,7 @@ export class StudentAttendance extends HTMLElement {
     const start = new Date(this.lecture.code_generated_at);
     const end = new Date(this.lecture.code_expires_at);
 
-    if (attendance !== null) {
+    if (attendance?.course_id == this.courseId) {
       // already did attendance
       return 0;
     }
@@ -106,14 +110,15 @@ export class StudentAttendance extends HTMLElement {
 
   async submitHandler(event) {
     event.preventDefault(); // <-- stops page reload
-    console.log('submit attendance form');
 
     try {
-      console.log(this.input.value, this.courseId);
       const output = await createAttendanceSimplified(this.courseId, {
         code: this.input.value,
       });
-      console.log('OUTPUT', output);
+      console.log(parseInt(output.course_id), parseInt(this.courseId));
+      if (parseInt(output.course_id) === parseInt(this.courseId)) {
+        this.displayStatusSuccess();
+      }
     } catch (e) {
       console.log(e);
     }
