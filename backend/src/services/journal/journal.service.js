@@ -64,12 +64,12 @@ class JournalService {
 
     if (filters.start_date != null) {
       where.created_at = {};
-      where.created_at = { gte: filters.start_date }
+      where.created_at = { gte: filters.start_date };
     }
 
     if (filters.end_date != null) {
       where.created_at = {};
-      where.created_at = { lte: filters.end_date }
+      where.created_at = { lte: filters.end_date };
     }
 
     return where;
@@ -83,13 +83,24 @@ class JournalService {
   async getJournals(course, user, enrollment, query) {
     const filters = this.buildFiltersFromQuery(query, user);
 
-    if (!await this.journalPermissions.canViewJournals(user, enrollment, filters)) {
-      const e = new Error("User does not have permission to view these journals");
+    if (
+      !(await this.journalPermissions.canViewJournals(
+        user,
+        enrollment,
+        filters
+      ))
+    ) {
+      const e = new Error(
+        'User does not have permission to view these journals'
+      );
       e.code = 'FORBIDDEN';
       throw e;
     }
 
-    return await this.journalRepo.getJournals(course.id, this.mapFiltersToWhereClause(filters));
+    return await this.journalRepo.getJournals(
+      course.id,
+      this.mapFiltersToWhereClause(filters)
+    );
   }
 
   /**

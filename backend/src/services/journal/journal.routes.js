@@ -40,7 +40,12 @@ module.exports = async function journalRoutes(fastify, options) {
         const course = request.course;
         const enrollment = request.enrollment;
         const query = request.query;
-        const res = await journalService.getJournals(course, user, enrollment, query);
+        const res = await journalService.getJournals(
+          course,
+          user,
+          enrollment,
+          query
+        );
         return res;
       } catch (error) {
         console.error(error);
