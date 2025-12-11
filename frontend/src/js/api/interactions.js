@@ -123,7 +123,7 @@ export async function getInteractions(courseID, filters = {}) {
     url.searchParams.set('entire_class', filters.entire_class);
   }
   if (filters.values && filters.values.length > 0) {
-    filters.values.forEach(value => {
+    filters.values.forEach((value) => {
       url.searchParams.append('values', value);
     });
   }
@@ -209,7 +209,7 @@ export async function getInteractionStats(courseID, filters = {}) {
     url.searchParams.set('entire_class', filters.entire_class);
   }
   if (filters.values && filters.values.length > 0) {
-    filters.values.forEach(value => {
+    filters.values.forEach((value) => {
       url.searchParams.append('values', value);
     });
   }

@@ -1,5 +1,5 @@
 import { getCourseId } from '/src/js/utils/cache-utils.js';
-import { getInteractionStats } from '../api/interactions.js';  
+import { getInteractionStats } from '../api/interactions.js';
 
 //Fetch API Data
 async function fetchInteractionData() {
@@ -21,7 +21,6 @@ async function fetchInteractionData() {
 
 //Format Interaction API Data for Stacked Charting Format
 function transformInteractionData(apiData) {
-
   // Helper function for colors
   function getColorForValue(value, alpha) {
     const colors = {
