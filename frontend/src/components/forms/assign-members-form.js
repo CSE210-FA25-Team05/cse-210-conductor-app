@@ -73,7 +73,8 @@ class AssignMembersForm extends HTMLElement {
     const filteredMembers =
       this.members.length > 0
         ? this.members.filter((m) => {
-            const haystack = `${m.user_first_name ?? ''} ${m.user_last_name ?? ''} ${m.user_email ?? ''}`.toLowerCase();
+            const haystack =
+              `${m.user_first_name ?? ''} ${m.user_last_name ?? ''} ${m.user_email ?? ''}`.toLowerCase();
             return haystack.includes(this.searchTerm.toLowerCase());
           })
         : [];
