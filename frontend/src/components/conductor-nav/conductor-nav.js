@@ -15,7 +15,6 @@ class ConductorNav extends HTMLElement {
       Lectures: '/course/lecture',
       Journals: '/course/journals',
       Directory: '/course/directory',
-      Profile: '/profile',
     };
     this.courses = [];
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
@@ -42,8 +41,8 @@ class ConductorNav extends HTMLElement {
       a.href = this.paths[displayName];
       a.textContent = displayName;
 
-      a.style.padding = "var(--button-padding)";
-      li.style.padding = "0";
+      a.style.padding = 'var(--button-padding)';
+      li.style.padding = '0';
       li.classList.add('state-layer');
 
       li.appendChild(a);
@@ -68,10 +67,20 @@ class ConductorNav extends HTMLElement {
     modalButton.addEventListener('click', this.boundedHandleOpenModal);
     this.modal = modal;
 
+    // Profile button
+    const profileButton = document.createElement('button');
+    profileButton.innerText = 'Profile';
+    profileButton.style.width = '100%';
+    profileButton.onclick = function () {
+      window.location.replace('/profile');
+    }
+    profileButton.style.marginBottom = "5%";
+
     header.appendChild(menuToggle);
     header.appendChild(courseDropdown);
     header.appendChild(modalButton);
     nav.appendChild(ul);
+    footer.appendChild(profileButton);
     footer.appendChild(logoutButtonInstance);
 
     this.appendChild(header);
