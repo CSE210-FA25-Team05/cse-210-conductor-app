@@ -35,26 +35,104 @@ async function main() {
 
   // Seed users (5 professors + 45 students)
   console.log('Creating 50 users (5 professors + 45 students)...');
-  
+
   const firstNames = [
-    'John', 'Jane', 'Sam', 'Alex', 'Emma', 'Michael', 'Sarah', 'David', 'Lisa', 'James',
-    'Mary', 'Robert', 'Jennifer', 'William', 'Patricia', 'Richard', 'Jessica', 'Joseph', 'Karen', 'Thomas',
-    'Nancy', 'Charles', 'Betty', 'Christopher', 'Margaret', 'Daniel', 'Susan', 'Matthew', 'Dorothy', 'Anthony',
-    'Carol', 'Mark', 'Melissa', 'Donald', 'Deborah', 'Steven', 'Stephanie', 'Paul', 'Rebecca', 'Andrew',
-    'Sharon', 'Joshua', 'Laura', 'Kenneth', 'Cynthia', 'Kevin', 'Kathleen', 'Brian', 'Shirley', 'George'
+    'John',
+    'Jane',
+    'Sam',
+    'Alex',
+    'Emma',
+    'Michael',
+    'Sarah',
+    'David',
+    'Lisa',
+    'James',
+    'Mary',
+    'Robert',
+    'Jennifer',
+    'William',
+    'Patricia',
+    'Richard',
+    'Jessica',
+    'Joseph',
+    'Karen',
+    'Thomas',
+    'Nancy',
+    'Charles',
+    'Betty',
+    'Christopher',
+    'Margaret',
+    'Daniel',
+    'Susan',
+    'Matthew',
+    'Dorothy',
+    'Anthony',
+    'Carol',
+    'Mark',
+    'Melissa',
+    'Donald',
+    'Deborah',
+    'Steven',
+    'Stephanie',
+    'Paul',
+    'Rebecca',
+    'Andrew',
+    'Sharon',
+    'Joshua',
+    'Laura',
+    'Kenneth',
+    'Cynthia',
+    'Kevin',
+    'Kathleen',
+    'Brian',
+    'Shirley',
+    'George',
   ];
-  
+
   const lastNames = [
-    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-    'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
-    'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+    'Hernandez',
+    'Lopez',
+    'Gonzalez',
+    'Wilson',
+    'Anderson',
+    'Thomas',
+    'Taylor',
+    'Moore',
+    'Jackson',
+    'Martin',
+    'Lee',
+    'Perez',
+    'Thompson',
+    'White',
+    'Harris',
+    'Sanchez',
+    'Clark',
+    'Ramirez',
+    'Lewis',
+    'Robinson',
   ];
-  
-  const pronouns = ['He/Him/His', 'She/Her/Hers', 'They/Them', 'He/They', 'She/They'];
-  
+
+  const pronouns = [
+    'He/Him/His',
+    'She/Her/Hers',
+    'They/Them',
+    'He/They',
+    'She/They',
+  ];
+
   const professorsData = [];
   const studentsData = [];
-  
+
   // Create 5 professors
   for (let i = 1; i <= 5; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -68,51 +146,65 @@ async function main() {
       is_profile_complete: true,
     });
   }
-  
+
   // Create 45 students (5% incomplete = ~2-3 students)
   for (let i = 1; i <= 45; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const isIncomplete = Math.random() < 0.05; // 5% incomplete
-    
+
     studentsData.push({
       first_name: isIncomplete ? null : firstName,
       last_name: isIncomplete ? null : lastName,
       email: `student${i}@ucsd.edu`,
-      pronouns: isIncomplete ? null : pronouns[Math.floor(Math.random() * pronouns.length)],
+      pronouns: isIncomplete
+        ? null
+        : pronouns[Math.floor(Math.random() * pronouns.length)],
       global_role: GlobalRoles.STUDENT,
       is_profile_complete: !isIncomplete,
     });
   }
-  
+
   // Batch create all users
   const allUsersData = [...professorsData, ...studentsData];
   const _createdUsers = await prisma.users.createMany({
     data: allUsersData,
   });
-  
+
   // Fetch all created users to get their IDs
   const professors = await prisma.users.findMany({
     where: { global_role: GlobalRoles.PROFESSOR },
     take: 5,
   });
-  
+
   const allStudents = await prisma.users.findMany({
     where: { global_role: GlobalRoles.STUDENT },
   });
-  
+
   // Rename first few students for easier reference in tests
   const professor = professors[0];
   const ta = allStudents[0];
   const john = allStudents[1];
   const jane = allStudents[2];
-  const incompleteUser = allStudents.find((s) => !s.is_profile_complete) || allStudents[3];
+  const incompleteUser =
+    allStudents.find((s) => !s.is_profile_complete) || allStudents[3];
   const sam = allStudents[4];
   const alex = allStudents[5];
 
   // Seed courses (10 courses total, 2 per professor)
   console.log('Creating 10 courses...');
-  const courseCodes = ['CSE110', 'CSE111', 'CSE210', 'CSE211', 'CSE212', 'CSE310', 'CSE311', 'CSE312', 'CSE411', 'CSE412'];
+  const courseCodes = [
+    'CSE110',
+    'CSE111',
+    'CSE210',
+    'CSE211',
+    'CSE212',
+    'CSE310',
+    'CSE311',
+    'CSE312',
+    'CSE411',
+    'CSE412',
+  ];
   const courseNames = [
     'Intro to Programming',
     'Intro to Programming II',
@@ -123,11 +215,11 @@ async function main() {
     'Database Systems',
     'Operating Systems',
     'Machine Learning',
-    'Artificial Intelligence'
+    'Artificial Intelligence',
   ];
-  
+
   const courses = [];
-  
+
   for (let i = 0; i < 10; i++) {
     const course = await prisma.courses.create({
       data: {
@@ -156,20 +248,20 @@ async function main() {
 
   // Seed enrollments (2-5 TAs and 20-30 students per course)
   console.log('Creating enrollments for courses...');
-  
+
   const enrollmentData = [];
-  
+
   // For each course, enroll TAs and students
   for (const course of courses) {
     // Enroll 2-5 random TAs per course
     const numTAs = Math.floor(Math.random() * 4) + 2; // 2-5 TAs
     const selectedTAs = new Set();
-    
+
     while (selectedTAs.size < numTAs) {
       const randomTAIndex = Math.floor(Math.random() * allStudents.length);
       selectedTAs.add(randomTAIndex);
     }
-    
+
     for (const taIndex of selectedTAs) {
       enrollmentData.push({
         user_id: allStudents[taIndex].id,
@@ -177,17 +269,17 @@ async function main() {
         role: CourseRoles.TA,
       });
     }
-    
+
     // Enroll 20-30 random students per course
     const numStudents = Math.floor(Math.random() * 11) + 20; // 20-30 students
     const selectedStudents = new Set();
-    
+
     while (selectedStudents.size < numStudents) {
       const randomStudentIndex = Math.floor(Math.random() * allStudents.length);
       if (selectedTAs.has(randomStudentIndex)) continue; // Avoid enrolling TAs as students too
       selectedStudents.add(randomStudentIndex);
     }
-    
+
     for (const studentIndex of selectedStudents) {
       enrollmentData.push({
         user_id: allStudents[studentIndex].id,
@@ -196,13 +288,13 @@ async function main() {
       });
     }
   }
-  
+
   // Batch create all enrollments
   await prisma.enrollments.createMany({
     data: enrollmentData,
     skipDuplicates: true, // Skip if user is already enrolled in course
   });
-  
+
   console.log(`Created enrollments for ${courses.length} courses.`);
 
   // Seed teams
@@ -246,7 +338,6 @@ async function main() {
       description: 'Lab team B for CSE110',
     },
   });
-
 
   // Seed TA team assignments
   console.log('Creating TA team assignments...');
