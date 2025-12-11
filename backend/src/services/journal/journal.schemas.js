@@ -19,6 +19,17 @@ export const JournalEntryType = {
   required: ['id', 'user_id', 'course_id', 'title', 'content'],
 };
 
+const JournalFiltersSchema = {
+  type: 'object',
+  properties: {
+    user_id: { type: 'integer' },
+    team_id: { type: 'integer' },
+    entire_class: { type: 'boolean' },
+    start_date: DateTimeType,
+    end_date: DateTimeType,
+  },
+};
+
 export const GetJournalByCourseSchema = {
   summary: 'Get all journal entries for a specific course',
   tags: ['Journals'],
@@ -29,6 +40,7 @@ export const GetJournalByCourseSchema = {
     },
     required: ['course_id'],
   },
+  querystring: JournalFiltersSchema,
   response: {
     200: createArrayReponseSchema(JournalEntryType),
     400: ErrorSchema,
@@ -53,7 +65,7 @@ export const GetJournalByIdSchema = {
 };
 
 export const GetJournalsByUserSchema = {
-  summary: 'Get journal entries for a specific user in a course',
+  summary: '(Deprecated) Get journal entries for a specific user in a course',
   tags: ['Journals'],
   params: {
     type: 'object',

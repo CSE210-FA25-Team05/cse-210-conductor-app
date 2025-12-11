@@ -3,9 +3,32 @@
 const { CourseRoles } = require('../shared/shared.enums');
 
 class JournalPermissions {
-  constructor(journalRepo, authRepo) {
+  constructor(journalRepo) {
     this.journalRepo = journalRepo;
-    this.authRepo = authRepo;
+  }
+
+  async canViewJournals(user, enrollment, filters) {
+    // Professors and TAs can view all journals
+    if (
+      enrollment.role === CourseRoles.PROFESSOR ||
+      enrollment.role === CourseRoles.TA
+    ) {
+      return true;
+    }
+
+    if (filters.team_id != null) {
+      // Check if user is in the same team
+      if (enrollment.team_id === filters.team_id) {
+        return true;
+      }
+    }
+
+    // Anyone else can only view their own journals
+    if (filters.user_id != null) {
+      return filters.user_id === user.id;
+    }
+
+    return false;
   }
 
   /**
