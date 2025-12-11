@@ -27,8 +27,7 @@ module.exports = fp(async function authenticateHook(fastify) {
     // Allow swagger UI assets and any explicitly whitelisted path
     if (
       publicPaths.has(url) ||
-      url.startsWith('/docs') ||
-      url.startsWith('/backdoor')
+      url.startsWith('/docs')
     ) {
       return;
     }
