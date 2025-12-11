@@ -45,7 +45,7 @@
             </article>
             <article id="teams-content" style="display: none;">
                 <header>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="grid-menu">
                         <h2>Teams</h2>
                         <button id="create-team-button" type="button" style="display: none;">Create Team<i>add</i></button>
                     </div>
@@ -129,19 +129,17 @@
             function showDirectoryView() {
                 directoryContent.style.display = 'block';
                 teamsContent.style.display = 'none';
-                teamViewButton.style.display = 'inline-block';
+                teamViewButton.style.display = 'inline-flex';
                 directoryViewButton.style.display = 'none';
                 currentView = 'directory';
             }
             
             function showTeamView() {
-                console.log('🔄 Switching to Team View...');
                 directoryContent.style.display = 'none';
                 teamsContent.style.display = 'block';
                 teamViewButton.style.display = 'none';
-                directoryViewButton.style.display = 'inline-block';
+                directoryViewButton.style.display = 'inline-flex';
                 currentView = 'teams';
-                console.log('✅ Team View shown. Create Team button should be visible now.');
                 loadTeams();
             }
             
@@ -174,7 +172,6 @@
                     directoryLoading.style.display = 'none';
                     
                 } catch (error) {
-                    console.error('Error loading directory:', error);
                     directoryLoading.style.display = 'none';
                     directoryError.textContent = `Error loading directory: ${error.message}`;
                     directoryError.style.display = 'block';
@@ -267,7 +264,6 @@
                         }
                     }
                 } catch (error) {
-                    console.error('Error loading teams:', error);
                     teamsLoading.style.display = 'none';
                     if (teamsGrid) {
                         teamsGrid.data = [
@@ -299,14 +295,11 @@
             
             // Button visibility and event handlers - check course-specific role
             async function checkCourseRoleAndSetupButtons() {
-                console.log('🔍 Starting role check...');
                 const courseId = getCourseId();
                 const userId = getUserId();
                 
-                console.log('📋 Course ID:', courseId, 'User ID:', userId);
                 
                 if (!courseId || !userId) {
-                    console.warn('⚠️ Missing courseId or userId - hiding buttons');
                     // Hide buttons if we can't get course/user info
                     if (teamViewButton) teamViewButton.style.display = 'none';
                     if (createTeamButton) createTeamButton.style.display = 'none';
@@ -314,71 +307,50 @@
                 }
                 
                 try {
-                    console.log('📡 Fetching all users in course...');
                     // Get all users in course and find current user (avoids pronouns validation issue)
                     const enrollments = await getAllUsersInCourse(courseId);
-                    console.log('✅ Got enrollments:', enrollments.length, 'users');
                     
                     const userEnrollment = enrollments.find(e => e.user_id === parseInt(userId));
-                    console.log('👤 Found user enrollment:', userEnrollment);
-                    console.log('👤 All enrollments:', enrollments.map(e => ({ user_id: e.user_id, role: e.role })));
                     
                     const courseRole = userEnrollment?.role;
-                    console.log('🎭 User course role (raw):', courseRole, 'Type:', typeof courseRole);
-                    console.log('🎭 Role comparison:', {
-                        'professor': courseRole === 'professor',
-                        'Professor': courseRole === 'Professor',
-                        'ta': courseRole === 'ta',
-                        'TA': courseRole === 'TA',
-                        'lowercase professor': courseRole?.toLowerCase() === 'professor',
-                        'lowercase ta': courseRole?.toLowerCase() === 'ta'
-                    });
                     
                     // Store course role for use in other functions
                     userCourseRole = courseRole;
                     
                     // Only professors and TAs can create teams (per backend) - make case-insensitive
                     const roleLower = courseRole?.toLowerCase();
-                    console.log('🔍 Checking role:', { courseRole, roleLower });
                     if (roleLower === 'professor' || roleLower === 'ta') {
-                        console.log('✅ User is professor or TA - showing buttons (role:', courseRole, '->', roleLower, ')');
                         if (teamViewButton) {
-                            teamViewButton.style.display = 'inline-block';
-                            console.log('✅ Team View button set to visible');
+                            teamViewButton.style.display = 'inline-flex';
                             // Only add listener if not already added
                             if (!teamViewButton.hasAttribute('data-listener-added')) {
                                 teamViewButton.addEventListener('click', () => {
-                                    console.log('🖱️ Team View button clicked!');
                                     showTeamView();
                                 });
                                 teamViewButton.setAttribute('data-listener-added', 'true');
                             }
                         } else {
-                            console.error('❌ Team View button not found in DOM!');
                         }
                         // Show create team button (it's inside teams-content, so will be visible when Team View is shown)
                         if (createTeamButton) {
-                            createTeamButton.style.display = 'inline-block';
-                            console.log('✅ Create Team button set to visible');
+                            createTeamButton.style.display = 'inline-flex';
                             // Only add listener if not already added
                             if (!createTeamButton.hasAttribute('data-listener-added')) {
                                 createTeamButton.addEventListener('click', (e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-                                    console.log('🖱️ Create Team button clicked!');
                                     if (createTeamModal && typeof createTeamModal.open === 'function') {
                                         createTeamModal.open();
                                     } else {
-                                        console.error('❌ Modal open method not available');
                                     }
                                 });
                                 createTeamButton.setAttribute('data-listener-added', 'true');
                             }
                         } else {
-                            console.error('❌ Create Team button not found in DOM!');
+                            console.error('Create Team button not found in DOM!');
                         }
                     } else {
-                        console.log('❌ User is NOT professor or TA. Role:', courseRole, '- hiding buttons');
+                        console.log('User is NOT professor or TA. Role:', courseRole, '- hiding buttons');
                         // Hide buttons for non-professors/TAs
                         if (teamViewButton) {
                             teamViewButton.style.display = 'none';
@@ -388,7 +360,7 @@
                         }
                     }
                 } catch (error) {
-                    console.error('❌ Error checking course role:', error);
+                    console.error('Error checking course role:', error);
                     // Hide buttons on error
                     if (teamViewButton) teamViewButton.style.display = 'none';
                     if (createTeamButton) createTeamButton.style.display = 'none';

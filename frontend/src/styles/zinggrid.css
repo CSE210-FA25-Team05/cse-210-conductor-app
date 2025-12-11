@@ -60,13 +60,11 @@ zg-head-cell {
 zg-cell {
   background-color: var(--grid-body-cells-color);
   color: var(--color-text-primary);
-  border-color: var(--grid-body-cells-color);
 }
 
 zg-pager {
   background-color: var(--grid-pager-color);
   color: var(--color-text-primary);
-  border-top-color: var(--grid-pager-color);
   font-size: 0.7em;
 }
 
@@ -77,18 +75,15 @@ zg-pager button:disabled {
 
 zg-search input {
   background-color: var(--grid-search-input-color);
-  border-color: var(--grid-search-input-color);
   color: var(--color-bg-white);
 }
 
 zg-search input:focus {
-  border-color: var(--grid-search-input-focus-color);
 }
 
 zg-pager zg-button {
   padding: 0.25em 0.3em !important;
   margin: 0 0.1em !important;
-  border: none !important;
   border-radius: 0 !important;
   background-color: transparent !important;
   color: var(--color-text-primary) !important;
@@ -106,7 +101,6 @@ zg-pager input[type='text'] {
   cursor: text !important;
   background-color: var(--color-bg-white) !important;
   color: var(--color-text-primary) !important;
-  border: 1px solid var(--color-border-light) !important;
   padding: 0.15em 0.3em !important;
   min-width: 2.5em !important;
   text-align: center !important;
@@ -117,5 +111,4 @@ zg-pager input.zg-input-input:focus,
 zg-pager input[type='number']:focus,
 zg-pager input[type='text']:focus {
   outline: 1px solid var(--color-primary-dark) !important;
-  border-color: var(--color-primary-dark) !important;
 }
