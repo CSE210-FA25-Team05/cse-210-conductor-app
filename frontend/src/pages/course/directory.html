@@ -451,7 +451,7 @@
             
             const editUserButton = document.getElementById('edit-user-button');
             const editUserModal = document.getElementById('edit-user-modal');
-            if (editUserButton && getUserRole() !== 'professor') {
+            if (editUserButton && getUserRole() !== 'professor' && getUserRole() !== 'ta') {
                 editUserButton.style.display = 'none';
             } else if (editUserButton && editUserModal) {
                 editUserButton.addEventListener('click', () => {
