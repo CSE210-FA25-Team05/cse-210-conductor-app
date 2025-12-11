@@ -31,7 +31,7 @@ module.exports = async function journalRoutes(fastify, options) {
   fastify.get(
     '/journals',
     {
-      preHandler: [fastify.loadCourse],
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
       schema: journalSchemas.GetJournalByCourseSchema,
     },
     async (request, reply) => {
@@ -157,7 +157,7 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const journal_id = request.params.journal_id;
         const res = await journalService.deleteJournalEntry(journal_id);
-        return res;
+        return reply.code(204).send();
       } catch (error) {
         console.error(error);
         return mapAndReply(error, reply);

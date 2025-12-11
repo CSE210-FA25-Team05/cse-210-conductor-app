@@ -62,14 +62,16 @@ class JournalService {
       where.user_id = filters.user_id;
     }
 
-    if (filters.start_date != null) {
+    if (filters.start_date != null || filters.end_date != null) {
       where.created_at = {};
-      where.created_at = { gte: filters.start_date };
-    }
 
-    if (filters.end_date != null) {
-      where.created_at = {};
-      where.created_at = { lte: filters.end_date };
+      if (filters.start_date != null) {
+        where.created_at = { gte: filters.start_date };
+      }
+      
+      if (filters.end_date != null) {
+        where.created_at = { lte: filters.end_date };
+      }
     }
 
     return where;
