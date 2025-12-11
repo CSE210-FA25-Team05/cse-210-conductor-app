@@ -31,31 +31,11 @@ zg-cell {
   border-color: var(--grid-body-cells-color);
 }
 
-zg-row:hover {
-  background-color: var(--grid-row-hover-color);
-}
-
-zg-row[selected] {
-  background-color: var(--grid-selected-row-color);
-  color: var(--color-bg-white);
-}
-
 zg-pager {
   background-color: var(--grid-pager-color);
   color: var(--color-text-primary);
   border-top-color: var(--grid-pager-color);
   font-size: 0.7em;
-  color: var(--color-text-primary);
-}
-
-zg-pager button {
-  background-color: var(--grid-pager-button-color);
-  color: var(--color-bg-white);
-  border-color: var(--grid-pager-button-color);
-}
-
-zg-pager button:hover {
-  background-color: var(--grid-pager-button-hover-color);
 }
 
 zg-pager button:disabled {
