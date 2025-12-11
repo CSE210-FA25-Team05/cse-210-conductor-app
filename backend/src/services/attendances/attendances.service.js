@@ -356,7 +356,7 @@ class AttendancesService {
 
     // Get only completed lectures (where attendance was activated and window has closed)
     // This ensures we only count lectures where attendance was actually taken
-    const lectures = await this.attendancesRepo.getCompletedLectures(
+    const lectures = await this.attendancesRepo.getActivatedLectures(
       course.id,
       startTime,
       endTime
@@ -468,7 +468,7 @@ class AttendancesService {
     );
 
     // Get only completed lectures (where attendance was activated and window has closed)
-    const lectures = await this.attendancesRepo.getCompletedLectures(
+    const lectures = await this.attendancesRepo.getActivatedLectures(
       course.id,
       startTime,
       endTime

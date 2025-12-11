@@ -8,6 +8,7 @@
  * POST   /courses/:course_id/lectures           - Create a new lecture (professor/TA only)
  * PATCH  /courses/:course_id/lectures/:lecture_id - Update a lecture (professor/TA only)
  * DELETE /courses/:course_id/lectures/:lecture_id - Delete a lecture (professor/TA only)
+ * POST   /courses/:course_id/lectures/:lecture_id/activate-attendance - Generate attendance code and start 5 min timer (professor/TA only)
  */
 
 const { mapAndReply } = require('../../utils/error-map');
@@ -144,7 +145,7 @@ async function routes(fastify) {
 
   // Activate attendance for a lecture (generate code and start 5-minute timer)
   fastify.post(
-    '/api/courses/:course_id/lectures/:lecture_id/activate-attendance',
+    '/courses/:course_id/lectures/:lecture_id/activate-attendance',
     {
       preHandler: [
         fastify.loadCourse,

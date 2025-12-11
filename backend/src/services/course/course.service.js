@@ -9,8 +9,9 @@ const { isValidEnumValue, CourseRoles } = require('../shared/shared.enums');
  */
 
 class CourseService {
-  constructor(courseRepo) {
+  constructor(courseRepo, authRepo) {
     this.courseRepo = courseRepo;
+    this.authRepo = authRepo;
   }
 
   /**
@@ -49,6 +50,63 @@ class CourseService {
       parseInt(userId, 10),
       updatedRole
     );
+  }
+
+  /**
+   * Add a user to a course by email.
+   * If user exists, add enrollment. If user doesn't exist, create user stub and add enrollment.
+   * @param {number} courseId - ID of the course
+   * @param {string} email - Email of the user
+   * @param {string} role - Role for the enrollment (default: 'student')
+   * @returns {Promise<Object>} Created enrollment object
+   */
+  async addUserToCourseByEmail(courseId, email, role = CourseRoles.STUDENT) {
+    // Validate role if provided
+    if (role && !isValidEnumValue(CourseRoles, role)) {
+      const e = new Error(
+        `Invalid role: ${role}. Valid roles are: ${Object.values(CourseRoles).join(', ')}`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    if (role === CourseRoles.PROFESSOR) {
+      const e = new Error(
+        `Professor role is not allowed to be added to a course`
+      );
+      e.code = 'BAD_REQUEST';
+      throw e;
+    }
+
+    // Normalize email to lowercase
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // Check if user exists
+    let user = await this.authRepo.getUserByEmail(normalizedEmail);
+
+    // If user doesn't exist, create a user stub
+    if (!user) {
+      user = await this.authRepo.upsertUser({
+        email: normalizedEmail,
+        first_name: null,
+        last_name: null,
+        last_login: null,
+      });
+      if (!user) {
+        const e = new Error(`Failed to create user: ${normalizedEmail}`);
+        e.code = 'INTERNAL_SERVER_ERROR';
+        throw e;
+      }
+    }
+
+    // Add enrollment
+    const enrollment = await this.courseRepo.addEnrollment(
+      courseId,
+      user.id,
+      role
+    );
+
+    return enrollment;
   }
 }
 
