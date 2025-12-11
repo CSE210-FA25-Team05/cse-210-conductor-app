@@ -198,5 +198,4 @@ export async function joinCourseWithCode(joinAndUser) {
   if (!response.ok) {
     throw new Error(response.error);
   }
-  return response.data;
 }

@@ -1,5 +1,4 @@
 import { FormModal } from '/src/components/modal/form-modal.js';
-import { getUserRole } from '/src/js/utils/cache-utils.js';
 import '/src/components/forms/pulse-form.js';
 import '/src/components/forms/interaction-form.js';
 import '/src/components/forms/create-lecture-form.js';
@@ -30,18 +29,11 @@ class QuickAddModal extends FormModal {
   }
 
   connectedCallback() {
-    // Get user role to conditionally show lecture form
-    const role = getUserRole();
-    const isStudent = role === 'student' || role === 'team_lead';
-
-    //Lectures - only show for professors and TAs
-    if (!isStudent) {
-      const lectureSection = document.createElement('form-section');
-      const lectureForm = document.createElement('create-lecture-form');
-      lectureSection.setAttribute('tag', 'New Lecture');
-      lectureSection.appendChild(lectureForm);
-      this.appendChild(lectureSection);
-    }
+    //Lectures
+    const lectureSection = document.createElement('form-section');
+    const lectureForm = document.createElement('create-lecture-form');
+    lectureSection.setAttribute('tag', 'New Lecture');
+    lectureSection.appendChild(lectureForm);
 
     // Pulse
     const pulseSection = document.createElement('form-section');
@@ -61,6 +53,7 @@ class QuickAddModal extends FormModal {
     journalSection.setAttribute('tag', 'New Journal');
     journalSection.appendChild(journalForm);
 
+    this.appendChild(lectureSection);
     this.appendChild(pulseSection);
     this.appendChild(interactionSection);
     this.appendChild(journalSection);

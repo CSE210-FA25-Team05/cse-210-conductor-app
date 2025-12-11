@@ -43,24 +43,8 @@ class JournalForm extends ConductorForm {
       content: values.journal_content,
       user_id: getUserId(),
     };
-    await createJournalEntry(getCachedCourseId(), body);
+    createJournalEntry(getCachedCourseId(), body);
     this.form.reset();
-
-    // Dispatch event to refresh journals grid
-    window.dispatchEvent(new CustomEvent('journal-created'));
-
-    // Close the modal by finding the parent form-modal or quick-add-modal
-    let parent = this.parentElement;
-    while (parent) {
-      if (
-        parent.tagName === 'QUICK-ADD-MODAL' ||
-        parent.tagName === 'FORM-MODAL'
-      ) {
-        parent.close();
-        break;
-      }
-      parent = parent.parentElement;
-    }
   }
 }
 
