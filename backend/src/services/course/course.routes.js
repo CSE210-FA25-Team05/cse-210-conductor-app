@@ -224,7 +224,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id/users/:user_id',
     {
-      preHandler: [fastify.requireProfessorInCourse],
+      preHandler: [fastify.requireTAOrProfessorInCourse],
       schema: courseSchemas.UpdateUserInCourseSchema,
     },
     async (request, reply) => {
@@ -232,7 +232,8 @@ module.exports = async function courseRoutes(fastify, options) {
         const res = await courseService.updateUserInCourse(
           parseInt(request.params.course_id, 10),
           parseInt(request.params.user_id, 10),
-          request.body
+          request.body,
+          request.user.id
         );
         reply.send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
