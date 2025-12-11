@@ -27,7 +27,11 @@ export class StudentAttendance extends HTMLElement {
     }
     if (this.role !== 'professor' && this.role !== 'ta' && status === 1) {
       this.createForm();
-    } else if (this.role !== 'professor' && this.role !== 'ta' && this.staus === 0) {
+    } else if (
+      this.role !== 'professor' &&
+      this.role !== 'ta' &&
+      this.staus === 0
+    ) {
       this.displayStatusSuccess();
     } else {
       this.displayStatusNotAvailable();
@@ -88,12 +92,15 @@ export class StudentAttendance extends HTMLElement {
     const start = new Date(this.lecture.code_generated_at);
     const end = new Date(this.lecture.code_expires_at);
 
-    if (attendance !== null) { // already did attendance
-      return 0
-    } if (now >= start && now <= end) { // attendance code open
-      return 1
+    if (attendance !== null) {
+      // already did attendance
+      return 0;
+    }
+    if (now >= start && now <= end) {
+      // attendance code open
+      return 1;
     } else {
-      return -1
+      return -1;
     }
   }
 
