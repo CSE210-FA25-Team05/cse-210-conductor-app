@@ -43,4 +43,3 @@ class ConductorFooter extends HTMLElement {
 }
 
 customElements.define('conductor-footer', ConductorFooter);
-
