@@ -103,6 +103,7 @@
             processedLectures = lectures.map((lec) => ({
               lecture_date: formatLectureDate(lec.lecture_date),
               status: determineLectureStatus(lec.lecture_date),
+              attendance: `<student-lecture-attendance lecture-id=${lec.id}></student-lecture-attendance>`
             }));
           }
 

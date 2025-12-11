@@ -7,7 +7,6 @@ export class ProfAttendance extends HTMLElement {
   }
 
   async connectedCallback() {
-    // this.createProfView();
     const role = getUserRole();
     if (role === 'professor' || role === 'ta') {
       this.createProfView();
@@ -42,8 +41,9 @@ export class ProfAttendance extends HTMLElement {
       return;
     }
 
-    this.codeState.style = 'display:none';
-    this.codeRow.style = 'display:block';
+    this.buttonRow.style = 'display:none;';
+    this.codeState.style = 'display:none;';
+    this.codeRow.style = 'display:block;';
     this.codeVal.textContent = attendance.code;
 
     this.timerRow.style = 'display:block;';
@@ -65,7 +65,6 @@ export class ProfAttendance extends HTMLElement {
       this.lectureId = parseInt(this.getAttribute('lecture-id'));
       this.today = new Date().toLocaleDateString('en-CA');
     } catch (e) {
-      this.errorMsg.textContent = `Error activating attendance: ${e.message}</p>`;
       console.error(e);
       return;
     }
@@ -84,7 +83,7 @@ export class ProfAttendance extends HTMLElement {
     if (lecDate === this.today) {
       this.profView.innerHTML = `
             <article>
-                <div>
+                <div id="button-row">
                     <button id="start-btn">Start Attendance</button>
                 </div>
                 <div id="code-row" style="display:none;">
@@ -100,6 +99,7 @@ export class ProfAttendance extends HTMLElement {
             </article>
         `;
       this.appendChild(this.profView);
+      this.buttonRow = this.profView.querySelector('#button-row');
       this.startBtn = this.profView.querySelector('#start-btn');
       this.stopBtn = this.profView.querySelector('#stop-btn');
       this.codeRow = this.profView.querySelector('#code-row');
@@ -112,9 +112,7 @@ export class ProfAttendance extends HTMLElement {
       this.startBtn.addEventListener('click', () => this.startHandler());
     } else {
       this.profView.innerHTML = `
-            <article>
-                <p id="error-msg">No lecture today</p>
-            </article>
+            <p id="error-msg">No lecture today</p>
         `;
       this.appendChild(this.profView);
     }

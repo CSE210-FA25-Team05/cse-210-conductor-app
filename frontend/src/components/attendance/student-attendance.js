@@ -1,12 +1,10 @@
 import {
   getUserRole,
-  getCourseId,
-  getUserId,
+  getCourseId
 } from '/src/js/utils/cache-utils.js';
 import { getLectures } from '/src/js/api/lecture.js';
 import {
-  createAttendanceSimplified,
-  getAttendanceStats,
+  createAttendanceSimplified
 } from '/src/js/api/attendance.js';
 
 export class StudentAttendance extends HTMLElement {
