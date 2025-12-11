@@ -403,7 +403,7 @@ async function main() {
 
   // Update student enrollments to assign them to teams
   console.log('Assigning students to teams...');
-  
+
   for (const course of courses) {
     if (courseTeamsMap[course.id] && courseTeamsMap[course.id].length > 0) {
       // Get all student enrollments in this course
@@ -431,14 +431,13 @@ async function main() {
             where: { id: studentEnrollment.id },
             data: { role: CourseRoles.TEAM_LEAD, team_id: teamId },
           });
-        } else{
+        } else {
           // Update the enrollment to assign the student to a team
           await prisma.enrollments.update({
             where: { id: studentEnrollment.id },
             data: { team_id: teamId },
           });
         }
-
       }
     }
   }
