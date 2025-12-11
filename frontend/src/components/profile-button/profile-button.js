@@ -1,6 +1,4 @@
-import { postWrapper } from '/src/js/fetch-wrapper.js';
-
-class LogoutButton extends HTMLElement {
+class ProfileButton extends HTMLElement {
   constructor() {
     super();
   }
@@ -8,7 +6,7 @@ class LogoutButton extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
         <button style="width: 100%"> 
-            <i>logout</i> Log Out
+            <i>account_circle</i> Profile
         </button>
         `;
 
@@ -20,11 +18,10 @@ class LogoutButton extends HTMLElement {
   }
 
   async handleClick() {
-    postWrapper('/auth/logout');
-    window.location.replace('/login');
+    window.location.replace('/profile');
   }
 }
 
-customElements.define('logout-button', LogoutButton);
+customElements.define('profile-button', ProfileButton);
 
-export default LogoutButton;
+export default ProfileButton;

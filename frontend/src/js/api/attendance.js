@@ -169,3 +169,31 @@ export async function deleteAttendance(courseID, lectureID, attendanceID) {
   }
   return response.data.message;
 }
+
+/**
+ * @description Get attendance record(s) for a specific user in a lecture.
+ * @param { number } courseID - ID of the course.
+ * @param { number } lectureID - ID of the lecture.
+ * @param { number } userID - ID of the user whose attendance you want to fetch.
+ * @returns { object[] } Array of attendance records for that user.
+ */
+export async function getUserAttendance(courseID, lectureID, userID) {
+  const response = await getWrapper(
+    `/api/courses/${courseID}/lectures/${lectureID}/attendances`
+  );
+
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+
+  for (const x of response.data.attendances) {
+    if (
+      parseInt(userID) === x.user_id &&
+      parseInt(lectureID) === x.lecture_id &&
+      parseInt(courseID) === x.course_id
+    ) {
+      return x;
+    }
+  }
+  return null;
+}

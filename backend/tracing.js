@@ -21,7 +21,7 @@ const sdk = new NodeSDK({
 
 try {
   sdk.start();
-  console.log('✅ OpenTelemetry SDK started');
+  console.log('OpenTelemetry SDK started');
 } catch (err) {
-  console.error('❌ OpenTelemetry failed to start', err);
+  console.error('OpenTelemetry failed to start', err);
 }

@@ -5,9 +5,6 @@ const TeamsRepo = require('./teams.repo');
 const TeamsService = require('./teams.service');
 const TeamsPermissions = require('./teams.permissions');
 const teamsSchemas = require('./teams.schemas');
-const {
-  mapUserAndEnrollmentToCourseUser,
-} = require('../shared/shared.mappers');
 
 /**
  * Teams Routes Plugin
@@ -77,11 +74,7 @@ module.exports = async function teamsRoutes(fastify /*, options */) {
           req.enrollment,
           teamId
         );
-        return reply.send({
-          members: members.map((m) =>
-            mapUserAndEnrollmentToCourseUser(m.users, m)
-          ),
-        });
+        return reply.send({ members });
       } catch (error) {
         return mapAndReply(error, reply);
       }

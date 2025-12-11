@@ -2,6 +2,7 @@ import '/src/components/logout-button/logout-button.js';
 import '/src/components/dropdown.js';
 import '/src/components/course-dropdown.js';
 import '/src/components/modal/quick-add-modal.js';
+import '/src/components/profile-button/profile-button.js';
 
 class ConductorNav extends HTMLElement {
   constructor() {
@@ -10,14 +11,11 @@ class ConductorNav extends HTMLElement {
     this.paths = {
       // Display name -> href
       Dashboard: '/course/dashboard',
-      Signals: '/course/signals',
+      Pulses: '/course/signals',
       Interactions: '/course/interactions',
       Lectures: '/course/lecture',
-      Atoms: '/course/atoms',
       Journals: '/course/journals',
-      ZingGrid: '/course/zinggrid',
       Directory: '/course/directory',
-      Profile: '/profile',
       ChartsJS: '/course/chartsjs',
     };
     this.courses = [];
@@ -37,6 +35,7 @@ class ConductorNav extends HTMLElement {
     const footer = document.createElement('footer');
     const logoutButtonInstance = document.createElement('logout-button');
     const courseDropdown = document.createElement('course-dropdown');
+    const profileButton = document.createElement('profile-button');
 
     for (const displayName of Object.keys(this.paths)) {
       const li = document.createElement('li');
@@ -44,6 +43,10 @@ class ConductorNav extends HTMLElement {
 
       a.href = this.paths[displayName];
       a.textContent = displayName;
+
+      a.style.padding = 'var(--button-padding)';
+      li.style.padding = '0';
+      li.classList.add('state-layer');
 
       li.appendChild(a);
       ul.appendChild(li);
@@ -71,6 +74,7 @@ class ConductorNav extends HTMLElement {
     header.appendChild(courseDropdown);
     header.appendChild(modalButton);
     nav.appendChild(ul);
+    footer.appendChild(profileButton);
     footer.appendChild(logoutButtonInstance);
 
     this.appendChild(header);
