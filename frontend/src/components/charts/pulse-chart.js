@@ -69,7 +69,7 @@ class PulseChart extends HTMLElement {
     }
   }
 
-    /**
+  /**
    * Builds a parameter object from the element's attributes.
    * Ensures date strings are converted to proper ISO date-time format.
    * @returns {Object} Query parameters for getPulseStats()
@@ -118,7 +118,7 @@ class PulseChart extends HTMLElement {
   /** Fetch data from API based on attributes. */
   async fetchPulseData() {
     try {
-      const courseId = getCourseId()
+      const courseId = getCourseId();
 
       const params = this.getQueryParams();
       const pulses = await getPulseStats(courseId, params);
