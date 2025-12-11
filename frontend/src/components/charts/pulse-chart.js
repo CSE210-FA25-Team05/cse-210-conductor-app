@@ -1,48 +1,56 @@
-import { getCourseId } from '/src/js/utils/cache-utils.js';
 import { getPulseStats } from '/src/js/api/pulse.js';
+import { getCourseId } from '/src/js/utils/cache-utils.js';
 
 /**
- * Custom Web Component that displays a stacked line chart of
- * course "pulse" data (student emotion trends) using Chart.js.
+ * Custom Web Component that displays Pulse (emotion) stats over time
+ * in a stacked line chart using Chart.js, with dynamic API parameters.
  *
  * Example usage:
  * ```html
- * <pulse-chart></pulse-chart>
+ * <pulse-chart
+ *   entire-class="true"
+ *   bucket="day"
+ *   start-date="2025-12-01"
+ *   end-date="2025-12-10"
+ *   values='["Happy","Worried"]'
+ * ></pulse-chart>
  * ```
+ *
+ * Changing any of these attributes automatically refreshes the data.
  *
  * @extends HTMLElement
  */
 class PulseChart extends HTMLElement {
-  /**
-   * Constructs a new instance of PulseChart.
-   * Initializes DOM element placeholders and chart reference.
-   */
+  /** Sets up initial properties and chart holder. */
   constructor() {
     super();
-
-    /** @type {HTMLDivElement|null} */
     this.container = null;
-
-    /** @type {HTMLCanvasElement|null} */
     this.canvas = null;
-
-    /** @type {HTMLParagraphElement|null} */
     this.errorMsg = null;
-
-    /** @type {import('chart.js').Chart|null} */
     this.chartInstance = null;
   }
 
   /**
-   * Lifecycle hook: Called automatically when the component
-   * is inserted into the document DOM.
-   * Builds structure and initializes the chart.
+   * Defines which attributes should be observed for changes.
+   * When changed, data refreshes and chart re-renders.
    */
+  static get observedAttributes() {
+    return [
+      'team-id',
+      'user-id',
+      'entire-class',
+      'values',
+      'start-date',
+      'end-date',
+      'bucket',
+    ];
+  }
+
+  /** Lifecycle hook: build structure and initialize chart. */
   connectedCallback() {
     this.container = document.createElement('div');
     this.errorMsg = document.createElement('p');
     this.canvas = document.createElement('canvas');
-
     this.errorMsg.style.display = 'none';
 
     this.container.appendChild(this.errorMsg);
@@ -53,16 +61,67 @@ class PulseChart extends HTMLElement {
   }
 
   /**
-   * Fetches Pulse (emotion) stats for the current course.
-   *
-   * @async
-   * @returns {Promise<Object>} Raw API response object with stats data.
-   * @throws {Error} If the API request fails.
+   * Called automatically whenever an observed attribute changes.
    */
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (newValue !== oldValue && this.isConnected) {
+      this.initializeChart();
+    }
+  }
+
+    /**
+   * Builds a parameter object from the element's attributes.
+   * Ensures date strings are converted to proper ISO date-time format.
+   * @returns {Object} Query parameters for getPulseStats()
+   */
+  getQueryParams() {
+    const params = {};
+
+    if (this.hasAttribute('team-id'))
+      params.team_id = Number(this.getAttribute('team-id'));
+
+    if (this.hasAttribute('user-id'))
+      params.user_id = Number(this.getAttribute('user-id'));
+
+    if (this.hasAttribute('entire-class'))
+      params.entire_class = this.getAttribute('entire-class') === 'true';
+
+    if (this.hasAttribute('bucket'))
+      params.bucket = this.getAttribute('bucket');
+
+    // Ensure valid ISO date-time formats for API
+    const toISODateTime = (value) => {
+      if (!value) return undefined;
+      // If it already includes 'T', assume it's ISO
+      if (value.includes('T')) return value;
+      // Append midnight UTC time if no time given
+      return `${value}T00:00:00Z`;
+    };
+
+    if (this.hasAttribute('start-date'))
+      params.start_date = toISODateTime(this.getAttribute('start-date'));
+
+    if (this.hasAttribute('end-date'))
+      params.end_date = toISODateTime(this.getAttribute('end-date'));
+
+    if (this.hasAttribute('values')) {
+      try {
+        params.values = JSON.parse(this.getAttribute('values'));
+      } catch {
+        console.warn('Invalid JSON for values attribute — ignoring.');
+      }
+    }
+
+    return params;
+  }
+
+  /** Fetch data from API based on attributes. */
   async fetchPulseData() {
     try {
-      const params = { entire_class: 'true' };
-      const pulses = await getPulseStats(getCourseId(), params);
+      const courseId = getCourseId()
+
+      const params = this.getQueryParams();
+      const pulses = await getPulseStats(courseId, params);
       return pulses;
     } catch (error) {
       console.error('Error fetching Pulse data', error);
@@ -72,34 +131,22 @@ class PulseChart extends HTMLElement {
   }
 
   /**
-   * Converts raw API data into a dataset suitable for a stacked area (line) chart.
-   *
-   * @param {Object} apiData - Raw pulse data response from the API.
-   * @param {Array} apiData.stats - Array of pulse records {bucket, value, count}.
-   * @returns {{labels: string[], datasets: Object[]}} Chart.js-ready data structure.
+   * Transforms raw API data into Chart.js dataset format.
    */
   transformPulseData(apiData) {
-    /**
-     * Maps each pulse emotion to a consistent RGBA color.
-     *
-     * @param {string} emotion - Emotion name (e.g., "Happy", "Tired").
-     * @param {number} alpha - Opacity (0–1).
-     * @returns {string} RGBA color string.
-     */
     function getColorForEmotion(emotion, alpha) {
       const colors = {
-        Happy: `rgba(75, 192, 75, ${alpha})`, // Green
-        Tired: `rgba(255, 206, 86, ${alpha})`, // Yellow
-        Concerned: `rgba(255, 159, 64, ${alpha})`, // Orange
-        Worried: `rgba(255, 99, 132, ${alpha})`, // Red
+        Happy: `rgba(75, 192, 75, ${alpha})`,
+        Tired: `rgba(255, 206, 86, ${alpha})`,
+        Concerned: `rgba(255, 159, 64, ${alpha})`,
+        Worried: `rgba(255, 99, 132, ${alpha})`,
       };
       return colors[emotion] || `rgba(201, 203, 207, ${alpha})`;
     }
 
-    const stats = apiData.stats || [];
-
-    const dates = [...new Set(stats.map((item) => item.bucket))].sort();
-    const emotions = [...new Set(stats.map((item) => item.value))];
+    const stats = apiData?.stats || [];
+    const dates = [...new Set(stats.map((i) => i.bucket))].sort();
+    const emotions = [...new Set(stats.map((i) => i.value))];
 
     const datasets = emotions.map((emotion) => {
       const data = dates.map((date) => {
@@ -130,66 +177,39 @@ class PulseChart extends HTMLElement {
     return { labels, datasets };
   }
 
-  /**
-   * Creates or re-creates the pulse chart using Chart.js.
-   *
-   * @param {{labels: string[], datasets: Object[]}} chartData - Formatted chart dataset.
-   */
+  /** Creates or replaces the Chart.js instance. */
   createChart(chartData) {
     this.canvas.style.display = 'block';
     this.errorMsg.style.display = 'none';
 
-    const context = this.canvas.getContext('2d');
-
-    // If chart already exists, destroy it before reinitializing
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
-    }
+    const ctx = this.canvas.getContext('2d');
+    if (this.chartInstance) this.chartInstance.destroy();
 
     /* global Chart */
-    this.chartInstance = new Chart(context, {
+    this.chartInstance = new Chart(ctx, {
       type: 'line',
-      data: {
-        labels: chartData.labels,
-        datasets: chartData.datasets,
-      },
+      data: chartData,
       options: {
         responsive: true,
-        interaction: {
-          mode: 'index',
-          intersect: false,
-        },
-        scales: {
-          y: {
-            stacked: true,
-            beginAtZero: true,
-          },
-        },
+        interaction: { mode: 'index', intersect: false },
+        scales: { y: { stacked: true, beginAtZero: true } },
       },
     });
   }
 
-  /**
-   * Displays an error message and hides the chart canvas.
-   *
-   * @param {string} message - Message to show to the user.
-   */
+  /** Simple helper to show an inline error message. */
   showError(message) {
     this.canvas.style.display = 'none';
     this.errorMsg.style.display = 'block';
     this.errorMsg.textContent = message;
   }
 
-  /**
-   * Coordinates data fetching, transforming, and chart rendering.
-   *
-   * @async
-   */
+  /** Orchestrates fetching, transforming, and drawing the chart. */
   async initializeChart() {
     try {
       const raw = await this.fetchPulseData();
-      const chartData = this.transformPulseData(raw);
-      this.createChart(chartData);
+      const data = this.transformPulseData(raw);
+      this.createChart(data);
     } catch (error) {
       console.error('Failed to initialize Pulse chart:', error);
       this.showError('Failed to load chart');
@@ -197,5 +217,5 @@ class PulseChart extends HTMLElement {
   }
 }
 
-// Register the web component
+// Register the component globally
 customElements.define('pulse-chart', PulseChart);
