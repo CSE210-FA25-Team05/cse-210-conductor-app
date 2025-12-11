@@ -73,8 +73,8 @@ class ConductorNav extends HTMLElement {
     profileButton.style.width = '100%';
     profileButton.onclick = function () {
       window.location.replace('/profile');
-    }
-    profileButton.style.marginBottom = "5%";
+    };
+    profileButton.style.marginBottom = '5%';
 
     header.appendChild(menuToggle);
     header.appendChild(courseDropdown);
