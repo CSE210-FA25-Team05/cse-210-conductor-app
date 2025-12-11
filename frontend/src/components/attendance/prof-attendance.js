@@ -1,124 +1,84 @@
 import { getUserRole, getCourseId } from '/src/js/utils/cache-utils.js';
-import { activateAttendance, getLectures } from '/src/js/api/lecture.js';
+import { activateAttendance, getLecture } from '/src/js/api/lecture.js';
 
 export class ProfAttendance extends HTMLElement {
   constructor() {
     super();
+    this.startHandler = this.startHandler.bind(this);
   }
 
   async connectedCallback() {
-    // this.createProfView();
-    const role = getUserRole();
-    if (role === 'professor' || role === 'ta') {
-      this.createProfView();
+    this.lectureId = this.getAttribute('lecture-id');
+    this.courseId = getCourseId();
+    this.role = getUserRole();
+    if (this.role === 'professor' || this.role === 'ta') {
+      await this.render();
+    }
+  }
+
+
+  // returns -1 if the lecture has expired
+  // returns 0 if the lecture attendance is ongoing
+  // returns 1 if the lecture attendance code has not been gnerated
+  async render() {
+
+    try {
+      this.courseId = getCourseId();
+      this.lecture = await getLecture(this.courseId, this.lectureId);
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+
+    const now = new Date();
+    const generated_time = new Date(this.lecture.code_generated_at);
+    const expires_time = new Date(this.lecture.code_expires_at);
+    const isGeneratedValid = this.lecture.code_generated_at && !isNaN(generated_time.getTime());
+    const isExpiresValid = this.lecture.code_expires_at && !isNaN(expires_time.getTime());
+    let status = 0; // ongoing
+    if (isExpiresValid && expires_time < now) {
+        status = -1; // expired
+    } else if (!isGeneratedValid && !isExpiresValid) {
+        status = 1; // not generated yet
+    } 
+
+    // Render 
+    this.startButton = document.createElement('button');
+    this.startButton.innerText = 'Activate';
+    this.startButton.style.marginBottom = "0";
+    this.status = document.createElement('p');
+    console.log(this.lecture, status);
+
+    if (status === 0) { // Ongoing
+      this.status.innerHTML = `${this.lecture.code}`;
+      this.status.style.color = 'blue';
+      this.appendChild(this.status);
+    } else if (status === 1) { // Not Generated Yet
+      this.appendChild(this.startButton);
+      this.appendChild(this.status);
+      this.startButton.addEventListener('click', this.startHandler);
+    } else { // Expired
+      this.status.innerHTML = 'Attendance Expired';
+      this.appendChild(this.status);
     }
   }
 
   async startHandler() {
-    try {
-      this.courseId = parseInt(getCourseId());
-      this.lectures = await getLectures(this.courseId);
-      this.lectureId = parseInt(this.getAttribute('lecture-id'));
-      this.today = new Date().toLocaleDateString('en-CA');
-    } catch (e) {
-      this.errorMsg.textContent = `Error activating attendance: ${e.message}</p>`;
-      console.error(e);
-      return;
-    }
-
-    let attendance;
-    try {
-      attendance = await activateAttendance(this.courseId, this.lectureId);
-    } catch (e) {
-      this.errorMsg.style = 'display:block; color:red;';
-      this.errorMsg.textContent = `Error activating attendance: ${e.message}`;
-      return;
-    }
-    // more saftey checks
-    if (!attendance) {
-      this.errorMsg.style = 'display:block; color:red;';
-      this.errorMsg.textContent =
-        'Error activating attendance: activateAttendance API failed.';
-      return;
-    }
-
-    this.codeState.style = 'display:none';
-    this.codeRow.style = 'display:block';
-    this.codeVal.textContent = attendance.code;
-
-    this.timerRow.style = 'display:block;';
-    const d = new Date(attendance.code_expires_at);
-    const expireTime = d.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    this.expiration.textContent = `Code expires at: ${expireTime}`;
-  }
-
-  async createProfView() {
-    this.profView = document.createElement('div');
-    this.lectureId = parseInt(this.getAttribute('lecture-id'));
 
     try {
-      this.courseId = parseInt(getCourseId());
-      this.lectures = await getLectures(this.courseId);
-      this.lectureId = parseInt(this.getAttribute('lecture-id'));
-      this.today = new Date().toLocaleDateString('en-CA');
-    } catch (e) {
-      this.errorMsg.textContent = `Error activating attendance: ${e.message}</p>`;
-      console.error(e);
-      return;
-    }
-
-    let currentLecture = null;
-    for (const lec of this.lectures) {
-      if (lec.id === this.lectureId) {
-        currentLecture = lec;
-        break;
+      const attendance = await activateAttendance(this.courseId, this.lectureId);
+      console.log(attendance);
+      if (attendance?.code) {
+        this.startButton.style.display = 'none';
+        this.status.innerText = attendance.code;
       }
-    }
-    // if there is no lecture scheduled for today
-    const lecDate = new Date(currentLecture.lecture_date).toLocaleDateString(
-      'en-CA'
-    );
-    if (lecDate === this.today) {
-      this.profView.innerHTML = `
-            <article>
-                <div>
-                    <button id="start-btn">Start Attendance</button>
-                </div>
-                <div id="code-row" style="display:none;">
-                    <strong>Attendance Code: </strong><span id="code-val"></span>
-                </div>
-                <div id="timer-row" style="display:none;">
-                    <span id="expiration">00:00</span>
-                </div>
-                <p id="error-msg" style="display:none, color: red;"></div>
-                <div id="code-state">
-                    <strong>Status: </strong><span>Not active</span>
-                </div>
-            </article>
-        `;
-      this.appendChild(this.profView);
-      this.startBtn = this.profView.querySelector('#start-btn');
-      this.stopBtn = this.profView.querySelector('#stop-btn');
-      this.codeRow = this.profView.querySelector('#code-row');
-      this.codeVal = this.profView.querySelector('#code-val');
-      this.codeState = this.profView.querySelector('#code-state');
-      this.timerRow = this.profView.querySelector('#timer-row');
-      this.expiration = this.profView.querySelector('#expiration');
-      this.errorMsg = this.profView.querySelector('#error-msg');
 
-      this.startBtn.addEventListener('click', () => this.startHandler());
-    } else {
-      this.profView.innerHTML = `
-            <article>
-                <p id="error-msg">No lecture today</p>
-            </article>
-        `;
-      this.appendChild(this.profView);
+    } catch (e) {
+      return;
     }
+
   }
+
 }
 
 customElements.define('prof-attendance', ProfAttendance);
