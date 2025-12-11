@@ -7,13 +7,52 @@
     <link rel="stylesheet" href="/src/styles/styles.css">
     <script type="module" src="/src/components/oauth/google-oauth.js"></script>
     <script type="module" src="/src/js/utils/show-content.js"></script>
+    <style>
+      html, body {
+        height: 100%;
+      }
+      body {
+        background-image: url('/src/assets/imgs/conductor-login.avif');
+        background-repeat: no-repeat;
+        background-color: black;
+        background-position: center;
+        background-size: auto;
+      }
+      .login {
+        background-color: rgba(68, 68, 68, 0.4);
+        backdrop-filter: blur(20px);
+        position: absolute;
+        height: fit-content;
+        width: 30%;
+        left: 25%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 5%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 1%;
+        padding-bottom: 2%;
+      }
+      h1 {
+        color: rgb(108, 42, 221);
+        font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-weight: 700;
+      }
+      p {
+        color: rgb(140, 140, 140);
+        width: 75%;
+        text-align: center;
+        margin-bottom: 5%;
+        font-size: medium;
+      }
+    </style>
 </head>
 <body>
-    <main>
-        <section class="middle">
-            <h1>Conductor Login</h1>
-            <google-oauth></google-oauth>
-        <section>
-    </main>
+    <div class="login">
+        <h1>Conductor</h1>
+        <p>Classroom management tool</p>
+        <google-oauth></google-oauth>
+    </div>
 </body>
 </html>
