@@ -1,5 +1,5 @@
 import { getCourseId } from '/src/js/utils/cache-utils.js';
-import { getInteractionStats } from '../api/interactions.js';
+import { getInteractionStats } from '/src/js/api/interactions.js';
 
 //Fetch API Data
 async function fetchInteractionData() {
@@ -8,6 +8,8 @@ async function fetchInteractionData() {
       entire_class: true,
     };
     const interactions = await getInteractionStats(getCourseId(), filters);
+    console.log(interactions);
+
     return interactions;
   } catch (error) {
     console.error('Error fetching Interaction data', error);
@@ -67,6 +69,7 @@ function createChart(chartData) {
   const canvasElement = document.getElementById('interactionChart');
   const chartContext = canvasElement.getContext('2d');
 
+  console.log('here', chartData);
   //Create new chart object
   // The below tag tells our linter to ignore 'Chart not defined'
   // Chart is defined globally when adding CDN script in <head>

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/src/styles/styles.css" />
     <script type="module" async src="/src/js/common.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="/src/js/charts/attendance-charts.js"></script>
+    <script type="module" src="/src/components/charts/attendance-chart.js"></script>
   </head>
 
   <body>
@@ -47,11 +47,8 @@
         <header>
           <h2>Latest Lecture Attendance</h2>
         </header>
+        <attendance-chart lecture-id="62"></attendance-chart>
 
-        <div class="chart-container" style="max-width: 500px; margin: 0 auto;">
-          <div id="error-message" style="color: red;"></div>
-          <canvas id="attendanceChart"></canvas>
-        </div>
       </article>
     </main>
 
