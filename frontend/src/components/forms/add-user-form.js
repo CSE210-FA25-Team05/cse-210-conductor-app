@@ -16,6 +16,10 @@ import { getCachedCourseId } from '/src/js/utils/cache-utils.js';
  * <add-user-form></add-user-form>
  */
 class AddUserForm extends ConductorForm {
+  /**
+   * Defines the form fields for the add user form.
+   * @returns {Array<Object>} Array containing the email field configuration.
+   */
   get fields() {
     return [
       {
@@ -27,6 +31,14 @@ class AddUserForm extends ConductorForm {
     ];
   }
 
+  /**
+   * Handles form submission by adding a user to the current course.
+   * Calls the API to add the user and resets the form after submission.
+   * @async
+   * @param {Object} values - The form values containing the user's email.
+   * @param {string} values.user_email - The email address of the user to add.
+   * @returns {Promise<void>}
+   */
   async onSubmit(values) {
     addUserInCourse(getCachedCourseId(), { user_email: values.user_email });
     this.form.reset();
