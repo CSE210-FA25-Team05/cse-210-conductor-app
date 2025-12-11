@@ -67,8 +67,8 @@
                     <pre id="courses-response" style="color: red;"></pre>
                 </article>
 
-                <!-- Create Course Section - hidden by default -->
-                <article id="create-course-section" style="">
+                <!-- Create Course Section - hidden by default, only shown for professors -->
+                <article id="create-course-section" style="display: none;">
                     <header>
                         <h2>Create Course</h2>
                     </header>
@@ -84,10 +84,12 @@
                     const responseElement = document.getElementById("courses-response");
                     const createCourseSection = document.getElementById("create-course-section");
 
-                    // Show "Create Course" only if role is Professor
-                    const role = await getUserRole();
-                    if (role === "Professor") {
+                    // Show "Create Course" only if role is professor (not student)
+                    const role = getUserRole();
+                    if (role === "professor") {
                         createCourseSection.style.display = "";
+                    } else {
+                        createCourseSection.style.display = "none";
                     }
 
                     // Clear previous content
@@ -134,5 +136,6 @@
                 });
             </script>
         </main>
+        <conductor-footer></conductor-footer>
     </body>
 </html>

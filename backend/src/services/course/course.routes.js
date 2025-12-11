@@ -216,6 +216,23 @@ module.exports = async function courseRoutes(fastify, options) {
         }
         reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
+        // Check if this is a unique constraint violation for enrollment
+        if (error.code === 'P2002') {
+          // Check if the constraint is on enrollments (user_id + course_id)
+          const target = error.meta?.target;
+          if (
+            target &&
+            Array.isArray(target) &&
+            target.includes('user_id') &&
+            target.includes('course_id')
+          ) {
+            const friendlyError = new Error(
+              'You are already enrolled in this course'
+            );
+            friendlyError.code = 'CONFLICT';
+            return mapAndReply(friendlyError, reply);
+          }
+        }
         return mapAndReply(error, reply);
       }
     }
