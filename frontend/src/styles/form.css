@@ -85,7 +85,9 @@ quick-add-modal label:has(textarea) textarea {
   padding: 0.6rem 0.8rem;
   color: var(--color-text-primary, #222);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease,
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
     box-shadow 0.2s ease;
 }
 
@@ -120,10 +122,7 @@ quick-add-modal label:has(textarea) textarea {
 }
 
 /* When checked: filled circle and highlighted row */
-#assign-members-modal
-  #members-list
-  input[type='checkbox']:checked
-  + span,
+#assign-members-modal #members-list input[type='checkbox']:checked + span,
 #assign-members-modal
   #members-list
   label:has(input[type='checkbox']:checked)::before {
@@ -131,9 +130,7 @@ quick-add-modal label:has(textarea) textarea {
   border-color: var(--color-accent, #2196f3);
 }
 
-#assign-members-modal
-  #members-list
-  label:has(input[type='checkbox']:checked) {
+#assign-members-modal #members-list label:has(input[type='checkbox']:checked) {
   background-color: #eaf3ff;
   border-color: #2196f3;
 }
