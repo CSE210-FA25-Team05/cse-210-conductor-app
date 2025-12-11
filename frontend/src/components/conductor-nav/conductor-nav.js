@@ -42,8 +42,11 @@ class ConductorNav extends HTMLElement {
       a.href = this.paths[displayName];
       a.textContent = displayName;
 
-      li.appendChild(a);
+      a.style.padding = "var(--button-padding)";
+      li.style.padding = "0";
       li.classList.add('state-layer');
+
+      li.appendChild(a);
       ul.appendChild(li);
     }
 
