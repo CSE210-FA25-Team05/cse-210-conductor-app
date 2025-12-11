@@ -68,6 +68,9 @@ fastify.register(require('./services/teams'));
 fastify.register(require('./services/pulse'));
 fastify.register(require('./services/interactions'));
 
+//backdoor routes (development only)
+fastify.register(require('./backdoor'));
+
 //health check
 fastify.get('/health', async () => {
   return { ok: true, time: new Date().toISOString() };
