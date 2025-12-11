@@ -6,24 +6,28 @@
     <title>Conductor - Lectures</title>
     <link rel="stylesheet" href="/src/styles/styles.css" />
     <script type="module" async src="/src/js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/src/components/charts/attendance-chart.js"></script>
   </head>
+
   <body>
     <main>
+      <!-- Page Header -->
       <header>
         <h1>Course Lectures</h1>
       </header>
 
+      <!-- Lecture Grid Section -->
       <article id="lecture-content">
-
         <header>
-            <div class="grid-menu" role="menu">
-                <input
-                    id="grid-search"
-                    type="search"
-                    placeholder="Search..."
-                    aria-label="Search your pulses"
-                />
-            </div>
+          <div class="grid-menu" role="menu">
+            <input
+              id="grid-search"
+              type="search"
+              placeholder="Search..."
+              aria-label="Search your lectures"
+            />
+          </div>
         </header>
 
         <zing-grid
@@ -35,17 +39,25 @@
           sort
         ></zing-grid>
 
-        <p
-          id="lecture-error"
-          style="display: none; color: var(--color-error);"
-        ></p>
+        <p id="lecture-error" style="display: none; color: var(--color-error);"></p>
+      </article>
+
+      <!-- Attendance Chart Section -->
+      <article id="attendance-content">
+        <header>
+          <h2>Latest Lecture Attendance</h2>
+        </header>
+        <attendance-chart lecture-id="62"></attendance-chart>
+
       </article>
     </main>
 
+    <!-- Navigation Sidebar -->
     <aside>
       <conductor-nav></conductor-nav>
     </aside>
 
+    <!-- Lecture Grid Script -->
     <script type="module">
       import { getCourseId, getUserRole } from "/src/js/utils/cache-utils.js";
       import { getLectures } from "/src/js/api/lecture.js";
@@ -88,6 +100,8 @@
           const role = getUserRole();
 
           if (!lectures || lectures.length === 0) {
+            lectureError.textContent = "No lectures found for this course.";
+            lectureError.style.display = "block";
             return;
           }
 
@@ -122,7 +136,7 @@
       loadLectureData();
 
       window.addEventListener('load', () => {
-          linkSearchToGrid('grid-search', 'lecture-grid');
+        linkSearchToGrid('grid-search', 'lecture-grid');
       });
     </script>
   </body>

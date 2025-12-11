@@ -144,6 +144,7 @@ export async function getAttendanceStats(
  * @returns { AttendanceStats } Attendance statistics for that lecture.
  */
 export async function getAttendanceStatsForLecture(courseID, lectureID) {
+  console.log(courseID, lectureID);
   const response = await getWrapper(
     `/api/courses/${courseID}/lectures/${lectureID}/attendances/stats`
   );
