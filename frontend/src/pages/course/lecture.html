@@ -47,11 +47,10 @@
     </aside>
 
     <script type="module">
-      import { getCourseId } from "/src/js/utils/cache-utils.js";
+      import { getCourseId, getUserRole } from "/src/js/utils/cache-utils.js";
       import { getLectures } from "/src/js/api/lecture.js";
       import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
 
-      const lectureLoading = document.getElementById("lecture-loading");
       const lectureGrid = document.getElementById("lecture-grid");
       const lectureError = document.getElementById("lecture-error");
 
@@ -86,16 +85,26 @@
           if (!courseId) throw new Error("Course ID not found");
 
           const lectures = await getLectures(courseId);
+          const role = getUserRole();
 
           if (!lectures || lectures.length === 0) {
-            lectureLoading.textContent = "No lectures found for this course.";
             return;
           }
 
-          const processedLectures = lectures.map((lec) => ({
-            lecture_date: formatLectureDate(lec.lecture_date),
-            status: determineLectureStatus(lec.lecture_date),
-          }));
+          let processedLectures;
+          if (role === 'professor' || role === 'ta') {
+            processedLectures = lectures.map((lec) => ({
+              lecture_date: formatLectureDate(lec.lecture_date),
+              status: determineLectureStatus(lec.lecture_date),
+              attendance: `<prof-attendance lecture-id=${lec.id}></prof-attendance>`
+            }));
+          } else{
+            processedLectures = lectures.map((lec) => ({
+              lecture_date: formatLectureDate(lec.lecture_date),
+              status: determineLectureStatus(lec.lecture_date),
+              attendance: `<student-attendance lecture-id=${lec.id}></student-attendance>`
+            }));
+          }
 
           // Sort: today → upcoming → finished
           const order = { today: 1, upcoming: 2, finished: 3 };
@@ -104,9 +113,7 @@
           );
 
           lectureGrid.data = processedLectures;
-          lectureLoading.style.display = "none";
         } catch (err) {
-          lectureLoading.style.display = "none";
           lectureError.textContent = `Error loading lecture data: ${err.message}`;
           lectureError.style.display = "block";
         }

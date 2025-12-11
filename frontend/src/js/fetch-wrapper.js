@@ -148,7 +148,7 @@ export async function deleteWrapper(
 /**
  * @description Makes a POST request and processes the response to return a consistent object.
  * @param {string} url - URL to send the HTTP request to.
- * @param {object} body - Body data to be sent with the HTTP request. Don't use JSON.stringify, we do that for you.
+ * @param {object} [body] - Body data to be sent with the HTTP request. Don't use JSON.stringify, we do that for you.
  * @param {number} [timeoutDuration] - Number of milliseconds before giving up on the request.
  * @param {number} [numRetries] - Number of times to retry the request when the request does not succeed.
  * @returns { ok: boolean, status: number, data?: json, error?: string} - An object containing:
@@ -159,7 +159,7 @@ export async function deleteWrapper(
  */
 export async function postWrapper(
   url,
-  body,
+  body = {},
   timeoutDuration = 1000,
   numRetries = 0
 ) {

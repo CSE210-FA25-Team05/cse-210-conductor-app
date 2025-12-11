@@ -39,13 +39,21 @@ class JoinCourseForm extends ConductorForm {
   }
 
   async onSubmit(values) {
-    await joinCourseWithCode({
+    const result = await joinCourseWithCode({
       user_id: getUserId(),
       join_code: values.join_code,
     });
 
-    cacheCourses(); // Update cache
-    window.location.href = `/course/${values.course_id}/dashboard`;
+    // Update cache
+    await cacheCourses();
+
+    // Redirect to the course dashboard using the course_id from the response
+    if (result && result.course_id) {
+      window.location.href = `/course/${result.course_id}/dashboard`;
+    } else {
+      // Fallback: refresh the page to show the new course in the list
+      window.location.href = '/courses';
+    }
   }
 }
 
