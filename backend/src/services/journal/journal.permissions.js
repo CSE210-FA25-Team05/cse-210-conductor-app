@@ -59,10 +59,10 @@ class JournalPermissions {
       return true;
     }
 
-    // If journal is private, only owner can access
-    if (journal.is_private === true) {
-      return false;
-    }
+    // If journal is private, only owner can access - TODO - currently disabled
+    // if (journal.is_private === true) {
+    //   return false;
+    // }
 
     // Journal is not private, check if user is in same team or is a TA managing that team
     const journalOwnerTeam =
