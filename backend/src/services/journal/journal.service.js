@@ -68,7 +68,7 @@ class JournalService {
       if (filters.start_date != null) {
         where.created_at = { gte: filters.start_date };
       }
-      
+
       if (filters.end_date != null) {
         where.created_at = { lte: filters.end_date };
       }
