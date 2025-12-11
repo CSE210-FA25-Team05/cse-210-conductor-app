@@ -34,7 +34,7 @@ class EditUserForm extends ConductorForm {
       }
     }
 
-    updateUserEnrollmentInCourse(getCachedCourseId(), user_id, {
+    await updateUserEnrollmentInCourse(getCachedCourseId(), user_id, {
       role: values.role.trim().toLowerCase(),
     });
     this.form.reset();
