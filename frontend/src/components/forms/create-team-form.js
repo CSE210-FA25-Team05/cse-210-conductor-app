@@ -55,4 +55,3 @@ class CreateTeamForm extends ConductorForm {
 }
 
 customElements.define('create-team-form', CreateTeamForm);
-
