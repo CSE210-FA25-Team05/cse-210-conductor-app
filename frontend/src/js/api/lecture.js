@@ -10,15 +10,14 @@ import { patchWrapper } from '/src/js/fetch-wrapper.js';
 import { deleteWrapper } from '/src/js/fetch-wrapper.js';
 
 /**
- * @typedef Lecture
+ * @typedef LectureInfo
  * @type { object }
- * @property { number } id - Lecture ID.
- * @property { number } course_id - course ID.
- * @property { string } [title] - Title of the lecture.
- * @property { string } [description] - Description or summary of the lecture.
- * @property { string } [date] - ISO 8601 date string for when the lecture occurs.
- * @property { string } [slidesUrl] - Optional URL to lecture slides/resources.
- * @property { string } [recordingUrl] - Optional URL to lecture recording.
+ * @property { number } id - Lecture ID
+ * @property { number } course_id - Associated course ID.
+ * @property { string } lecture_date - Date of the lecture in YYYY-MM-DD format.
+ * @property { string } code - Lecture attendance code.
+ * @property { Timestamp } code_generated_at - Timestamp of when the code was generated.
+ * @property { Timestamp } code_expires_at - Timestamp of when the code expires.
  */
 
 /**
@@ -34,7 +33,7 @@ import { deleteWrapper } from '/src/js/fetch-wrapper.js';
 /**
  * @description Get all lectures for a course. Wraps `GET /api/courses/{course_id}/lectures`.
  * @param {number|string} courseId - Unique identifier of the course.
- * @returns { Lecture[] } List of lectures for the course.
+ * @returns { LectureInfo[] } List of lectures for the course.
  */
 export async function getLectures(courseId) {
   const response = await getWrapper(`/api/courses/${courseId}/lectures`);
@@ -48,7 +47,7 @@ export async function getLectures(courseId) {
  * @description Get a single lecture. Wraps `GET /api/courses/{course_id}/lectures/{lecture_id}`.
  * @param {number|string} courseId - Unique identifier of the course.
  * @param {number|string} lectureId - Unique identifier of the lecture.
- * @returns { Lecture } The requested lecture.
+ * @returns { LectureInfo } The requested lecture.
  */
 export async function getLecture(courseId, lectureId) {
   const response = await getWrapper(
@@ -64,7 +63,7 @@ export async function getLecture(courseId, lectureId) {
  * @description Create a new lecture. Wraps `POST /api/courses/{course_id}/lectures`.
  * @param {number|string} courseId - Unique identifier of the course.
  * @param {LecturePayload} lectureBody - Fields for the new lecture.
- * @returns { Lecture } Created lecture with its information.
+ * @returns { LectureInfo } Created lecture with its information.
  */
 export async function createLecture(courseId, lectureBody) {
   const response = await postWrapper(
@@ -104,6 +103,22 @@ export async function updateLecture(courseId, lectureId, lectureBody) {
 export async function deleteLecture(courseId, lectureId) {
   const response = await deleteWrapper(
     `/api/courses/${courseId}/lectures/${lectureId}`
+  );
+  if (!response.ok) {
+    throw new Error(response.error);
+  }
+  return response.data;
+}
+
+/**
+ * @description Activate attendance for a lecture
+ * @param {number|string} courseId - Unique identifier of the course.
+ * @param {number|string} lectureId - Unique identifier of the lecture.
+ * @returns { LectureInfo } Activated attendance information.
+ */
+export async function activateAttendance(courseId, lectureId) {
+  const response = await postWrapper(
+    `/api/courses/${courseId}/lectures/${lectureId}/activate-attendance`
   );
   if (!response.ok) {
     throw new Error(response.error);

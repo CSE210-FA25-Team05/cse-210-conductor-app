@@ -83,6 +83,28 @@ async function main() {
     },
   });
 
+  const sam = await prisma.users.create({
+    data: {
+      first_name: 'Sam',
+      last_name: 'Student',
+      email: 'sam@ucsd.edu',
+      pronouns: 'They/Them',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
+    },
+  });
+
+  const alex = await prisma.users.create({
+    data: {
+      first_name: 'Alex',
+      last_name: 'Nguyen',
+      email: 'alexn@ucsd.edu',
+      pronouns: 'He/Him/His',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
+    },
+  });
+
   // Seed courses
   console.log('Creating courses...');
   const cse210 = await prisma.courses.create({
@@ -223,6 +245,42 @@ async function main() {
   await prisma.enrollments.create({
     data: {
       user_id: jane.id,
+      course_id: cse110.id,
+      team_id: team5.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: sam.id,
+      course_id: cse210.id,
+      team_id: team1.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: alex.id,
+      course_id: cse210.id,
+      team_id: team3.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: sam.id,
+      course_id: cse110.id,
+      team_id: team4.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: alex.id,
       course_id: cse110.id,
       team_id: team5.id,
       role: CourseRoles.STUDENT,
@@ -651,6 +709,66 @@ async function main() {
     },
   });
 
+  const interaction6 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'negative',
+      description:
+        'Sam submitted the assignment late without requesting an extension.',
+      created_at: new Date('2025-10-05T12:15:00Z'),
+    },
+  });
+
+  const interaction7 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'Alex led the team stand-up and ensured everyone stayed on track.',
+      created_at: new Date('2025-10-06T16:45:00Z'),
+    },
+  });
+
+  const interaction8 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'neutral',
+      description:
+        'In-class peer review — several students shared partial solutions.',
+      created_at: new Date('2025-10-07T09:20:00Z'),
+    },
+  });
+
+  const interaction9 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: professor.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'positive',
+      description:
+        'Sam and Jane paired up in lab and finished the exercise early.',
+      created_at: new Date('2025-10-03T13:10:00Z'),
+    },
+  });
+
+  const interaction10 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: ta.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'neutral',
+      description:
+        'General reminder about the upcoming quiz — several students stayed back to ask clarifying questions.',
+      created_at: new Date('2025-10-04T10:00:00Z'),
+    },
+  });
+
   console.log('Creating interaction participants...');
   // Interaction 1: John participated
   await prisma.interaction_participants.create({
@@ -697,6 +815,58 @@ async function main() {
       interaction_id: interaction5.id,
       user_id: jane.id,
     },
+  });
+
+  // Interaction 6 – Sam
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction6.id,
+      user_id: sam.id,
+    },
+  });
+
+  // Interaction 7 – Alex
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction7.id,
+      user_id: alex.id,
+    },
+  });
+
+  // Interaction 8 – group: John, Jane, Sam, Alex
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: john.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: jane.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: alex.id },
+  });
+
+  // Interaction 9 – Sam + Jane
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction9.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction9.id, user_id: jane.id },
+  });
+
+  // Interaction 10 – all four
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: john.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: jane.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: alex.id },
   });
 
   console.log('Seeding completed!');
