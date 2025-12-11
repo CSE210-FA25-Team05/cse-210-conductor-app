@@ -2,6 +2,7 @@ import '/src/components/logout-button/logout-button.js';
 import '/src/components/dropdown.js';
 import '/src/components/course-dropdown.js';
 import '/src/components/modal/quick-add-modal.js';
+import '/src/components/profile-button/profile-button.js';
 
 class ConductorNav extends HTMLElement {
   constructor() {
@@ -33,6 +34,7 @@ class ConductorNav extends HTMLElement {
     const footer = document.createElement('footer');
     const logoutButtonInstance = document.createElement('logout-button');
     const courseDropdown = document.createElement('course-dropdown');
+    const profileButton = document.createElement('profile-button');
 
     for (const displayName of Object.keys(this.paths)) {
       const li = document.createElement('li');
@@ -66,15 +68,6 @@ class ConductorNav extends HTMLElement {
     const modal = document.createElement('quick-add-modal');
     modalButton.addEventListener('click', this.boundedHandleOpenModal);
     this.modal = modal;
-
-    // Profile button
-    const profileButton = document.createElement('button');
-    profileButton.innerText = 'Profile';
-    profileButton.style.width = '100%';
-    profileButton.onclick = function () {
-      window.location.replace('/profile');
-    };
-    profileButton.style.marginBottom = '5%';
 
     header.appendChild(menuToggle);
     header.appendChild(courseDropdown);
