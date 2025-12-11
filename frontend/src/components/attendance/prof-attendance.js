@@ -47,7 +47,6 @@ export class ProfAttendance extends HTMLElement {
     this.startButton.innerText = 'Activate';
     this.startButton.style.marginBottom = '0';
     this.status = document.createElement('p');
-    console.log(this.lecture, status);
 
     if (status === 0) {
       // Ongoing

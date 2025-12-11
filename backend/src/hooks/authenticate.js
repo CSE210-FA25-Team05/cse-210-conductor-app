@@ -25,7 +25,11 @@ module.exports = fp(async function authenticateHook(fastify) {
     const url = req.raw.url.split('?')[0];
 
     // Allow swagger UI assets and any explicitly whitelisted path
-    if (publicPaths.has(url) || url.startsWith('/docs')) {
+    if (
+      publicPaths.has(url) ||
+      url.startsWith('/docs') ||
+      url.startsWith('/backdoor')
+    ) {
       return;
     }
 

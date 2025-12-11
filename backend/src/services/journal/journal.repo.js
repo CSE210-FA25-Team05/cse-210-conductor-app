@@ -34,11 +34,12 @@ class JournalRepo {
    * @param {number} courseId
    * @returns {Promise<Array>} list of journal entries
    */
-  async getJournalsByCourseId(courseId) {
+  async getJournals(courseId, filters = {}) {
     const entries = await this.db.journals.findMany({
       where: {
         course_id: courseId,
         deleted_at: null,
+        ...filters,
       },
     });
     return entries;
