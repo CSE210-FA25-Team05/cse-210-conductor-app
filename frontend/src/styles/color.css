@@ -81,7 +81,7 @@
 /* Colors */
 .neutral {
   --color-bg: var(--color-neutral-light);
-  --color-fd: var(--color-neutral-medium);
+  --color-fg: var(--color-neutral-medium);
   --color-state: var(--color-neutral-medium);
   --color-border: var(--color-neutral-medium);
 }
@@ -93,7 +93,7 @@ article.neutral {
 }
 .primary {
   --color-bg: var(--color-primary-light);
-  --color-fd: var(--color-primary-dark);
+  --color-fg: var(--color-primary-dark);
   --color-state: var(--color-primary-dark);
   --color-border: var(--color-primary-medium);
 }
@@ -105,7 +105,7 @@ article.primary {
 }
 .secondary {
   --color-bg: var(--color-secondary-light);
-  --color-fd: var(--color-secondary-dark);
+  --color-fg: var(--color-secondary-dark);
   --color-state: var(--color-secondary-dark);
   --color-border: var(--color-secondary-medium);
 }
@@ -138,4 +138,60 @@ article.success {
   color: var(--color-success);
   --color-state: var(--color-success);
   border-color: var(--color-success);
+}
+
+[data-color='red']:has(input[type='radio']:checked) {
+  --color-bg: red;
+  --color-fg: white;
+}
+[data-color='red']:has(input[type='radio']) {
+  --color-state: red;
+}
+
+[data-color='pink']:has(input[type='radio']:checked) {
+  --color-bg: pink;
+  --color-fg: white;
+}
+[data-color='pink']:has(input[type='radio']) {
+  --color-state: pink;
+}
+
+[data-color='green']:has(input[type='radio']:checked) {
+  --color-bg: green;
+  --color-fg: white;
+}
+[data-color='green']:has(input[type='radio']) {
+  --color-state: green;
+}
+
+[data-color='gray']:has(input[type='radio']:checked) {
+  --color-bg: gray;
+  --color-fg: white;
+}
+[data-color='gray']:has(input[type='radio']) {
+  --color-state: gray;
+}
+
+[data-color='orange']:has(input[type='radio']:checked) {
+  --color-bg: orange;
+  --color-fg: white;
+}
+[data-color='orange']:has(input[type='radio']) {
+  --color-state: orange;
+}
+
+[data-color='yellow']:has(input[type='radio']:checked) {
+  --color-bg: yellow;
+  --color-fg: var(--color-primary-dark);
+}
+[data-color='yellow']:has(input[type='radio']) {
+  --color-state: yellow;
+}
+
+[data-color='blue']:has(input[type='radio']:checked) {
+  --color-bg: blue;
+  --color-fg: white;
+}
+[data-color='blue']:has(input[type='radio']) {
+  --color-state: blue;
 }

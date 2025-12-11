@@ -6,15 +6,32 @@
         <title>Conductor</title>
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script type="module" async src="/src/js/common.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script type="module" src="/src/js/charts/pulse-charts.js"></script>
+
+
     </head>
     <body>
         <main>
             <h1>ChartsJS Playground</h1>
-            <theme-toggle></theme-toggle>
             <a href="https://www.chartjs.org/docs/latest/" target="_blank">ChartsJS Documentation</a>
+            <h1>Pulse Emotion Tracker</h1>
+            
+            <div class="chart-container">
+        
+            <!-- Error message display -->
+            <div id="error-message" style="color: red;"></div>
+            
+            <!-- Pulse Chart -->
+            <canvas id="pulseChart"></canvas>
+        </div>
         </main>
+
+        
+
         <aside>
             <conductor-nav></conductor-nav>
         </aside>
     </body>
 </html>
+

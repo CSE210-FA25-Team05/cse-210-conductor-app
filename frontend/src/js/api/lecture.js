@@ -118,7 +118,7 @@ export async function deleteLecture(courseId, lectureId) {
  */
 export async function activateAttendance(courseId, lectureId) {
   const response = await postWrapper(
-    `/api/api/courses/${courseId}/lectures/${lectureId}/activate-attendance`
+    `/api/courses/${courseId}/lectures/${lectureId}/activate-attendance`
   );
   if (!response.ok) {
     throw new Error(response.error);
