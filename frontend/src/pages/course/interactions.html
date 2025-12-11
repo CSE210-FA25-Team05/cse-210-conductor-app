@@ -7,15 +7,12 @@
         <link rel="stylesheet" href="/src/styles/styles.css">
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script type="module" async src="/src/js/common.js"></script>
-        <script type="module" src="/src/js/charts/interactions-chart.js"></script>
+        <script type="module" src="/src/components/charts/interaction-chart.js"></script>
     </head>
     <body>
         <main>
             <h1>Interactions</h1>
-            <div id="error-message" style="color: red; margin-bottom: 1rem;"></div>
-            <div style="position: relative; height: 400px; width: 100%;">
-                <canvas id="interactionChart"></canvas>
-            </div>
+            <interaction-chart></interaction-chart>
         </main>
         <aside>
             <conductor-nav></conductor-nav>

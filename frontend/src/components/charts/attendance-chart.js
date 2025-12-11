@@ -88,7 +88,10 @@ class AttendanceChart extends HTMLElement {
   async attendanceData(lectureId) {
     try {
       const courseId = getCourseId();
-      const attendance = await getAttendanceStatsForLecture(courseId, lectureId);
+      const attendance = await getAttendanceStatsForLecture(
+        courseId,
+        lectureId
+      );
       return attendance;
     } catch (error) {
       console.error('Error fetching Attendance data', error);
@@ -118,10 +121,7 @@ class AttendanceChart extends HTMLElement {
             'rgba(75, 192, 75, 0.8)',
             'rgba(255, 99, 132, 0.8)',
           ],
-          borderColor: [
-            'rgba(75, 192, 75, 1)',
-            'rgba(255, 99, 132, 1)',
-          ],
+          borderColor: ['rgba(75, 192, 75, 1)', 'rgba(255, 99, 132, 1)'],
           borderWidth: 2,
         },
       ],
