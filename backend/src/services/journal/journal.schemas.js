@@ -96,9 +96,8 @@ export const CreateJournalSchema = {
     properties: {
       title: { type: 'string' },
       content: { type: 'string' },
-      user_id: { type: 'number' },
     },
-    required: ['title', 'content', 'user_id'],
+    required: ['title', 'content'],
   },
   response: {
     201: JournalEntryType,
