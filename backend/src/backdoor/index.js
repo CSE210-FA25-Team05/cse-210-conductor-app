@@ -21,4 +21,3 @@ module.exports = fp(async function backdoorPlugin(fastify, opts) {
   // Register backdoor routes (routes already have /backdoor prefix)
   fastify.register(backdoorRoutes);
 });
-

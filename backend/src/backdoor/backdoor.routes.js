@@ -9,7 +9,10 @@
  * These routes are for development and testing purposes only.
  */
 
-const { GlobalRoles, isValidEnumValue } = require('../services/shared/shared.enums');
+const {
+  GlobalRoles,
+  isValidEnumValue,
+} = require('../services/shared/shared.enums');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = async function backdoorRoutes(fastify, options) {
@@ -23,7 +26,8 @@ module.exports = async function backdoorRoutes(fastify, options) {
     '/backdoor/users/update-role',
     {
       schema: {
-        description: '⚠️ DEVELOPMENT BACKDOOR: Update user global role by email (NO AUTH REQUIRED)',
+        description:
+          '⚠️ DEVELOPMENT BACKDOOR: Update user global role by email (NO AUTH REQUIRED)',
         tags: ['Backdoor'],
         body: {
           type: 'object',
@@ -144,7 +148,8 @@ module.exports = async function backdoorRoutes(fastify, options) {
     '/backdoor/users',
     {
       schema: {
-        description: '⚠️ DEVELOPMENT BACKDOOR: Create a new user (NO AUTH REQUIRED)',
+        description:
+          '⚠️ DEVELOPMENT BACKDOOR: Create a new user (NO AUTH REQUIRED)',
         tags: ['Backdoor'],
         body: {
           type: 'object',
@@ -281,7 +286,8 @@ module.exports = async function backdoorRoutes(fastify, options) {
     '/backdoor/users/:email',
     {
       schema: {
-        description: '⚠️ DEVELOPMENT BACKDOOR: Get user info by email (NO AUTH REQUIRED)',
+        description:
+          '⚠️ DEVELOPMENT BACKDOOR: Get user info by email (NO AUTH REQUIRED)',
         tags: ['Backdoor'],
         params: {
           type: 'object',
@@ -355,4 +361,3 @@ module.exports = async function backdoorRoutes(fastify, options) {
     }
   );
 };
-
