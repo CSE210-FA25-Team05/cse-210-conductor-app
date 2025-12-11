@@ -46,7 +46,7 @@ class JoinCourseForm extends ConductorForm {
 
     // Update cache
     await cacheCourses();
-    
+
     // Redirect to the course dashboard using the course_id from the response
     if (result && result.course_id) {
       window.location.href = `/course/${result.course_id}/dashboard`;
