@@ -28,11 +28,11 @@ jobs:
             git fetch origin
             git checkout $BRANCH
             git reset --hard origin/$BRANCH
-            npm install --production
-            if pm2 describe conductor > /dev/null 2>&1; then
-              pm2 restart conductor --update-env
+            sudo npm install --production
+            if sudo pm2 describe conductor > /dev/null 2>&1; then
+              sudo pm2 restart conductor --update-env
             else
-              pm2 start backend/src/server.js --name conductor
+              sudo pm2 start backend/src/server.js --name conductor
             fi
-            pm2 save
+            sudo pm2 save
             echo "Deployment completed successfully"

@@ -121,6 +121,11 @@ export class ConductorForm extends HTMLElement {
       radio.name = field.name;
       radio.value = opt.value;
 
+      // Store option color for later, only apply when selected
+      if (opt.color) {
+        label.dataset.color = opt.color;
+      }
+
       label.appendChild(radio);
       label.appendChild(document.createTextNode(opt.label || opt.value));
       wrapper.appendChild(label);

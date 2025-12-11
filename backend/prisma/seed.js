@@ -75,11 +75,33 @@ async function main() {
     },
   });
 
-  await prisma.users.create({
+  const incompleteUser = await prisma.users.create({
     data: {
       email: 'incomplete@ucsd.edu',
       global_role: GlobalRoles.STUDENT,
       is_profile_complete: false,
+    },
+  });
+
+  const sam = await prisma.users.create({
+    data: {
+      first_name: 'Sam',
+      last_name: 'Student',
+      email: 'sam@ucsd.edu',
+      pronouns: 'They/Them',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
+    },
+  });
+
+  const alex = await prisma.users.create({
+    data: {
+      first_name: 'Alex',
+      last_name: 'Nguyen',
+      email: 'alexn@ucsd.edu',
+      pronouns: 'He/Him/His',
+      global_role: GlobalRoles.STUDENT,
+      is_profile_complete: true,
     },
   });
 
@@ -205,6 +227,14 @@ async function main() {
 
   await prisma.enrollments.create({
     data: {
+      user_id: incompleteUser.id,
+      course_id: cse210.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
       user_id: john.id,
       course_id: cse110.id,
       team_id: team4.id,
@@ -215,6 +245,42 @@ async function main() {
   await prisma.enrollments.create({
     data: {
       user_id: jane.id,
+      course_id: cse110.id,
+      team_id: team5.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: sam.id,
+      course_id: cse210.id,
+      team_id: team1.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: alex.id,
+      course_id: cse210.id,
+      team_id: team3.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: sam.id,
+      course_id: cse110.id,
+      team_id: team4.id,
+      role: CourseRoles.STUDENT,
+    },
+  });
+
+  await prisma.enrollments.create({
+    data: {
+      user_id: alex.id,
       course_id: cse110.id,
       team_id: team5.id,
       role: CourseRoles.STUDENT,
@@ -479,52 +545,79 @@ async function main() {
   });
 
   console.log('Creating pulses...');
-  await prisma.pulses.create({
-    data: {
+  // Pulse options for CSE210
+  const pulseOptions = ['Happy', 'Tired', 'Concerned', 'Worried', 'Sad'];
+  const descriptions = [
+    'Feeling good about our project progress!',
+    'A bit overwhelmed with the workload.',
+    'Need to catch up on readings.',
+    'Team meeting went well today.',
+    'Struggling with the latest assignment.',
+    'Excited about the new project phase.',
+    'Feeling confident about the exam.',
+    'Need help with debugging.',
+    'Great collaboration with teammates.',
+    'Concerned about the upcoming deadlines.',
+  ];
+
+  // Generate hundreds of pulse records spread over multiple days
+  const numPulses = 500; // Generate 500 pulses
+  const students = [professor, ta, john, jane, incompleteUser]; // Students who can submit pulses
+  const teamsMap = {
+    [john.id]: team1,
+    [jane.id]: team2,
+  };
+  const courseStartDate = new Date('2025-09-23');
+  const courseEndDate = new Date('2025-12-12');
+  const daysDiff =
+    Math.floor((courseEndDate - courseStartDate) / (1000 * 60 * 60 * 24)) + 1;
+
+  const pulseData = [];
+
+  for (let i = 0; i < numPulses; i++) {
+    // Random date within course period
+    const randomDay = Math.floor(Math.random() * daysDiff);
+    const randomDate = new Date(courseStartDate);
+    randomDate.setDate(randomDate.getDate() + randomDay);
+
+    // Random time during the day (between 8 AM and 6 PM)
+    const randomHour = 8 + Math.floor(Math.random() * 10);
+    const randomMinute = Math.floor(Math.random() * 60);
+    randomDate.setHours(randomHour, randomMinute, 0, 0);
+
+    // Random student
+    const randomStudent = students[Math.floor(Math.random() * students.length)];
+
+    // Random team (some pulses might not have a team)
+    const team = teamsMap[randomStudent.id];
+
+    // Random pulse value
+    const randomValue =
+      pulseOptions[Math.floor(Math.random() * pulseOptions.length)];
+
+    // Only 30% of pulses have descriptions
+    const hasDescription = Math.random() < 0.3;
+    const randomDescription = hasDescription
+      ? descriptions[Math.floor(Math.random() * descriptions.length)]
+      : null;
+
+    pulseData.push({
       course_id: cse210.id,
-      user_id: john.id,
-      team_id: team1.id,
+      user_id: randomStudent.id,
+      team_id: team ? team.id : null,
       pulse_config_id: cse210_pulse_config.id,
-      value: 'Happy',
-      description: 'Feeling good about our project progress!',
-      created_at: new Date('2025-10-01T09:00:00Z'),
-    },
+      value: randomValue,
+      description: randomDescription,
+      created_at: randomDate,
+    });
+  }
+
+  // Batch insert pulses (Prisma supports createMany)
+  await prisma.pulses.createMany({
+    data: pulseData,
   });
 
-  await prisma.pulses.create({
-    data: {
-      course_id: cse210.id,
-      user_id: jane.id,
-      team_id: team2.id,
-      pulse_config_id: cse210_pulse_config.id,
-      value: 'Tired',
-      description: 'A bit overwhelmed with the workload.',
-      created_at: new Date('2025-10-01T09:05:00Z'),
-    },
-  });
-
-  await prisma.pulses.create({
-    data: {
-      course_id: cse210.id,
-      user_id: john.id,
-      team_id: team1.id,
-      pulse_config_id: cse210_pulse_config.id,
-      value: 'Concerned',
-      created_at: new Date('2025-10-08T09:00:00Z'),
-    },
-  });
-
-  await prisma.pulses.create({
-    data: {
-      course_id: cse210.id,
-      user_id: ta.id,
-      pulse_config_id: cse210_pulse_config.id,
-      value: 'Worried',
-      description:
-        'Concerned about the upcoming deadlines and progress of team 5.',
-      created_at: new Date('2025-10-08T09:10:00Z'),
-    },
-  });
+  console.log(`Created ${numPulses} pulse records for testing.`);
 
   console.log('Creating interaction configs...');
   const cse210_interaction_config = await prisma.interaction_configs.create({
@@ -616,6 +709,66 @@ async function main() {
     },
   });
 
+  const interaction6 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'negative',
+      description:
+        'Sam submitted the assignment late without requesting an extension.',
+      created_at: new Date('2025-10-05T12:15:00Z'),
+    },
+  });
+
+  const interaction7 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'Alex led the team stand-up and ensured everyone stayed on track.',
+      created_at: new Date('2025-10-06T16:45:00Z'),
+    },
+  });
+
+  const interaction8 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'neutral',
+      description:
+        'In-class peer review — several students shared partial solutions.',
+      created_at: new Date('2025-10-07T09:20:00Z'),
+    },
+  });
+
+  const interaction9 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: professor.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'positive',
+      description:
+        'Sam and Jane paired up in lab and finished the exercise early.',
+      created_at: new Date('2025-10-03T13:10:00Z'),
+    },
+  });
+
+  const interaction10 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: ta.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'neutral',
+      description:
+        'General reminder about the upcoming quiz — several students stayed back to ask clarifying questions.',
+      created_at: new Date('2025-10-04T10:00:00Z'),
+    },
+  });
+
   console.log('Creating interaction participants...');
   // Interaction 1: John participated
   await prisma.interaction_participants.create({
@@ -662,6 +815,58 @@ async function main() {
       interaction_id: interaction5.id,
       user_id: jane.id,
     },
+  });
+
+  // Interaction 6 – Sam
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction6.id,
+      user_id: sam.id,
+    },
+  });
+
+  // Interaction 7 – Alex
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction7.id,
+      user_id: alex.id,
+    },
+  });
+
+  // Interaction 8 – group: John, Jane, Sam, Alex
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: john.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: jane.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: alex.id },
+  });
+
+  // Interaction 9 – Sam + Jane
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction9.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction9.id, user_id: jane.id },
+  });
+
+  // Interaction 10 – all four
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: john.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: jane.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: alex.id },
   });
 
   console.log('Seeding completed!');

@@ -106,6 +106,22 @@ class CourseRepo {
     return enrollment;
   }
 
+  async getEnrollmentCount(courseId, filters = {}, db = this.db) {
+    const where = {
+      course_id: courseId,
+      deleted_at: null,
+    };
+
+    const { userIds = [] } = filters;
+    if (userIds.length > 0) {
+      where.user_id = { in: userIds };
+    }
+
+    return db.enrollments.count({
+      where,
+    });
+  }
+
   /**
    * Add a new course.
    * @param {Object} courseData - Data for the new course
@@ -216,13 +232,15 @@ class CourseRepo {
    * Add an enrollment of a user into a course.
    * @param {number} courseId - ID of the course
    * @param {number} userId - ID of the user
+   * @param {string} role - Role for the enrollment (default: 'student')
    * @returns {Promise<Object>} Created enrollment object
    */
-  async addEnrollment(courseId, userId) {
+  async addEnrollment(courseId, userId, role = 'student') {
     const enrollment = await this.db.enrollments.create({
       data: {
         course_id: courseId,
         user_id: userId,
+        role: role,
       },
       include: {
         users: {

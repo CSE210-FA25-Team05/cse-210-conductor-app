@@ -11,25 +11,28 @@
     <main>
       <header>
         <h1>Pulse Records</h1>
-        <theme-toggle></theme-toggle>
       </header>
       <article id="pulse-content">
-        <p id="pulse-loading">Loading pulse data...</p>
+        <header>
+            <div class="grid-menu" role="menu">
+                <input
+                    id="grid-search"
+                    type="search"
+                    placeholder="Search..."
+                    aria-label="Search your pulses"
+                />
+            </div>
+        </header>
         <zing-grid
           id="pulse-grid"
-          style="display: block;"
-          caption="Course Pulse Records"
           theme="default"
           pager
           page-size="25"
           page-size-options="10,25,50,100"
           search
+          sort
         >
         </zing-grid>
-        <p
-          id="pulse-error"
-          style="display: none; color: var(--color-error);"
-        ></p>
       </article>
     </main>
     <aside>
@@ -39,9 +42,9 @@
     <script type="module">
       import { getCourseId } from '/src/js/utils/cache-utils.js';
       import { getPulseRecords } from '/src/js/api/pulse.js';
+      import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
 
       const pulseContent = document.getElementById('pulse-content');
-      const pulseLoading = document.getElementById('pulse-loading');
       const pulseGrid = document.getElementById('pulse-grid');
       const pulseError = document.getElementById('pulse-error');
 
@@ -54,15 +57,11 @@
           // Fetch all pulse records for this course
           const pulses = await getPulseRecords(courseId);
           if (!pulses || pulses.length === 0) {
-            pulseLoading.textContent = 'No pulse records found for this course.';
             return;
           }
 
           // Map and format pulse data for grid
-          console.log(pulses);
           const gridData = pulses.map((p) => ({
-            first_name: p.user_first_name ?? 'N/A',
-            last_name: p.user_last_name ?? 'N/A',
             value: p.value ?? 'N/A',
             description: p.description ?? 'N/A',
             created_at: p.created_at
@@ -71,16 +70,18 @@
           }));
 
           pulseGrid.data = gridData;
-          pulseLoading.style.display = 'none';
         } catch (error) {
           console.error('Error loading pulse data:', error);
-          pulseLoading.style.display = 'none';
           pulseError.textContent = `Error loading pulse data: ${error.message}`;
           pulseError.style.display = 'block';
         }
       }
 
       loadPulseData();
+
+      window.addEventListener('load', () => {
+          linkSearchToGrid('grid-search', 'pulse-grid');
+      });
     </script>
   </body>
 </html>

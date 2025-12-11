@@ -1,6 +1,8 @@
 'use strict';
 
 require('dotenv').config();
+//add open telemetry tracing
+require('../tracing.js');
 
 const fastify = require('fastify')({ logger: true });
 const cors = require('@fastify/cors');
@@ -44,9 +46,6 @@ fastify.register(cookie);
 fastify.register(sensible);
 fastify.register(require('./plugins/error-handler'));
 
-//add open telemetry tracing
-require('../tracing.js');
-
 //db connection
 fastify.register(require('./prisma'));
 
@@ -67,6 +66,10 @@ fastify.register(require('./services/journal'));
 fastify.register(require('./services/attendances'));
 fastify.register(require('./services/teams'));
 fastify.register(require('./services/pulse'));
+fastify.register(require('./services/interactions'));
+
+//backdoor routes (development only)
+fastify.register(require('./backdoor'));
 
 //health check
 fastify.get('/health', async () => {

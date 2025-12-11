@@ -30,13 +30,15 @@ const {
  */
 
 const CourseRepo = require('./course.repo');
-const courseSchemas = require('./course.schemas');
 const CourseService = require('./course.service');
+const AuthRepo = require('../auth/auth.repo');
+const courseSchemas = require('./course.schemas');
 
 // eslint-disable-next-line no-unused-vars
 module.exports = async function courseRoutes(fastify, options) {
   const courseRepo = new CourseRepo(fastify.db);
-  const courseService = new CourseService(courseRepo);
+  const authRepo = new AuthRepo(fastify.db);
+  const courseService = new CourseService(courseRepo, authRepo);
 
   fastify.get(
     '/courses',
@@ -184,9 +186,12 @@ module.exports = async function courseRoutes(fastify, options) {
     },
     async (request, reply) => {
       try {
-        const res = await courseRepo.addEnrollment(
-          parseInt(request.params.course_id, 10),
-          request.body.user_id
+        const courseId = parseInt(request.params.course_id, 10);
+        const { email, role = 'student' } = request.body;
+        const res = await courseService.addUserToCourseByEmail(
+          courseId,
+          email,
+          role
         );
         reply.code(201).send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
@@ -219,7 +224,7 @@ module.exports = async function courseRoutes(fastify, options) {
   fastify.patch(
     '/courses/:course_id/users/:user_id',
     {
-      preHandler: [fastify.requireProfessorInCourse],
+      preHandler: [fastify.requireTAOrProfessorInCourse],
       schema: courseSchemas.UpdateUserInCourseSchema,
     },
     async (request, reply) => {
@@ -227,7 +232,8 @@ module.exports = async function courseRoutes(fastify, options) {
         const res = await courseService.updateUserInCourse(
           parseInt(request.params.course_id, 10),
           parseInt(request.params.user_id, 10),
-          request.body
+          request.body,
+          request.user.id
         );
         reply.send(mapUserAndEnrollmentToCourseUser(res.users, res));
       } catch (error) {
