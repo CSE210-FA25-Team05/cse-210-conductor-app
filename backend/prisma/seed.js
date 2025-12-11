@@ -110,31 +110,100 @@ async function main() {
   const sam = allStudents[4];
   const alex = allStudents[5];
 
-  // Seed courses
-  console.log('Creating courses...');
-  const cse210 = await prisma.courses.create({
-    data: {
-      course_code: 'CSE210',
-      course_name: 'Software Engineering',
-      term: 'FA25',
-      section: 'A00',
-      start_date: new Date('2025-09-23'),
-      end_date: new Date('2025-12-12'),
-      join_code: 'ABCDEF',
-    },
-  });
+  // Seed courses (10 courses total, 2 per professor)
+  console.log('Creating 10 courses...');
+  const courseCodes = ['CSE110', 'CSE111', 'CSE210', 'CSE211', 'CSE212', 'CSE310', 'CSE311', 'CSE312', 'CSE411', 'CSE412'];
+  const courseNames = [
+    'Intro to Programming',
+    'Intro to Programming II',
+    'Software Engineering',
+    'Software Engineering II',
+    'Advanced Software Engineering',
+    'Data Structures & Algorithms',
+    'Database Systems',
+    'Operating Systems',
+    'Machine Learning',
+    'Artificial Intelligence'
+  ];
+  
+  const courses = [];
+  
+  for (let i = 0; i < 10; i++) {
+    const course = await prisma.courses.create({
+      data: {
+        course_code: courseCodes[i],
+        course_name: courseNames[i],
+        term: 'FA25',
+        section: 'A00',
+        start_date: new Date('2025-09-23'),
+        end_date: new Date('2025-12-12'),
+        join_code: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        // Nested creation: assign a professor to teach this course
+        enrollments: {
+          create: {
+            user_id: professors[Math.floor(i / 2) % professors.length].id, // Each professor teaches 2 courses
+            role: CourseRoles.PROFESSOR,
+          },
+        },
+      },
+    });
+    courses.push(course);
+  }
 
-  const cse110 = await prisma.courses.create({
-    data: {
-      course_code: 'CSE110',
-      course_name: 'Intro to Programming',
-      term: 'FA25',
-      section: 'A00',
-      start_date: new Date('2025-09-23'),
-      end_date: new Date('2025-12-12'),
-      join_code: 'HIJKLM',
-    },
+  // Use first two courses for main seeding (references to old cse210 and cse110)
+  const cse210 = courses[2];
+  const cse110 = courses[0];
+
+  // Seed enrollments (2-5 TAs and 20-30 students per course)
+  console.log('Creating enrollments for courses...');
+  
+  const enrollmentData = [];
+  
+  // For each course, enroll TAs and students
+  for (const course of courses) {
+    // Enroll 2-5 random TAs per course
+    const numTAs = Math.floor(Math.random() * 4) + 2; // 2-5 TAs
+    const selectedTAs = new Set();
+    
+    while (selectedTAs.size < numTAs) {
+      const randomTAIndex = Math.floor(Math.random() * allStudents.length);
+      selectedTAs.add(randomTAIndex);
+    }
+    
+    for (const taIndex of selectedTAs) {
+      enrollmentData.push({
+        user_id: allStudents[taIndex].id,
+        course_id: course.id,
+        role: CourseRoles.TA,
+      });
+    }
+    
+    // Enroll 20-30 random students per course
+    const numStudents = Math.floor(Math.random() * 11) + 20; // 20-30 students
+    const selectedStudents = new Set();
+    
+    while (selectedStudents.size < numStudents) {
+      const randomStudentIndex = Math.floor(Math.random() * allStudents.length);
+      if (selectedTAs.has(randomStudentIndex)) continue; // Avoid enrolling TAs as students too
+      selectedStudents.add(randomStudentIndex);
+    }
+    
+    for (const studentIndex of selectedStudents) {
+      enrollmentData.push({
+        user_id: allStudents[studentIndex].id,
+        course_id: course.id,
+        role: CourseRoles.STUDENT,
+      });
+    }
+  }
+  
+  // Batch create all enrollments
+  await prisma.enrollments.createMany({
+    data: enrollmentData,
+    skipDuplicates: true, // Skip if user is already enrolled in course
   });
+  
+  console.log(`Created enrollments for ${courses.length} courses.`);
 
   // Seed teams
   console.log('Creating teams...');
@@ -178,119 +247,6 @@ async function main() {
     },
   });
 
-  // Seed enrollments
-  console.log('Creating enrollments...');
-  await prisma.enrollments.create({
-    data: {
-      user_id: professor.id,
-      course_id: cse210.id,
-      role: CourseRoles.PROFESSOR,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: professor.id,
-      course_id: cse110.id,
-      role: CourseRoles.PROFESSOR,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: ta.id,
-      course_id: cse210.id,
-      role: CourseRoles.TA,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: ta.id,
-      course_id: cse110.id,
-      role: CourseRoles.TA,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: john.id,
-      course_id: cse210.id,
-      team_id: team1.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: jane.id,
-      course_id: cse210.id,
-      team_id: team2.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: incompleteUser.id,
-      course_id: cse210.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: john.id,
-      course_id: cse110.id,
-      team_id: team4.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: jane.id,
-      course_id: cse110.id,
-      team_id: team5.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: sam.id,
-      course_id: cse210.id,
-      team_id: team1.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: alex.id,
-      course_id: cse210.id,
-      team_id: team3.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: sam.id,
-      course_id: cse110.id,
-      team_id: team4.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: alex.id,
-      course_id: cse110.id,
-      team_id: team5.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
 
   // Seed TA team assignments
   console.log('Creating TA team assignments...');
