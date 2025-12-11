@@ -6,7 +6,7 @@ class LogoutButton extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
         <button style="width: 100%"> 
-            Log Out
+            <i>logout</i> Log Out
         </button>
         `;
 
