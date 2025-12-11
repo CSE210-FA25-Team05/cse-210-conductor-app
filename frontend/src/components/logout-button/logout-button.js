@@ -1,3 +1,5 @@
+import { postWrapper } from '/src/js/fetch-wrapper.js';
+
 class LogoutButton extends HTMLElement {
   constructor() {
     super();
@@ -18,17 +20,8 @@ class LogoutButton extends HTMLElement {
   }
 
   async handleClick() {
-    try {
-      const response = await fetch('/auth/logout', {
-        method: 'POST',
-      });
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      window.location.replace('/login');
-    } catch (error) {
-      console.error(error.message);
-    }
+    postWrapper('/auth/logout');
+    window.location.replace('/login');
   }
 }
 

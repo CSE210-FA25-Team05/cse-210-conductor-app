@@ -6,24 +6,28 @@
     <title>Conductor - Lectures</title>
     <link rel="stylesheet" href="/src/styles/styles.css" />
     <script type="module" async src="/src/js/common.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/src/components/charts/attendance-chart.js"></script>
   </head>
+
   <body>
     <main>
+      <!-- Page Header -->
       <header>
         <h1>Course Lectures</h1>
       </header>
 
+      <!-- Lecture Grid Section -->
       <article id="lecture-content">
-
         <header>
-            <div class="grid-menu" role="menu">
-                <input
-                    id="grid-search"
-                    type="search"
-                    placeholder="Search..."
-                    aria-label="Search your pulses"
-                />
-            </div>
+          <div class="grid-menu" role="menu">
+            <input
+              id="grid-search"
+              type="search"
+              placeholder="Search..."
+              aria-label="Search your lectures"
+            />
+          </div>
         </header>
 
         <zing-grid
@@ -35,28 +39,36 @@
           sort
         ></zing-grid>
 
-        <p
-          id="lecture-error"
-          style="display: none; color: var(--color-error);"
-        ></p>
+        <p id="lecture-error" style="display: none; color: var(--color-error);"></p>
+      </article>
+
+      <!-- Attendance Chart Section -->
+      <article id="attendance-content">
+        <header>
+          <h2>Latest Lecture Attendance</h2>
+        </header>
+        <attendance-chart lecture-id="62"></attendance-chart>
+
       </article>
     </main>
 
+    <!-- Navigation Sidebar -->
     <aside>
       <conductor-nav></conductor-nav>
     </aside>
 
+    <!-- Lecture Grid Script -->
     <script type="module">
-      import { getCourseId } from "/src/js/utils/cache-utils.js";
+      import { getCourseId, getUserRole } from "/src/js/utils/cache-utils.js";
       import { getLectures } from "/src/js/api/lecture.js";
       import { linkSearchToGrid } from '/src/js/utils/zinggrid.js';
 
-      const lectureLoading = document.getElementById("lecture-loading");
       const lectureGrid = document.getElementById("lecture-grid");
       const lectureError = document.getElementById("lecture-error");
 
       function formatLectureDate(dateString) {
-        const date = new Date(dateString);
+        const [year, month, day] = dateString.split("-");
+        const date = new Date(year, month - 1, day);
         return date.toLocaleDateString(undefined, {
           year: "numeric",
           month: "short",
@@ -66,7 +78,8 @@
 
       function determineLectureStatus(lectureDate) {
         const now = new Date();
-        const date = new Date(lectureDate);
+        const [year, month, day] = lectureDate.split("-");
+        const date = new Date(year, month - 1, day);
 
         const sameDay =
           date.getFullYear() === now.getFullYear() &&
@@ -84,16 +97,28 @@
           if (!courseId) throw new Error("Course ID not found");
 
           const lectures = await getLectures(courseId);
+          const role = getUserRole();
 
           if (!lectures || lectures.length === 0) {
-            lectureLoading.textContent = "No lectures found for this course.";
+            lectureError.textContent = "No lectures found for this course.";
+            lectureError.style.display = "block";
             return;
           }
 
-          const processedLectures = lectures.map((lec) => ({
-            lecture_date: formatLectureDate(lec.lecture_date),
-            status: determineLectureStatus(lec.lecture_date),
-          }));
+          let processedLectures;
+          if (role === 'professor' || role === 'ta') {
+            processedLectures = lectures.map((lec) => ({
+              lecture_date: formatLectureDate(lec.lecture_date),
+              status: determineLectureStatus(lec.lecture_date),
+              attendance: `<prof-attendance lecture-id=${lec.id}></prof-attendance>`
+            }));
+          } else{
+            processedLectures = lectures.map((lec) => ({
+              lecture_date: formatLectureDate(lec.lecture_date),
+              status: determineLectureStatus(lec.lecture_date),
+              attendance: `<student-attendance lecture-id=${lec.id}></student-attendance>`
+            }));
+          }
 
           // Sort: today → upcoming → finished
           const order = { today: 1, upcoming: 2, finished: 3 };
@@ -102,9 +127,7 @@
           );
 
           lectureGrid.data = processedLectures;
-          lectureLoading.style.display = "none";
         } catch (err) {
-          lectureLoading.style.display = "none";
           lectureError.textContent = `Error loading lecture data: ${err.message}`;
           lectureError.style.display = "block";
         }
@@ -113,7 +136,7 @@
       loadLectureData();
 
       window.addEventListener('load', () => {
-          linkSearchToGrid('grid-search', 'lecture-grid');
+        linkSearchToGrid('grid-search', 'lecture-grid');
       });
     </script>
     <conductor-footer></conductor-footer>

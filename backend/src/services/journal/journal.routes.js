@@ -5,9 +5,9 @@ const { mapAndReply } = require('../../utils/error-map');
 /**
  * Journal Routes Plugin
  * GET
- * /courses/:course_id/journals - get all journals of a course
- * /courses/:course_id/journals/entry/:journal_id - get specific journal entry
- * /courses/:course_id/journals/user/:user_id - get journals of the authenticated user
+ * /courses/:course_id/journals - get journals for a course. Supports filters.
+ * /courses/:course_id/journals/:journal_id - get specific journal entry
+ * /courses/:course_id/journals/user/:user_id - get journals of the authenticated user (deprecated - Use user_id filter in /journals instead)
  *
  * POST
  * /courses/:course_id/journals - create a new journal entry
@@ -21,21 +21,31 @@ const { mapAndReply } = require('../../utils/error-map');
 
 const JournalRepo = require('./journal.repo');
 const JournalService = require('./journal.service');
+const JournalPermissions = require('./journal.permissions');
 const journalSchemas = require('./journal.schemas');
 
 module.exports = async function journalRoutes(fastify, options) {
   const journalRepo = new JournalRepo(fastify.db);
-  const journalService = new JournalService(journalRepo);
-
+  const journalPermissions = new JournalPermissions(fastify.db);
+  const journalService = new JournalService(journalRepo, journalPermissions);
   fastify.get(
     '/journals',
     {
+      preHandler: [fastify.loadCourse, fastify.requireEnrolledInCourse],
       schema: journalSchemas.GetJournalByCourseSchema,
     },
     async (request, reply) => {
       try {
-        const course_id = request.params.course_id;
-        const res = await journalService.getJournalsByCourseId(course_id);
+        const user = request.user;
+        const course = request.course;
+        const enrollment = request.enrollment;
+        const query = request.query;
+        const res = await journalService.getJournals(
+          course,
+          user,
+          enrollment,
+          query
+        );
         return res;
       } catch (error) {
         console.error(error);
@@ -100,7 +110,8 @@ module.exports = async function journalRoutes(fastify, options) {
     async (request, reply) => {
       try {
         const course_id = parseInt(request.params.course_id, 10);
-        const { title, content, user_id } = request.body;
+        const user_id = request.user.id;
+        const { title, content } = request.body;
         const res = await journalService.createJournalEntry(
           user_id,
           course_id,
@@ -146,7 +157,7 @@ module.exports = async function journalRoutes(fastify, options) {
       try {
         const journal_id = request.params.journal_id;
         const res = await journalService.deleteJournalEntry(journal_id);
-        return res;
+        return reply.code(204).send();
       } catch (error) {
         console.error(error);
         return mapAndReply(error, reply);

@@ -3,30 +3,6 @@
  * ----------------------
  * A reusable Web Component for building form-based UI elements.
  *
- * This component handles:
- *  - Rendering form fields from the `fields` getter
- *  - Automatic label + input creation
- *  - Submit handling and value extraction
- *  - Centralized error display
- *  - Lifecycle event binding/unbinding
- *
- * Child classes should override:
- *  - `get fields()` to define form structure
- *  - `get submitLabel()` to define button label
- *  - `async onSubmit(values)` to define submit behavior
- *
- * @extends HTMLElement
- *
- * @example
- * class MyForm extends BaseForm {
- *   get fields() {
- *     return [{ label: "Username", id: "user", name: "username" }];
- *   }
- *   async onSubmit(values) { console.log(values); }
- * }
- *
- * @property {HTMLFormElement} form - Internal form element
- * @property {HTMLElement} errorCard - Error message container
  */
 export class ConductorForm extends HTMLElement {
   constructor() {
@@ -52,7 +28,7 @@ export class ConductorForm extends HTMLElement {
     }
   }
 
-  // OVERRIDE BELOW
+  // -- OVERRIDE BELOW --
   get fields() {
     return [];
   }
@@ -60,7 +36,7 @@ export class ConductorForm extends HTMLElement {
     return 'Submit';
   }
   async onSubmit(values) {}
-  // OVERRIDE ABOVE
+  // -- OVERRIDE ABOVE --
 
   renderFields() {
     this.fields.forEach((field) => {
@@ -70,6 +46,9 @@ export class ConductorForm extends HTMLElement {
           break;
         case 'textarea':
           this.renderTextarea(field);
+          break;
+        case 'select':
+          this.renderSelect(field);
           break;
         default:
           this.renderInput(field);
@@ -107,7 +86,30 @@ export class ConductorForm extends HTMLElement {
     this.form.appendChild(label);
   }
 
-  // Radio group
+  renderSelect(field) {
+    const label = document.createElement('label');
+    label.innerText = field.label;
+    label.setAttribute('for', field.id);
+
+    const select = document.createElement('select');
+    select.id = field.id;
+    select.name = field.name;
+    select.required = field.required !== false;
+
+    // Create options
+    for (const opt of field.options || []) {
+      const option = document.createElement('option');
+      option.value = opt.value;
+      option.textContent = opt.label || opt.value;
+      if (opt.selected) option.selected = true;
+      select.appendChild(option);
+    }
+
+    label.appendChild(select);
+    this.form.appendChild(label);
+  }
+
+  // Radio group remains unchanged
   renderRadioGroup(field) {
     const wrapper = document.createElement('div');
     wrapper.role = 'group';
@@ -121,7 +123,6 @@ export class ConductorForm extends HTMLElement {
       radio.name = field.name;
       radio.value = opt.value;
 
-      // Store option color for later, only apply when selected
       if (opt.color) {
         label.dataset.color = opt.color;
       }
@@ -163,6 +164,11 @@ export class ConductorForm extends HTMLElement {
             `input[name="${field.name}"]:checked`
           );
           values[field.name] = selected ? selected.value : null;
+          break;
+        }
+        case 'select': {
+          const select = this.form.querySelector(`[name="${field.name}"]`);
+          values[field.name] = select ? select.value : null;
           break;
         }
         default: {

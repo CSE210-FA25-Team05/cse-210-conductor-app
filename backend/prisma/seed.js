@@ -12,248 +12,437 @@ async function main() {
 
   // Clear existing data (optional - comment out if you want to keep existing data)
   console.log('Clearing existing data...');
-  await prisma.interaction_participants.deleteMany();
-  await prisma.interactions.deleteMany();
-  await prisma.interaction_configs.deleteMany();
-  await prisma.pulses.deleteMany();
-  await prisma.pulse_configs.deleteMany();
-  await prisma.attendances.deleteMany();
-  await prisma.lectures.deleteMany();
-  await prisma.ta_teams.deleteMany();
-  await prisma.enrollments.deleteMany();
-  // remove journals before deleting courses/users to avoid FK constraint issues
-  await prisma.journals.deleteMany();
-  await prisma.teams.deleteMany();
-  await prisma.courses.deleteMany();
-  await prisma.credentials.deleteMany();
-  await prisma.oauth_accounts.deleteMany();
-  await prisma.users.deleteMany();
+  // await prisma.interaction_participants.deleteMany();
+  // await prisma.interactions.deleteMany();
+  // await prisma.interaction_configs.deleteMany();
+  // await prisma.pulses.deleteMany();
+  // await prisma.pulse_configs.deleteMany();
+  // await prisma.attendances.deleteMany();
+  // await prisma.lectures.deleteMany();
+  // await prisma.ta_teams.deleteMany();
+  // await prisma.enrollments.deleteMany();
+  // // remove journals before deleting courses/users to avoid FK constraint issues
+  // await prisma.journals.deleteMany();
+  // await prisma.teams.deleteMany();
+  // await prisma.courses.deleteMany();
+  // await prisma.credentials.deleteMany();
+  // await prisma.oauth_accounts.deleteMany();
+  // await prisma.users.deleteMany();
 
-  // Seed users
-  console.log('Creating users...');
-  const professor = await prisma.users.create({
-    data: {
-      first_name: 'Professor',
-      last_name: 'Mathematics',
-      email: 'mathprof@ucsd.edu',
-      pronouns: 'She/Her/Hers',
+  // Cascade will lead to truncation of all other dependent tables
+  // Everything depends on either users or courses
+  await prisma.$executeRaw`TRUNCATE TABLE users, courses RESTART IDENTITY CASCADE;`;
+
+  // Seed users (5 professors + 45 students)
+  console.log('Creating 50 users (5 professors + 45 students)...');
+
+  const firstNames = [
+    'John',
+    'Jane',
+    'Sam',
+    'Alex',
+    'Emma',
+    'Michael',
+    'Sarah',
+    'David',
+    'Lisa',
+    'James',
+    'Mary',
+    'Robert',
+    'Jennifer',
+    'William',
+    'Patricia',
+    'Richard',
+    'Jessica',
+    'Joseph',
+    'Karen',
+    'Thomas',
+    'Nancy',
+    'Charles',
+    'Betty',
+    'Christopher',
+    'Margaret',
+    'Daniel',
+    'Susan',
+    'Matthew',
+    'Dorothy',
+    'Anthony',
+    'Carol',
+    'Mark',
+    'Melissa',
+    'Donald',
+    'Deborah',
+    'Steven',
+    'Stephanie',
+    'Paul',
+    'Rebecca',
+    'Andrew',
+    'Sharon',
+    'Joshua',
+    'Laura',
+    'Kenneth',
+    'Cynthia',
+    'Kevin',
+    'Kathleen',
+    'Brian',
+    'Shirley',
+    'George',
+  ];
+
+  const lastNames = [
+    'Smith',
+    'Johnson',
+    'Williams',
+    'Brown',
+    'Jones',
+    'Garcia',
+    'Miller',
+    'Davis',
+    'Rodriguez',
+    'Martinez',
+    'Hernandez',
+    'Lopez',
+    'Gonzalez',
+    'Wilson',
+    'Anderson',
+    'Thomas',
+    'Taylor',
+    'Moore',
+    'Jackson',
+    'Martin',
+    'Lee',
+    'Perez',
+    'Thompson',
+    'White',
+    'Harris',
+    'Sanchez',
+    'Clark',
+    'Ramirez',
+    'Lewis',
+    'Robinson',
+  ];
+
+  const pronouns = [
+    'He/Him/His',
+    'She/Her/Hers',
+    'They/Them',
+    'He/They',
+    'She/They',
+  ];
+
+  const professorsData = [];
+  const studentsData = [];
+
+  // Create 5 professors
+  for (let i = 1; i <= 5; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    professorsData.push({
+      first_name: firstName,
+      last_name: lastName,
+      email: `prof${i}@ucsd.edu`,
+      pronouns: pronouns[Math.floor(Math.random() * pronouns.length)],
       global_role: GlobalRoles.PROFESSOR,
       is_profile_complete: true,
-    },
-  });
+    });
+  }
 
-  const ta = await prisma.users.create({
-    data: {
-      first_name: 'TA',
-      last_name: 'Genius',
-      email: 'genius_ta@ucsd.edu',
-      pronouns: 'He/Him/His',
+  // Create 45 students (5% incomplete = ~2-3 students)
+  for (let i = 1; i <= 45; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const isIncomplete = Math.random() < 0.05; // 5% incomplete
+
+    studentsData.push({
+      first_name: isIncomplete ? null : firstName,
+      last_name: isIncomplete ? null : lastName,
+      email: `student${i}@ucsd.edu`,
+      pronouns: isIncomplete
+        ? null
+        : pronouns[Math.floor(Math.random() * pronouns.length)],
       global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
+      is_profile_complete: !isIncomplete,
+    });
+  }
+
+  // Batch create all users
+  const allUsersData = [...professorsData, ...studentsData];
+  const _createdUsers = await prisma.users.createMany({
+    data: allUsersData,
+  });
+
+  // Fetch all created users to get their IDs
+  const professors = await prisma.users.findMany({
+    where: { global_role: GlobalRoles.PROFESSOR },
+    take: 5,
+  });
+
+  const allStudents = await prisma.users.findMany({
+    where: { global_role: GlobalRoles.STUDENT },
+  });
+
+  // Rename first few students for easier reference in tests
+  const professor = professors[0];
+  const ta = allStudents[0];
+  const john = allStudents[1];
+  const jane = allStudents[2];
+  const incompleteUser =
+    allStudents.find((s) => !s.is_profile_complete) || allStudents[3];
+  const sam = allStudents[4];
+  const alex = allStudents[5];
+
+  // Seed courses (10 courses total, 2 per professor)
+  console.log('Creating 10 courses...');
+  const courseCodes = [
+    'CSE110',
+    'CSE111',
+    'CSE210',
+    'CSE211',
+    'CSE212',
+    'CSE310',
+    'CSE311',
+    'CSE312',
+    'CSE411',
+    'CSE412',
+  ];
+  const courseNames = [
+    'Intro to Programming',
+    'Intro to Programming II',
+    'Software Engineering',
+    'Software Engineering II',
+    'Advanced Software Engineering',
+    'Data Structures & Algorithms',
+    'Database Systems',
+    'Operating Systems',
+    'Machine Learning',
+    'Artificial Intelligence',
+  ];
+
+  const courses = [];
+
+  for (let i = 0; i < 10; i++) {
+    const course = await prisma.courses.create({
+      data: {
+        course_code: courseCodes[i],
+        course_name: courseNames[i],
+        term: 'FA25',
+        section: 'A00',
+        start_date: new Date('2025-09-23'),
+        end_date: new Date('2025-12-12'),
+        join_code: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        // Nested creation: assign a professor to teach this course
+        enrollments: {
+          create: {
+            user_id: professors[Math.floor(i / 2) % professors.length].id, // Each professor teaches 2 courses
+            role: CourseRoles.PROFESSOR,
+          },
+        },
+      },
+    });
+    courses.push(course);
+  }
+
+  // Use first two courses for main seeding (references to old cse210 and cse110)
+  const cse210 = courses[2];
+  const cse110 = courses[0];
+
+  // Seed enrollments (2-5 TAs and 20-30 students per course)
+  console.log('Creating enrollments for courses...');
+
+  const enrollmentData = [];
+
+  // For each course, enroll TAs and students
+  for (const course of courses) {
+    // Enroll 2-5 random TAs per course
+    const numTAs = Math.floor(Math.random() * 4) + 2; // 2-5 TAs
+    const selectedTAs = new Set();
+
+    while (selectedTAs.size < numTAs) {
+      const randomTAIndex = Math.floor(Math.random() * allStudents.length);
+      selectedTAs.add(randomTAIndex);
+    }
+
+    for (const taIndex of selectedTAs) {
+      enrollmentData.push({
+        user_id: allStudents[taIndex].id,
+        course_id: course.id,
+        role: CourseRoles.TA,
+      });
+    }
+
+    // Enroll 20-30 random students per course
+    const numStudents = Math.floor(Math.random() * 11) + 20; // 20-30 students
+    const selectedStudents = new Set();
+
+    while (selectedStudents.size < numStudents) {
+      const randomStudentIndex = Math.floor(Math.random() * allStudents.length);
+      if (selectedTAs.has(randomStudentIndex)) continue; // Avoid enrolling TAs as students too
+      selectedStudents.add(randomStudentIndex);
+    }
+
+    for (const studentIndex of selectedStudents) {
+      enrollmentData.push({
+        user_id: allStudents[studentIndex].id,
+        course_id: course.id,
+        role: CourseRoles.STUDENT,
+      });
+    }
+  }
+
+  // Batch create all enrollments
+  await prisma.enrollments.createMany({
+    data: enrollmentData,
+    skipDuplicates: true, // Skip if user is already enrolled in course
+  });
+
+  console.log(`Created enrollments for ${courses.length} courses.`);
+
+  // Seed teams (create teams in 60% of courses)
+  console.log('Creating teams in selected courses...');
+  const teamNames = [
+    'Team Alpha',
+    'Team Beta',
+    'Team Gamma',
+    'Team Delta',
+    'Team Epsilon',
+    'Lab Group A',
+    'Lab Group B',
+    'Lab Group C',
+    'Project Team 1',
+    'Project Team 2',
+  ];
+
+  const teamsData = [];
+  const courseTeamsMap = {}; // Map course ID to list of teams
+
+  for (const course of courses) {
+    // 60% chance a course will have teams
+    if (Math.random() < 0.6) {
+      // Create 2-4 teams per course
+      const numTeams = Math.floor(Math.random() * 3) + 2;
+      courseTeamsMap[course.id] = [];
+
+      for (let i = 0; i < numTeams; i++) {
+        teamsData.push({
+          course_id: course.id,
+          name: `${teamNames[i % teamNames.length]} ${i + 1}`,
+          description: `Project team for ${course.course_code}`,
+        });
+      }
+    }
+  }
+
+  // Batch create all teams
+  const createdTeams = await prisma.teams.createMany({
+    data: teamsData,
+  });
+
+  // Fetch created teams grouped by course
+  const allTeams = await prisma.teams.findMany({
+    where: {
+      course_id: {
+        in: courses.map((c) => c.id),
+      },
     },
   });
 
-  const john = await prisma.users.create({
-    data: {
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'jdoe@ucsd.edu',
-      pronouns: 'He/Him/His',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
-  });
-
-  const jane = await prisma.users.create({
-    data: {
-      first_name: 'Jane',
-      last_name: 'Doe',
-      email: 'jd563@ucsd.edu',
-      pronouns: 'She/Her/Hers',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
-  });
-
-  const incompleteUser = await prisma.users.create({
-    data: {
-      email: 'incomplete@ucsd.edu',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: false,
-    },
-  });
-
-  // Seed courses
-  console.log('Creating courses...');
-  const cse210 = await prisma.courses.create({
-    data: {
-      course_code: 'CSE210',
-      course_name: 'Software Engineering',
-      term: 'FA25',
-      section: 'A00',
-      start_date: new Date('2025-09-23'),
-      end_date: new Date('2025-12-12'),
-      join_code: 'ABCDEF',
-    },
-  });
-
-  const cse110 = await prisma.courses.create({
-    data: {
-      course_code: 'CSE110',
-      course_name: 'Intro to Programming',
-      term: 'FA25',
-      section: 'A00',
-      start_date: new Date('2025-09-23'),
-      end_date: new Date('2025-12-12'),
-      join_code: 'HIJKLM',
-    },
-  });
-
-  // Seed teams
-  console.log('Creating teams...');
-  const team1 = await prisma.teams.create({
-    data: {
-      course_id: cse210.id,
-      name: 'Team 1',
-      description: 'Project Team 1 for CSE210',
-    },
-  });
-
-  const team2 = await prisma.teams.create({
-    data: {
-      course_id: cse210.id,
-      name: 'Team 2',
-      description: 'Project Team 2 for CSE210',
-    },
-  });
-
-  const team3 = await prisma.teams.create({
-    data: {
-      course_id: cse210.id,
-      name: 'Team 3',
-      description: 'Project Team 3 for CSE210',
-    },
-  });
-
-  const team4 = await prisma.teams.create({
-    data: {
-      course_id: cse110.id,
-      name: 'Lab Team A',
-      description: 'Lab team A for CSE110',
-    },
-  });
-
-  const team5 = await prisma.teams.create({
-    data: {
-      course_id: cse110.id,
-      name: 'Lab Team B',
-      description: 'Lab team B for CSE110',
-    },
-  });
-
-  // Seed enrollments
-  console.log('Creating enrollments...');
-  await prisma.enrollments.create({
-    data: {
-      user_id: professor.id,
-      course_id: cse210.id,
-      role: CourseRoles.PROFESSOR,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: professor.id,
-      course_id: cse110.id,
-      role: CourseRoles.PROFESSOR,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: ta.id,
-      course_id: cse210.id,
-      role: CourseRoles.TA,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: ta.id,
-      course_id: cse110.id,
-      role: CourseRoles.TA,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: john.id,
-      course_id: cse210.id,
-      team_id: team1.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: jane.id,
-      course_id: cse210.id,
-      team_id: team2.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: incompleteUser.id,
-      course_id: cse210.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: john.id,
-      course_id: cse110.id,
-      team_id: team4.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
-
-  await prisma.enrollments.create({
-    data: {
-      user_id: jane.id,
-      course_id: cse110.id,
-      team_id: team5.id,
-      role: CourseRoles.STUDENT,
-    },
-  });
+  // Group teams by course ID
+  for (const team of allTeams) {
+    if (!courseTeamsMap[team.course_id]) {
+      courseTeamsMap[team.course_id] = [];
+    }
+    courseTeamsMap[team.course_id].push(team);
+  }
 
   // Seed TA team assignments
-  console.log('Creating TA team assignments...');
-  await prisma.ta_teams.create({
-    data: {
-      ta_user_id: ta.id,
-      course_id: cse210.id,
-      team_id: team1.id,
-    },
-  });
+  console.log('Assigning TAs to teams...');
+  const tATeamAssignments = [];
 
-  await prisma.ta_teams.create({
-    data: {
-      ta_user_id: ta.id,
-      course_id: cse210.id,
-      team_id: team2.id,
-    },
-  });
+  // For each course with teams, assign TAs to teams
+  for (const course of courses) {
+    if (courseTeamsMap[course.id] && courseTeamsMap[course.id].length > 0) {
+      // Get all TAs enrolled in this course
+      const taEnrollments = await prisma.enrollments.findMany({
+        where: {
+          course_id: course.id,
+          role: CourseRoles.TA,
+        },
+      });
 
-  await prisma.ta_teams.create({
-    data: {
-      ta_user_id: ta.id,
-      course_id: cse110.id,
-      team_id: team4.id,
-    },
-  });
+      // Distribute TAs across teams
+      const teams = courseTeamsMap[course.id];
+      for (const team of teams) {
+        const taToAssign = Math.floor(Math.random() * taEnrollments.length);
+        tATeamAssignments.push({
+          ta_user_id: taEnrollments[taToAssign].user_id,
+          course_id: course.id,
+          team_id: team.id,
+        });
+      }
+    }
+  }
+
+  // Batch create all TA team assignments
+  if (tATeamAssignments.length > 0) {
+    await prisma.ta_teams.createMany({
+      data: tATeamAssignments,
+      skipDuplicates: true,
+    });
+  }
+
+  console.log(
+    `Created teams in ${Object.keys(courseTeamsMap).length} courses and assigned TAs.`
+  );
+
+  // Reference teams from CSE210 for remaining seeding tasks
+  const team1 = courseTeamsMap[cse210.id]?.[0];
+  const team2 = courseTeamsMap[cse210.id]?.[1];
+  const team3 = courseTeamsMap[cse210.id]?.[2];
+  const team4 = courseTeamsMap[cse110.id]?.[0];
+  const team5 = courseTeamsMap[cse110.id]?.[1];
+
+  // Update student enrollments to assign them to teams
+  console.log('Assigning students to teams...');
+
+  for (const course of courses) {
+    if (courseTeamsMap[course.id] && courseTeamsMap[course.id].length > 0) {
+      // Get all student enrollments in this course
+      const studentEnrollments = await prisma.enrollments.findMany({
+        where: {
+          course_id: course.id,
+          role: CourseRoles.STUDENT,
+        },
+      });
+
+      // Distribute students across teams
+      const teams = courseTeamsMap[course.id];
+      const teamLeads = [];
+      const numLeads = Math.random() < 0.25 ? 1 : 2;
+      for (const studentEnrollment of studentEnrollments) {
+        // Each student can be on 1 team (or no team if we wanted to randomize)
+        const randomTeamIndex = Math.floor(Math.random() * teams.length);
+        const teamId = teams[randomTeamIndex].id;
+
+        // Randomly assign some students as team leads
+        if (teamLeads.length < numLeads && Math.random() < 0.2) {
+          teamLeads.push(studentEnrollment.user_id);
+          // Update the enrollment to set is_team_lead
+          await prisma.enrollments.update({
+            where: { id: studentEnrollment.id },
+            data: { role: CourseRoles.TEAM_LEAD, team_id: teamId },
+          });
+        } else {
+          // Update the enrollment to assign the student to a team
+          await prisma.enrollments.update({
+            where: { id: studentEnrollment.id },
+            data: { team_id: teamId },
+          });
+        }
+      }
+    }
+  }
+
+  console.log('Student team assignments completed.');
 
   // Seed lectures
   console.log('Creating lectures...');
@@ -651,6 +840,66 @@ async function main() {
     },
   });
 
+  const interaction6 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'negative',
+      description:
+        'Sam submitted the assignment late without requesting an extension.',
+      created_at: new Date('2025-10-05T12:15:00Z'),
+    },
+  });
+
+  const interaction7 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: professor.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'positive',
+      description:
+        'Alex led the team stand-up and ensured everyone stayed on track.',
+      created_at: new Date('2025-10-06T16:45:00Z'),
+    },
+  });
+
+  const interaction8 = await prisma.interactions.create({
+    data: {
+      course_id: cse210.id,
+      author_id: ta.id,
+      interaction_config_id: cse210_interaction_config.id,
+      value: 'neutral',
+      description:
+        'In-class peer review — several students shared partial solutions.',
+      created_at: new Date('2025-10-07T09:20:00Z'),
+    },
+  });
+
+  const interaction9 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: professor.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'positive',
+      description:
+        'Sam and Jane paired up in lab and finished the exercise early.',
+      created_at: new Date('2025-10-03T13:10:00Z'),
+    },
+  });
+
+  const interaction10 = await prisma.interactions.create({
+    data: {
+      course_id: cse110.id,
+      author_id: ta.id,
+      interaction_config_id: cse110_interaction_config.id,
+      value: 'neutral',
+      description:
+        'General reminder about the upcoming quiz — several students stayed back to ask clarifying questions.',
+      created_at: new Date('2025-10-04T10:00:00Z'),
+    },
+  });
+
   console.log('Creating interaction participants...');
   // Interaction 1: John participated
   await prisma.interaction_participants.create({
@@ -697,6 +946,58 @@ async function main() {
       interaction_id: interaction5.id,
       user_id: jane.id,
     },
+  });
+
+  // Interaction 6 – Sam
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction6.id,
+      user_id: sam.id,
+    },
+  });
+
+  // Interaction 7 – Alex
+  await prisma.interaction_participants.create({
+    data: {
+      interaction_id: interaction7.id,
+      user_id: alex.id,
+    },
+  });
+
+  // Interaction 8 – group: John, Jane, Sam, Alex
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: john.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: jane.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction8.id, user_id: alex.id },
+  });
+
+  // Interaction 9 – Sam + Jane
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction9.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction9.id, user_id: jane.id },
+  });
+
+  // Interaction 10 – all four
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: john.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: jane.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: sam.id },
+  });
+  await prisma.interaction_participants.create({
+    data: { interaction_id: interaction10.id, user_id: alex.id },
   });
 
   console.log('Seeding completed!');
