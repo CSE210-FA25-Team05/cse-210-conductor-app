@@ -187,9 +187,13 @@ export async function getUserAttendance(courseID, lectureID, userID) {
   }
 
   for (const x of response.data.attendances) {
-    if (userID === x.user_id && lectureID === x.lecture_id && courseID === x.course_id) {
-        return x
+    if (
+      userID === x.user_id &&
+      lectureID === x.lecture_id &&
+      courseID === x.course_id
+    ) {
+      return x;
     }
   }
-  return null
+  return null;
 }
