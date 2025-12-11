@@ -66,11 +66,6 @@
                 fetchUserJournals();
                 linkSearchToGrid('grid-search', 'journals-grid');
             });
-            
-            // Listen for journal creation events to refresh the grid
-            window.addEventListener('journal-created', () => {
-                fetchUserJournals();
-            });
 
 
         </script>
