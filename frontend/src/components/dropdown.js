@@ -3,7 +3,7 @@
  * Manages dropdown open/close state, handles click-outside and escape key behavior,
  * and ensures only one dropdown is open at a time across the application.
  * @extends HTMLElement
- * 
+ *
  * @example
  * <conductor-dropdown>
  *   <details>

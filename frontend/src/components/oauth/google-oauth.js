@@ -3,7 +3,7 @@
  * Renders a styled Google sign-in button that redirects users to the Google OAuth flow.
  * Uses shadow DOM for style encapsulation.
  * @extends HTMLElement
- * 
+ *
  * @example
  * <google-oauth></google-oauth>
  */

@@ -114,7 +114,7 @@ export class StudentAttendance extends HTMLElement {
    * Retrieves the current attendance status for the user.
    * Checks if the user has already submitted attendance, if the attendance window is open,
    * or if the attendance period has expired.
-   * 
+   *
    * @async
    * @returns {Promise<number|string>} Returns 0 if already attended, 1 if attendance is open,
    * -1 if expired, or 'Lecture Not Found' if the lecture doesn't exist.

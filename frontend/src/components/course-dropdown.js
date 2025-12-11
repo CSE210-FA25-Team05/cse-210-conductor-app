@@ -14,7 +14,7 @@ import '/src/components/forms/join-course.js';
  * Displays a list of user's courses and provides modals for creating and joining courses.
  * Shows different options based on user role (professors can create courses, all users can join).
  * @extends HTMLElement
- * 
+ *
  * @example
  * <course-dropdown></course-dropdown>
  */

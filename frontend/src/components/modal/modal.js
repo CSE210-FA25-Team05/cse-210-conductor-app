@@ -3,7 +3,7 @@
  * Provides a reusable modal with header, content, and footer slots, backdrop click handling,
  * and keyboard escape support. Uses the native <dialog> element for accessibility.
  * @extends HTMLElement
- * 
+ *
  * @example
  * <modal-component open button-align="end">
  *   <span slot="header">Modal Title</span>

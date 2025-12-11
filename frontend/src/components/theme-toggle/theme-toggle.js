@@ -3,7 +3,7 @@
  * Allows users to switch between light and dark themes. The selected theme
  * preference is persisted in localStorage and applied to the document root.
  * @extends HTMLElement
- * 
+ *
  * @example
  * <theme-toggle></theme-toggle>
  */

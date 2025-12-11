@@ -2,7 +2,7 @@
  * Custom element for a profile button that navigates to the user's profile page.
  * Displays a button with an account icon and text that redirects to the profile route.
  * @extends HTMLElement
- * 
+ *
  * @example
  * <profile-button></profile-button>
  */

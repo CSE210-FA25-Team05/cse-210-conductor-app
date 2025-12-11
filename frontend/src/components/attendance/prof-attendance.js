@@ -36,12 +36,12 @@ export class ProfAttendance extends HTMLElement {
    * Renders the attendance UI based on the current lecture status.
    * Determines if attendance is ongoing, expired, or not yet generated and
    * displays appropriate controls and status messages.
-   * 
+   *
    * Status values:
    * - returns -1 if the lecture has expired
    * - returns 0 if the lecture attendance is ongoing
    * - returns 1 if the lecture attendance code has not been gnerated
-   * 
+   *
    * @async
    * @returns {Promise<void>}
    */
