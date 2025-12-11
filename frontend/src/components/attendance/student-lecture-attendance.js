@@ -1,11 +1,6 @@
-import {
-  getUserRole,
-  getCourseId
-} from '/src/js/utils/cache-utils.js';
+import { getUserRole, getCourseId } from '/src/js/utils/cache-utils.js';
 import { getLectures } from '/src/js/api/lecture.js';
-import {
-  getAttendanceStats
-} from '/src/js/api/attendance.js';
+import { getAttendanceStats } from '/src/js/api/attendance.js';
 
 export class StudentLectureAttendance extends HTMLElement {
   constructor() {
@@ -27,7 +22,9 @@ export class StudentLectureAttendance extends HTMLElement {
       this.lectureId = parseInt(this.getAttribute('lecture-id'));
 
       const userAttendance = await getAttendanceStats(this.courseId);
-      const attendedLectures = userAttendance.lectures ? userAttendance.lectures.map(l => l.lecture_id) : [];
+      const attendedLectures = userAttendance.lectures
+        ? userAttendance.lectures.map((l) => l.lecture_id)
+        : [];
       const attendedSet = new Set(attendedLectures);
 
       if (attendedSet.has(this.lectureId)) {

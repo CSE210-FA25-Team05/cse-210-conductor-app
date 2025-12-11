@@ -1,11 +1,6 @@
-import {
-  getUserRole,
-  getCourseId
-} from '/src/js/utils/cache-utils.js';
+import { getUserRole, getCourseId } from '/src/js/utils/cache-utils.js';
 import { getLectures } from '/src/js/api/lecture.js';
-import {
-  createAttendanceSimplified
-} from '/src/js/api/attendance.js';
+import { createAttendanceSimplified } from '/src/js/api/attendance.js';
 
 export class StudentAttendance extends HTMLElement {
   constructor() {
