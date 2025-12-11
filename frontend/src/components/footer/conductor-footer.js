@@ -21,14 +21,13 @@ class ConductorFooter extends HTMLElement {
       width: 100%;
       box-sizing: border-box;
     `;
-    
+
     footer.innerHTML = `
       <p style="margin: 0; padding: 0;">&copy; 2025 Conductor by Team Py5ch. All rights reserved.</p>
     `;
-    
+
     this.appendChild(footer);
   }
 }
 
 customElements.define('conductor-footer', ConductorFooter);
-
