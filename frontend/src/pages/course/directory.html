@@ -180,7 +180,7 @@
                     directoryError.style.display = 'block';
                 }
             }
-            
+
             async function loadTeams() {
                 try {
                     const courseId = getCourseId();
@@ -419,10 +419,10 @@
                     
                     if (courseRole === 'professor') {
                         if (addUserModal) {
-                            addUserButton.addEventListener('click', () => {
-                                addUserModal.open();
-                            });
-                        }
+                addUserButton.addEventListener('click', () => {
+                    addUserModal.open();
+                });
+            }
                     } else {
                         addUserButton.style.display = 'none';
                     }
@@ -449,5 +449,6 @@
                 linkSearchToGrid('grid-search', 'directory-grid');
             });
         </script>
+        <conductor-footer></conductor-footer>
     </body>
 </html>

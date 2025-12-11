@@ -8,3 +8,4 @@ import '/src/components/alerts/toast.js';
 import '/src/components/attendance/student-attendance.js';
 import '/src/components/attendance/prof-attendance.js';
 import '/src/components/attendance/student-lecture-attendance.js';
+import '/src/components/footer/conductor-footer.js';
