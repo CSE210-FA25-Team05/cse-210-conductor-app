@@ -1,4 +1,21 @@
+/**
+ * Custom modal dialog component with shadow DOM.
+ * Provides a reusable modal with header, content, and footer slots, backdrop click handling,
+ * and keyboard escape support. Uses the native <dialog> element for accessibility.
+ * @extends HTMLElement
+ *
+ * @example
+ * <modal-component open button-align="end">
+ *   <span slot="header">Modal Title</span>
+ *   <div slot="content">Modal content goes here</div>
+ *   <button slot="buttons">Confirm</button>
+ * </modal-component>
+ */
 export class Modal extends HTMLElement {
+  /**
+   * Creates an instance of Modal.
+   * Binds event handler methods to the instance context.
+   */
   constructor() {
     super();
     this.handleBackdropClick = this.handleBackdropClick.bind(this);
@@ -6,6 +23,12 @@ export class Modal extends HTMLElement {
     this.handleDialogCancel = this.handleDialogCancel.bind(this);
   }
 
+  /**
+   * Lifecycle callback invoked when the element is connected to the DOM.
+   * Creates the shadow DOM structure with dialog, slots for content,
+   * and sets up event listeners for modal interactions.
+   * @returns {void}
+   */
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
     const footerAttr = this.getAttribute('footer');
@@ -72,10 +95,24 @@ export class Modal extends HTMLElement {
     this.updateButtonAlignment();
   }
 
+  /**
+   * Specifies which attributes to observe for changes.
+   * @static
+   * @returns {string[]} Array of attribute names to observe.
+   */
   static get observedAttributes() {
     return ['open', 'button-align'];
   }
 
+  /**
+   * Lifecycle callback invoked when an observed attribute changes.
+   * Handles opening/closing the modal and updating button alignment.
+   * Manages body scroll behavior when modal is open.
+   * @param {string} name - The name of the attribute that changed.
+   * @param {string|null} oldValue - The previous value of the attribute.
+   * @param {string|null} newValue - The new value of the attribute.
+   * @returns {void}
+   */
   attributeChangedCallback(name, oldValue, newValue) {
     // Only process if the value actually changed
     if (oldValue === newValue) return;
@@ -99,6 +136,11 @@ export class Modal extends HTMLElement {
     }
   }
 
+  /**
+   * Lifecycle callback invoked when the element is disconnected from the DOM.
+   * Cleans up event listeners and restores body scroll behavior.
+   * @returns {void}
+   */
   disconnectedCallback() {
     document.body.style.overflow = '';
     this.closeBtn.removeEventListener('click', this.handleCloseClick);
@@ -106,6 +148,11 @@ export class Modal extends HTMLElement {
     this.dialog.removeEventListener('cancel', this.handleDialogCancel);
   }
 
+  /**
+   * Updates the footer button alignment based on the button-align attribute.
+   * Sets flex justification to either flex-start or flex-end.
+   * @returns {void}
+   */
   updateButtonAlignment() {
     if (!this.footer) return;
     const align = this.getAttribute('button-align') || 'end';
@@ -113,14 +160,28 @@ export class Modal extends HTMLElement {
       align === 'start' ? 'flex-start' : 'flex-end';
   }
 
+  /**
+   * Opens the modal by setting the open attribute.
+   * @returns {void}
+   */
   open() {
     this.setAttribute('open', '');
   }
 
+  /**
+   * Closes the modal by removing the open attribute.
+   * @returns {void}
+   */
   close() {
     this.removeAttribute('open');
   }
 
+  /**
+   * Handles clicks on the modal backdrop.
+   * Closes the modal if the click occurs outside the dialog boundaries.
+   * @param {MouseEvent} event - The click event object.
+   * @returns {void}
+   */
   handleBackdropClick(event) {
     const rect = this.dialog.getBoundingClientRect();
     const clickX = event.clientX;
@@ -137,11 +198,23 @@ export class Modal extends HTMLElement {
     }
   }
 
+  /**
+   * Handles the dialog cancel event (typically triggered by the Escape key).
+   * Prevents the default behavior and closes the modal.
+   * @param {Event} event - The cancel event object.
+   * @returns {void}
+   */
   handleDialogCancel(event) {
     event.preventDefault();
     this.close();
   }
 
+  /**
+   * Handles clicks on the close button.
+   * Stops event propagation and closes the modal.
+   * @param {MouseEvent} event - The click event object.
+   * @returns {void}
+   */
   handleCloseClick(event) {
     event.stopPropagation();
     this.close();

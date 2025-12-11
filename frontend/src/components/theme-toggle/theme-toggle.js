@@ -1,8 +1,26 @@
+/**
+ * Custom element for a theme toggle switch.
+ * Allows users to switch between light and dark themes. The selected theme
+ * preference is persisted in localStorage and applied to the document root.
+ * @extends HTMLElement
+ *
+ * @example
+ * <theme-toggle></theme-toggle>
+ */
 class ThemeToggle extends HTMLElement {
+  /**
+   * Creates an instance of ThemeToggle.
+   */
   constructor() {
     super();
   }
 
+  /**
+   * Lifecycle callback invoked when the element is connected to the DOM.
+   * Creates a checkbox toggle, restores the saved theme preference from localStorage,
+   * and sets up an event listener to handle theme changes.
+   * @returns {void}
+   */
   connectedCallback() {
     const label = document.createElement('label');
     const toggle = document.createElement('input');

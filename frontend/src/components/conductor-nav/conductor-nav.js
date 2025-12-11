@@ -4,7 +4,17 @@ import '/src/components/course-dropdown.js';
 import '/src/components/modal/quick-add-modal.js';
 import '/src/components/profile-button/profile-button.js';
 
+/**
+ * Custom element for the main navigation sidebar in the Conductor application.
+ * Provides navigation links, course dropdown, profile button, logout functionality,
+ * and a quick-add modal. Handles responsive behavior for mobile and desktop views.
+ * @extends HTMLElement
+ */
 class ConductorNav extends HTMLElement {
+  /**
+   * Creates an instance of ConductorNav.
+   * Initializes navigation paths, binds event handlers, and sets up responsive behavior.
+   */
   constructor() {
     super();
 
@@ -16,7 +26,6 @@ class ConductorNav extends HTMLElement {
       Lectures: '/course/lecture',
       Journals: '/course/journals',
       Directory: '/course/directory',
-      ChartsJS: '/course/chartsjs',
     };
     this.courses = [];
     this.boundedHandleMenuToggleClick = this.handleMenuToggleClick.bind(this);
@@ -28,6 +37,12 @@ class ConductorNav extends HTMLElement {
     window.addEventListener('resize', this.boundedHandleResize);
   }
 
+  /**
+   * Lifecycle callback invoked when the element is connected to the DOM.
+   * Creates and renders the navigation structure including header, navigation links,
+   * footer with profile/logout buttons, and the quick-add modal.
+   * @returns {void}
+   */
   connectedCallback() {
     const nav = document.createElement('nav');
     const ul = document.createElement('ul');
@@ -83,10 +98,21 @@ class ConductorNav extends HTMLElement {
     this.appendChild(modal);
   }
 
+  /**
+   * Handles the menu toggle button click event.
+   * Toggles the 'menu-closed' class on the body element to show/hide the navigation menu.
+   * @returns {void}
+   */
   handleMenuToggleClick() {
     document.body.classList.toggle('menu-closed');
   }
 
+  /**
+   * Handles window resize events to manage responsive navigation behavior.
+   * Automatically closes the menu on mobile viewports (< 600px width) and
+   * opens it on larger viewports.
+   * @returns {void}
+   */
   handleResize() {
     if (window.innerWidth < 600) {
       document.body.classList.add('menu-closed');
@@ -95,10 +121,20 @@ class ConductorNav extends HTMLElement {
     }
   }
 
+  /**
+   * Handles the quick-add button click event.
+   * Opens the quick-add modal for creating new items.
+   * @returns {void}
+   */
   handleOpenModal() {
     this.modal.open();
   }
 
+  /**
+   * Lifecycle callback invoked when the element is disconnected from the DOM.
+   * Cleans up the resize event listener to prevent memory leaks.
+   * @returns {void}
+   */
   disconnectedCallback() {
     if (this.boundedHandleResize) {
       window.removeEventListener('resize', this.boundedHandleResize);

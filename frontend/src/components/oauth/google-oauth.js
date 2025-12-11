@@ -1,8 +1,25 @@
+/**
+ * Custom element for Google OAuth sign-in button.
+ * Renders a styled Google sign-in button that redirects users to the Google OAuth flow.
+ * Uses shadow DOM for style encapsulation.
+ * @extends HTMLElement
+ *
+ * @example
+ * <google-oauth></google-oauth>
+ */
 class GoogleOAuth extends HTMLElement {
+  /**
+   * Creates an instance of GoogleOAuth.
+   */
   constructor() {
     super();
   }
 
+  /**
+   * Lifecycle callback invoked when the element is connected to the DOM.
+   * Creates the shadow DOM with the Google sign-in button and attaches click event listener.
+   * @returns {void}
+   */
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
@@ -33,12 +50,23 @@ class GoogleOAuth extends HTMLElement {
       .addEventListener('click', this.handleClick);
   }
 
+  /**
+   * Lifecycle callback invoked when the element is disconnected from the DOM.
+   * Removes the click event listener to prevent memory leaks.
+   * @returns {void}
+   */
   disconnectedCallback() {
     this.shadowRoot
       .querySelector('button')
       .removeEventListener('click', this.handleClick);
   }
 
+  /**
+   * Handles the button click event by redirecting to the Google OAuth endpoint.
+   * @async
+   * @param {MouseEvent} event - The click event object.
+   * @returns {Promise<void>}
+   */
   async handleClick(event) {
     event.preventDefault();
 
