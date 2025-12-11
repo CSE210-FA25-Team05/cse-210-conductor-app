@@ -12,98 +12,103 @@ async function main() {
 
   // Clear existing data (optional - comment out if you want to keep existing data)
   console.log('Clearing existing data...');
-  await prisma.interaction_participants.deleteMany();
-  await prisma.interactions.deleteMany();
-  await prisma.interaction_configs.deleteMany();
-  await prisma.pulses.deleteMany();
-  await prisma.pulse_configs.deleteMany();
-  await prisma.attendances.deleteMany();
-  await prisma.lectures.deleteMany();
-  await prisma.ta_teams.deleteMany();
-  await prisma.enrollments.deleteMany();
-  // remove journals before deleting courses/users to avoid FK constraint issues
-  await prisma.journals.deleteMany();
-  await prisma.teams.deleteMany();
-  await prisma.courses.deleteMany();
-  await prisma.credentials.deleteMany();
-  await prisma.oauth_accounts.deleteMany();
-  await prisma.users.deleteMany();
+  // await prisma.interaction_participants.deleteMany();
+  // await prisma.interactions.deleteMany();
+  // await prisma.interaction_configs.deleteMany();
+  // await prisma.pulses.deleteMany();
+  // await prisma.pulse_configs.deleteMany();
+  // await prisma.attendances.deleteMany();
+  // await prisma.lectures.deleteMany();
+  // await prisma.ta_teams.deleteMany();
+  // await prisma.enrollments.deleteMany();
+  // // remove journals before deleting courses/users to avoid FK constraint issues
+  // await prisma.journals.deleteMany();
+  // await prisma.teams.deleteMany();
+  // await prisma.courses.deleteMany();
+  // await prisma.credentials.deleteMany();
+  // await prisma.oauth_accounts.deleteMany();
+  // await prisma.users.deleteMany();
 
-  // Seed users
-  console.log('Creating users...');
-  const professor = await prisma.users.create({
-    data: {
-      first_name: 'Professor',
-      last_name: 'Mathematics',
-      email: 'mathprof@ucsd.edu',
-      pronouns: 'She/Her/Hers',
+  // Cascade will lead to truncation of all other dependent tables
+  // Everything depends on either users or courses
+  await prisma.$executeRaw`TRUNCATE TABLE users, courses RESTART IDENTITY CASCADE;`;
+
+  // Seed users (5 professors + 45 students)
+  console.log('Creating 50 users (5 professors + 45 students)...');
+  
+  const firstNames = [
+    'John', 'Jane', 'Sam', 'Alex', 'Emma', 'Michael', 'Sarah', 'David', 'Lisa', 'James',
+    'Mary', 'Robert', 'Jennifer', 'William', 'Patricia', 'Richard', 'Jessica', 'Joseph', 'Karen', 'Thomas',
+    'Nancy', 'Charles', 'Betty', 'Christopher', 'Margaret', 'Daniel', 'Susan', 'Matthew', 'Dorothy', 'Anthony',
+    'Carol', 'Mark', 'Melissa', 'Donald', 'Deborah', 'Steven', 'Stephanie', 'Paul', 'Rebecca', 'Andrew',
+    'Sharon', 'Joshua', 'Laura', 'Kenneth', 'Cynthia', 'Kevin', 'Kathleen', 'Brian', 'Shirley', 'George'
+  ];
+  
+  const lastNames = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
+    'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
+    'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'
+  ];
+  
+  const pronouns = ['He/Him/His', 'She/Her/Hers', 'They/Them', 'He/They', 'She/They'];
+  
+  const professorsData = [];
+  const studentsData = [];
+  
+  // Create 5 professors
+  for (let i = 1; i <= 5; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    professorsData.push({
+      first_name: firstName,
+      last_name: lastName,
+      email: `prof${i}@ucsd.edu`,
+      pronouns: pronouns[Math.floor(Math.random() * pronouns.length)],
       global_role: GlobalRoles.PROFESSOR,
       is_profile_complete: true,
-    },
-  });
-
-  const ta = await prisma.users.create({
-    data: {
-      first_name: 'TA',
-      last_name: 'Genius',
-      email: 'genius_ta@ucsd.edu',
-      pronouns: 'He/Him/His',
+    });
+  }
+  
+  // Create 45 students (5% incomplete = ~2-3 students)
+  for (let i = 1; i <= 45; i++) {
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const isIncomplete = Math.random() < 0.05; // 5% incomplete
+    
+    studentsData.push({
+      first_name: isIncomplete ? null : firstName,
+      last_name: isIncomplete ? null : lastName,
+      email: `student${i}@ucsd.edu`,
+      pronouns: isIncomplete ? null : pronouns[Math.floor(Math.random() * pronouns.length)],
       global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
+      is_profile_complete: !isIncomplete,
+    });
+  }
+  
+  // Batch create all users
+  const allUsersData = [...professorsData, ...studentsData];
+  const _createdUsers = await prisma.users.createMany({
+    data: allUsersData,
   });
-
-  const john = await prisma.users.create({
-    data: {
-      first_name: 'John',
-      last_name: 'Doe',
-      email: 'jdoe@ucsd.edu',
-      pronouns: 'He/Him/His',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
+  
+  // Fetch all created users to get their IDs
+  const professors = await prisma.users.findMany({
+    where: { global_role: GlobalRoles.PROFESSOR },
+    take: 5,
   });
-
-  const jane = await prisma.users.create({
-    data: {
-      first_name: 'Jane',
-      last_name: 'Doe',
-      email: 'jd563@ucsd.edu',
-      pronouns: 'She/Her/Hers',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
+  
+  const allStudents = await prisma.users.findMany({
+    where: { global_role: GlobalRoles.STUDENT },
   });
-
-  const incompleteUser = await prisma.users.create({
-    data: {
-      email: 'incomplete@ucsd.edu',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: false,
-    },
-  });
-
-  const sam = await prisma.users.create({
-    data: {
-      first_name: 'Sam',
-      last_name: 'Student',
-      email: 'sam@ucsd.edu',
-      pronouns: 'They/Them',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
-  });
-
-  const alex = await prisma.users.create({
-    data: {
-      first_name: 'Alex',
-      last_name: 'Nguyen',
-      email: 'alexn@ucsd.edu',
-      pronouns: 'He/Him/His',
-      global_role: GlobalRoles.STUDENT,
-      is_profile_complete: true,
-    },
-  });
+  
+  // Rename first few students for easier reference in tests
+  const professor = professors[0];
+  const ta = allStudents[0];
+  const john = allStudents[1];
+  const jane = allStudents[2];
+  const incompleteUser = allStudents.find((s) => !s.is_profile_complete) || allStudents[3];
+  const sam = allStudents[4];
+  const alex = allStudents[5];
 
   // Seed courses
   console.log('Creating courses...');
