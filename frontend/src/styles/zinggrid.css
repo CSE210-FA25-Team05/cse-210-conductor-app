@@ -88,8 +88,8 @@ zg-pager zg-button {
 }
 
 zg-pager input.zg-input-input,
-zg-pager input[type="number"],
-zg-pager input[type="text"] {
+zg-pager input[type='number'],
+zg-pager input[type='text'] {
   pointer-events: auto !important;
   cursor: text !important;
   background-color: var(--color-bg-white) !important;
@@ -102,8 +102,8 @@ zg-pager input[type="text"] {
 }
 
 zg-pager input.zg-input-input:focus,
-zg-pager input[type="number"]:focus,
-zg-pager input[type="text"]:focus {
+zg-pager input[type='number']:focus,
+zg-pager input[type='text']:focus {
   outline: 1px solid var(--color-primary-dark) !important;
   border-color: var(--color-primary-dark) !important;
 }
