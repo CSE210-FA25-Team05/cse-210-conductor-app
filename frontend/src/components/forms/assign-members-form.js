@@ -19,6 +19,7 @@ class AssignMembersForm extends HTMLElement {
     this.teams = [];
     this.members = [];
     this.selectedTeamId = null;
+    this.searchTerm = '';
   }
 
   connectedCallback() {
@@ -69,6 +70,14 @@ class AssignMembersForm extends HTMLElement {
   render() {
     if (!this.courseId) return;
 
+    const filteredMembers =
+      this.members.length > 0
+        ? this.members.filter((m) => {
+            const haystack = `${m.user_first_name ?? ''} ${m.user_last_name ?? ''} ${m.user_email ?? ''}`.toLowerCase();
+            return haystack.includes(this.searchTerm.toLowerCase());
+          })
+        : [];
+
     this.innerHTML = `
       <div class="error-message" style="display: none; color: var(--color-error); margin-bottom: var(--spacing-medium); padding: var(--spacing-small); background-color: var(--color-error-light); border-radius: var(--border-radius);"></div>
       <form id="assign-members-form-internal">
@@ -100,23 +109,33 @@ class AssignMembersForm extends HTMLElement {
           </label>
         `
         }
-        <label style="margin-top: var(--spacing-medium);">
-          Select Members
+        <label style="margin-top: var(--spacing-medium); width: 100%;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-medium);">
+            <span>Select Members</span>
+            <input
+              id="members-search"
+              type="search"
+              placeholder="Search by name or email"
+              value="${this.searchTerm}"
+              style="flex: 1; padding: var(--spacing-small); border: var(--border-form); border-radius: var(--border-radius);"
+            />
+          </div>
           <div id="members-list" style="max-height: 300px; overflow-y: auto; border: var(--border-form); border-radius: var(--border-radius); padding: var(--spacing-small); margin-top: var(--spacing-small); background-color: var(--color-bg-white);">
             ${
-              this.members.length > 0
-                ? this.members
+              filteredMembers.length > 0
+                ? filteredMembers
                     .map(
                       (member) => `
-              <label style="display: block; padding: var(--spacing-small); ${member.team_id ? 'opacity: 0.6;' : ''} cursor: ${member.team_id ? 'not-allowed' : 'pointer'}; border-radius: var(--border-radius);">
-                <input type="checkbox" name="member_ids" value="${member.id}" ${member.team_id ? 'disabled' : ''} style="margin-right: var(--spacing-small);" />
+              <label style="display: flex; align-items: center; gap: var(--spacing-small); padding: var(--spacing-small); border-radius: var(--border-radius); cursor: pointer;">
+                <input type="checkbox" name="member_ids" value="${member.id}" style="margin-right: var(--spacing-small);" />
                 ${member.user_first_name} ${member.user_last_name} <span style="color: var(--color-text-secondary);">(${member.user_email})</span>
-                ${member.team_id ? `<span style="color: var(--color-text-secondary); font-size: var(--fs-50);"> - Already assigned to a team</span>` : ''}
               </label>
             `
                     )
                     .join('')
-                : '<p style="color: var(--color-text-secondary); padding: var(--spacing-small);">Loading members...</p>'
+                : this.members.length === 0
+                  ? '<p style="color: var(--color-text-secondary); padding: var(--spacing-small);">Loading members...</p>'
+                  : '<p style="color: var(--color-text-secondary); padding: var(--spacing-small);">No members match your search.</p>'
             }
           </div>
         </label>
@@ -131,6 +150,15 @@ class AssignMembersForm extends HTMLElement {
       form.removeEventListener('submit', this.handleSubmit);
       // Add new listener
       form.addEventListener('submit', this.handleSubmit.bind(this));
+    }
+
+    // Attach search listener
+    const searchInput = this.querySelector('#members-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        this.searchTerm = e.target.value || '';
+        this.render();
+      });
     }
   }
 
